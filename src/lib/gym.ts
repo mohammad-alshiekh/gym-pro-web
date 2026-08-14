@@ -7,6 +7,8 @@
  * "Failed to read the request form. Form key length limit 2048 exceeded."
  */
 
+import { SERVICE_TYPE } from "@/lib/manager";
+
 // ─── API shapes ──────────────────────────────────────────────────────────────
 
 export interface WorkingPeriod {
@@ -19,11 +21,16 @@ export interface WorkingPeriod {
 export interface GymImage {
   id: string;
   url: string;
+  /** Storage provider handle — returned by the API, never sent back. */
+  publicId?: string | null;
   order: number;
   description?: string | null;
 }
 
 export interface GymService {
+  /** Present on services the gym already has a row for; absent on new ones. */
+  id?: string;
+  gymId?: string;
   serviceType: number;
   isEnabled: boolean;
 }
@@ -79,16 +86,12 @@ export const DAY_KEYS = [
 export type DayKey = (typeof DAY_KEYS)[number];
 
 /**
- * GymServiceTypeEnum — the eight services occupy 0–7, not the 1–8 the API doc
- * lists. Verified against the live endpoint: 0–7 pass model validation while
- * 8 and 9 come back as "The value '8' is invalid."
- * Labels live in `serviceTypeLabel` (lib/utils.ts).
+ * GymServiceTypeEnum — the eight services occupy 0–7 (Sauna … Spa). Verified
+ * against the live endpoint: 0–7 pass model validation while 8 and 9 come back
+ * as "The value '8' is invalid." Labels live in `serviceTypeLabel`
+ * (lib/utils.ts).
  */
-export const SERVICE_TYPES = [0, 1, 2, 3, 4, 5, 6, 7] as const;
-
-/** GenderTypeEnum — 1 = Male, 2 = Female (per the Gym Manager API doc). */
-export const GENDER_MALE = 1;
-export const GENDER_FEMALE = 2;
+export const SERVICE_TYPES = Object.values(SERVICE_TYPE);
 
 // ─── Normalisation ───────────────────────────────────────────────────────────
 

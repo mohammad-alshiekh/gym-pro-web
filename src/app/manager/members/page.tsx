@@ -85,7 +85,9 @@ export default function ManagerMembersPage() {
   const statusVariant = (status: number): "warning" | "success" | "danger" | "neutral" => {
     if (status === SUBSCRIPTION_STATUS.pending) return "warning";
     if (status === SUBSCRIPTION_STATUS.active) return "success";
+    if (status === SUBSCRIPTION_STATUS.cancelRequested) return "warning";
     if (status === SUBSCRIPTION_STATUS.rejected) return "danger";
+    if (status === SUBSCRIPTION_STATUS.cancelled) return "danger";
     return "neutral";
   };
 

@@ -20,6 +20,7 @@ import { subscriptionsApi } from "@/lib/api";
 import { apiErrorMessage } from "@/lib/apiError";
 import {
   CANCELLATION_TYPE,
+  CANCELLATION_TYPES,
   PAYMENT_METHOD,
   SUBSCRIPTION_STATUS,
   SUBSCRIPTION_STATUSES,
@@ -44,7 +45,9 @@ type Action = "approve" | "reject" | "cancel";
 function statusVariant(status: number): "warning" | "success" | "danger" | "neutral" {
   if (status === SUBSCRIPTION_STATUS.pending) return "warning";
   if (status === SUBSCRIPTION_STATUS.active) return "success";
+  if (status === SUBSCRIPTION_STATUS.cancelRequested) return "warning";
   if (status === SUBSCRIPTION_STATUS.rejected) return "danger";
+  if (status === SUBSCRIPTION_STATUS.cancelled) return "danger";
   return "neutral";
 }
 
@@ -56,7 +59,13 @@ export default function ManagerSubscriptionsPage() {
   const [actionTarget, setActionTarget] = useState<
     { sub: GymSubscription; action: Action } | null
   >(null);
+  const [cancelType, setCancelType] = useState<number>(CANCELLATION_TYPE.immediate);
   const [submitting, setSubmitting] = useState(false);
+
+  const openAction = (sub: GymSubscription, action: Action) => {
+    setCancelType(CANCELLATION_TYPE.immediate);
+    setActionTarget({ sub, action });
+  };
 
   const fetchSubs = useCallback(async () => {
     setLoading(true);
@@ -96,8 +105,7 @@ export default function ManagerSubscriptionsPage() {
         await subscriptionsApi.reject(sub.id);
         toast.success(t.subscriptions.rejectSuccess);
       } else {
-        // A manager-initiated cancellation is always ByManager.
-        await subscriptionsApi.cancel(sub.id, CANCELLATION_TYPE.byManager);
+        await subscriptionsApi.cancel(sub.id, cancelType);
         toast.success(t.subscriptions.cancelSuccess);
       }
       setActionTarget(null);
@@ -226,7 +234,11 @@ export default function ManagerSubscriptionsPage() {
               const remaining = daysRemaining(sub.endDate);
               const isPending = sub.status === SUBSCRIPTION_STATUS.pending;
               const isActive = sub.status === SUBSCRIPTION_STATUS.active;
-              const isCash = sub.paymentMethod === PAYMENT_METHOD.cash;
+              const isManual = sub.paymentMethod === PAYMENT_METHOD.manual;
+              // Only manual requests are the manager's to approve (§6.2), but any
+              // pending one can be rejected (§6.3), and a membership the trainee has
+              // asked to end still needs the manager to close it out (§6.4).
+              const canCancel = isActive || sub.status === SUBSCRIPTION_STATUS.cancelRequested;
 
               return (
                 <div key={sub.id} className="rounded-2xl border p-5" style={CARD}>
@@ -256,7 +268,7 @@ export default function ManagerSubscriptionsPage() {
                     </div>
 
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <Badge variant={isCash ? "neutral" : "info"}>
+                      <Badge variant={isManual ? "neutral" : "info"}>
                         {paymentMethodLabel(sub.paymentMethod)}
                       </Badge>
                       <Badge variant={statusVariant(sub.status)}>
@@ -303,49 +315,51 @@ export default function ManagerSubscriptionsPage() {
 
                   {sub.cancellationType != null && (
                     <p className="mt-3 text-xs" style={{ color: "#ffb4ab" }}>
-                      {t.subscriptions.cancelledBy}: {cancellationTypeLabel(sub.cancellationType)}
+                      {t.subscriptions.cancellationType}:{" "}
+                      {cancellationTypeLabel(sub.cancellationType)}
                     </p>
                   )}
 
                   {/* Actions */}
-                  {(isPending || isActive) && (
+                  {(isPending || canCancel) && (
                     <div
                       className="mt-4 flex flex-wrap items-center gap-2 pt-4 border-t"
                       style={{ borderColor: "#23272e" }}
                     >
-                      {isPending && isCash && (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => setActionTarget({ sub, action: "approve" })}
-                            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-colors"
-                            style={{
-                              background: "rgba(200,243,35,0.1)",
-                              color: "#c8f323",
-                              border: "1px solid rgba(200,243,35,0.25)",
-                            }}
-                          >
-                            <CheckCircle className="w-3.5 h-3.5" />
-                            {t.subscriptions.approve}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setActionTarget({ sub, action: "reject" })}
-                            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-colors"
-                            style={{
-                              background: "rgba(255,180,171,0.1)",
-                              color: "#ffb4ab",
-                              border: "1px solid rgba(255,180,171,0.25)",
-                            }}
-                          >
-                            <XCircle className="w-3.5 h-3.5" />
-                            {t.subscriptions.reject}
-                          </button>
-                        </>
+                      {isPending && isManual && (
+                        <button
+                          type="button"
+                          onClick={() => openAction(sub, "approve")}
+                          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-colors"
+                          style={{
+                            background: "rgba(200,243,35,0.1)",
+                            color: "#c8f323",
+                            border: "1px solid rgba(200,243,35,0.25)",
+                          }}
+                        >
+                          <CheckCircle className="w-3.5 h-3.5" />
+                          {t.subscriptions.approve}
+                        </button>
                       )}
 
-                      {/* Card payments are settled by Stripe, not by the manager. */}
-                      {isPending && !isCash && (
+                      {isPending && (
+                        <button
+                          type="button"
+                          onClick={() => openAction(sub, "reject")}
+                          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-colors"
+                          style={{
+                            background: "rgba(255,180,171,0.1)",
+                            color: "#ffb4ab",
+                            border: "1px solid rgba(255,180,171,0.25)",
+                          }}
+                        >
+                          <XCircle className="w-3.5 h-3.5" />
+                          {t.subscriptions.reject}
+                        </button>
+                      )}
+
+                      {/* Stripe approves itself once the checkout settles. */}
+                      {isPending && !isManual && (
                         <p
                           className="flex items-center gap-1.5 text-xs"
                           style={{ color: "#8b93a1" }}
@@ -355,10 +369,10 @@ export default function ManagerSubscriptionsPage() {
                         </p>
                       )}
 
-                      {isActive && (
+                      {canCancel && (
                         <button
                           type="button"
-                          onClick={() => setActionTarget({ sub, action: "cancel" })}
+                          onClick={() => openAction(sub, "cancel")}
                           className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-colors"
                           style={{
                             background: "rgba(255,180,171,0.1)",
@@ -426,6 +440,55 @@ export default function ManagerSubscriptionsPage() {
                 {actionTarget.sub.planName} — {formatCurrency(actionTarget.sub.price)} ·{" "}
                 {actionTarget.sub.durationDays} {t.common.days}
               </p>
+            </div>
+          )}
+
+          {/* CancellationTypeEnum — immediate, or let the paid period run out. */}
+          {actionTarget?.action === "cancel" && (
+            <div className="space-y-2">
+              <p
+                className="text-[11px] font-medium uppercase tracking-widest"
+                style={MONO}
+              >
+                {t.subscriptions.cancellationType}
+              </p>
+              {CANCELLATION_TYPES.map((value) => {
+                const on = cancelType === value;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setCancelType(value)}
+                    disabled={submitting}
+                    className="w-full flex items-start gap-2.5 p-3 rounded-xl border text-left transition-colors"
+                    style={{
+                      background: on ? "rgba(200,243,35,0.08)" : "#0f1013",
+                      borderColor: on ? "rgba(200,243,35,0.35)" : "#2f3742",
+                    }}
+                  >
+                    <span
+                      className="mt-0.5 w-3.5 h-3.5 rounded-full border flex-shrink-0"
+                      style={{
+                        borderColor: on ? "#c8f323" : "#2f3742",
+                        background: on ? "#c8f323" : "transparent",
+                      }}
+                    />
+                    <span className="min-w-0">
+                      <span
+                        className="block text-sm font-medium"
+                        style={{ color: on ? "#c8f323" : "#e9ecf1" }}
+                      >
+                        {cancellationTypeLabel(value)}
+                      </span>
+                      <span className="block text-xs mt-0.5" style={{ color: "#8b93a1" }}>
+                        {value === CANCELLATION_TYPE.immediate
+                          ? t.subscriptions.immediateHint
+                          : t.subscriptions.cancelAtEndHint}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>

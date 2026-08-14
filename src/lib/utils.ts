@@ -42,60 +42,62 @@ export function getInitials(name: string): string {
     .slice(0, 2);
 }
 
+/** GymTypeEnum. */
 export function gymTypeLabel(type: number): string {
   const map: Record<number, string> = {
-    0: "Unspecified",
-    1: "Male Only",
-    2: "Female Only",
+    0: "Men Only",
+    1: "Women Only",
+    2: "Separate Sessions",
     3: "Mixed",
   };
   return map[type] ?? "Unknown";
 }
 
+/** GymSubscriptionStatusEnum. */
 export function subscriptionStatusLabel(status: number): string {
   const map: Record<number, string> = {
-    1: "Pending",
-    2: "Active",
-    3: "Rejected",
+    0: "Pending",
+    1: "Active",
+    2: "Cancel Requested",
+    3: "Cancelled",
     4: "Expired",
-    5: "Cancelled",
+    5: "Rejected",
   };
   return map[status] ?? "Unknown";
 }
 
 export function subscriptionStatusColor(status: number): string {
   const map: Record<number, string> = {
-    1: "text-yellow-400 bg-yellow-400/10",
-    2: "text-green-400 bg-green-400/10",
+    0: "text-yellow-400 bg-yellow-400/10",
+    1: "text-green-400 bg-green-400/10",
+    2: "text-orange-400 bg-orange-400/10",
     3: "text-red-400 bg-red-400/10",
     4: "text-gray-400 bg-gray-400/10",
-    5: "text-orange-400 bg-orange-400/10",
+    5: "text-red-400 bg-red-400/10",
   };
   return map[status] ?? "text-gray-400 bg-gray-400/10";
 }
 
-/**
- * GymServiceTypeEnum is 0-based on the server (verified: values 0–7 validate,
- * 8 and 9 are rejected). The API doc numbers the same eight services 1–8.
- */
+/** GymServiceTypeEnum — eight services occupying 0–7. */
 export function serviceTypeLabel(type: number): string {
   const map: Record<number, string> = {
-    0: "Personal Trainer",
-    1: "Locker Room",
-    2: "Sauna",
-    3: "Pool",
-    4: "Parking",
+    0: "Sauna",
+    1: "Pool",
+    2: "Personal Training",
+    3: "CrossFit",
+    4: "Locker Room",
     5: "WiFi",
-    6: "Protein Bar",
-    7: "Nutritionist",
+    6: "Parking",
+    7: "Spa",
   };
   return map[type] ?? "Unknown";
 }
 
+/** GymPaymentMethodEnum — 0 is an online Stripe checkout, 1 is cash at reception. */
 export function paymentMethodLabel(method: number): string {
   const map: Record<number, string> = {
+    0: "Card (Stripe)",
     1: "Cash",
-    2: "Card",
   };
   return map[method] ?? "Unknown";
 }

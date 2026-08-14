@@ -30,10 +30,9 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { myGymApi } from "@/lib/api";
 import { apiErrorMessage } from "@/lib/apiError";
 import { formatCurrency, gymTypeLabel, serviceTypeLabel } from "@/lib/utils";
+import { GENDER_TYPE, GENDER_TYPES } from "@/lib/manager";
 import {
   DAY_KEYS,
-  GENDER_FEMALE,
-  GENDER_MALE,
   buildGymFormData,
   buildImageFormData,
   moveImage,
@@ -134,6 +133,13 @@ export default function MyGymPage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageDescription, setImageDescription] = useState("");
   const imageInputRef = useRef<HTMLInputElement>(null);
+
+  /** GenderTypeEnum → the localised audience label for a working period. */
+  const genderText = (type: number) => {
+    if (type === GENDER_TYPE.men) return t.gyms.male;
+    if (type === GENDER_TYPE.women) return t.gyms.female;
+    return t.gyms.mixed;
+  };
 
   const applyGym = useCallback((data: MyGym) => {
     setGym(data);
@@ -245,7 +251,12 @@ export default function MyGymPage() {
             ...prev,
             workingPeriods: [
               ...prev.workingPeriods,
-              { dayOfWeek: 0, startTime: "09:00", endTime: "22:00", genderType: GENDER_MALE },
+              {
+                dayOfWeek: 0,
+                startTime: "09:00",
+                endTime: "22:00",
+                genderType: GENDER_TYPE.mixed,
+              },
             ],
           }
         : prev
@@ -725,12 +736,11 @@ export default function MyGymPage() {
                       className="px-2 py-1.5 rounded-lg border text-xs cursor-pointer"
                       style={INPUT}
                     >
-                      <option value={GENDER_FEMALE} style={{ background: "#0f1013" }}>
-                        {t.gyms.female}
-                      </option>
-                      <option value={GENDER_MALE} style={{ background: "#0f1013" }}>
-                        {t.gyms.male}
-                      </option>
+                      {GENDER_TYPES.map((value) => (
+                        <option key={value} value={value} style={{ background: "#0f1013" }}>
+                          {genderText(value)}
+                        </option>
+                      ))}
                     </select>
                     <button
                       type="button"
@@ -762,8 +772,10 @@ export default function MyGymPage() {
                       >
                         {wp.startTime} – {wp.endTime}
                       </span>
-                      <Badge variant={wp.genderType === GENDER_MALE ? "info" : "neutral"}>
-                        {wp.genderType === GENDER_MALE ? t.gyms.male : t.gyms.female}
+                      <Badge
+                        variant={wp.genderType === GENDER_TYPE.men ? "info" : "neutral"}
+                      >
+                        {genderText(wp.genderType)}
                       </Badge>
                     </div>
                   </div>

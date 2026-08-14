@@ -176,8 +176,14 @@ export const plansApi = {
   update: (id: string, data: GymPlanInput) =>
     apiClient.put<GymPlan>(`/gym-plans/${id}`, data),
 
-  /** Deletes the plan when unused, otherwise soft-deactivates it. */
+  /**
+   * Hard-deletes the plan. Returns 400 when trainees have already subscribed —
+   * `deactivate` is the call to make in that case.
+   */
   delete: (id: string) => apiClient.delete<{ message: string }>(`/gym-plans/${id}`),
+
+  /** Hides the plan from trainee discovery, leaving existing subscriptions intact. */
+  deactivate: (id: string) => apiClient.post<GymPlan>(`/gym-plans/${id}/deactivate`),
 
   reactivate: (id: string) => apiClient.post<GymPlan>(`/gym-plans/${id}/reactivate`),
 };
@@ -185,16 +191,17 @@ export const plansApi = {
 // ─── Subscriptions ───────────────────────────────────────────────────────────
 
 export const subscriptionsApi = {
+  /** `status` is GymSubscriptionStatusEnum; 0 (Pending) is a filter, not "unset". */
   getRequests: (status?: number) =>
     apiClient.get<GymSubscription[]>("/gym-subscriptions/gym-requests", {
-      params: status ? { status } : {},
+      params: status == null ? {} : { status },
     }),
 
   approve: (id: string) => apiClient.post(`/gym-subscriptions/${id}/approve`),
 
   reject: (id: string) => apiClient.post(`/gym-subscriptions/${id}/reject`),
 
-  /** `cancellationType` is CancellationTypeEnum — a manager sends 1 (ByManager). */
+  /** `cancellationType` is CancellationTypeEnum — 0 Immediate, 1 CancelAtEnd. */
   cancel: (id: string, cancellationType: number) =>
     apiClient.post(`/gym-subscriptions/${id}/cancel`, { cancellationType }),
 

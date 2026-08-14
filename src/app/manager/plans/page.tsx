@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, ScrollText, Edit2, Trash2, RotateCcw } from "lucide-react";
+import { Plus, ScrollText, Edit2, EyeOff, Trash2, RotateCcw } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
@@ -107,6 +107,16 @@ export default function ManagerPlansPage() {
     } catch (err) { toast.error(apiErrorMessage(err, t.plans.reactivateFailed)); }
   };
 
+  // Deactivating keeps existing subscriptions running and only hides the plan
+  // from trainee discovery — it is the documented fallback when delete is refused.
+  const handleDeactivate = async (plan: GymPlan) => {
+    try {
+      await plansApi.deactivate(plan.id);
+      toast.success(t.plans.deactivateSuccess);
+      fetchPlans();
+    } catch (err) { toast.error(apiErrorMessage(err, t.plans.deactivateFailed)); }
+  };
+
   const setField = (key: keyof FormState, value: string) => setForm(p => ({ ...p, [key]: value }));
   const inputStyle = { background: "#0f1013", borderColor: "#2f3742", color: "#e9ecf1", outline: "none", fontFamily: "Inter, sans-serif" };
   const labelStyle = { fontFamily: "JetBrains Mono, monospace", color: "#c3cad6", fontSize: "11px", textTransform: "uppercase" as const, letterSpacing: "0.1em" };
@@ -151,14 +161,17 @@ export default function ManagerPlansPage() {
                     <Edit2 className="w-3.5 h-3.5" />Edit
                   </button>
                   {!plan.isActive ? (
-                    <button onClick={() => handleReactivate(plan)} className="p-2 rounded-xl hover:bg-[#c8f32315] transition-colors" style={{ color: "#c8f323" }}>
+                    <button onClick={() => handleReactivate(plan)} title={t.plans.reactivatePlan} className="p-2 rounded-xl hover:bg-[#c8f32315] transition-colors" style={{ color: "#c8f323" }}>
                       <RotateCcw className="w-4 h-4" />
                     </button>
                   ) : (
-                    <button onClick={() => setDeleteTarget(plan)} className="p-2 rounded-xl hover:bg-[#93000a]/20" style={{ color: "#ffb4ab" }}>
-                      <Trash2 className="w-4 h-4" />
+                    <button onClick={() => handleDeactivate(plan)} title={t.plans.deactivatePlan} className="p-2 rounded-xl hover:bg-[#23272e] transition-colors" style={{ color: "#8b93a1" }}>
+                      <EyeOff className="w-4 h-4" />
                     </button>
                   )}
+                  <button onClick={() => setDeleteTarget(plan)} title={t.plans.deletePlan} className="p-2 rounded-xl hover:bg-[#93000a]/20" style={{ color: "#ffb4ab" }}>
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
             ))}
@@ -179,6 +192,10 @@ export default function ManagerPlansPage() {
             <label style={labelStyle} className="block mb-1.5">{t.common.description}</label>
             <textarea value={form.description} onChange={(e) => setField("description", e.target.value)} rows={3} placeholder="Unlimited gym access..." className="w-full px-4 py-3 rounded-xl border text-sm input-accent resize-none" style={inputStyle} />
           </div>
+          {/* The API rejects price/duration edits once the plan has active subscribers. */}
+          {editTarget && (
+            <p className="text-xs" style={{ color: "#8b93a1" }}>{t.plans.editLockNote}</p>
+          )}
         </div>
       </Modal>
 
@@ -186,6 +203,7 @@ export default function ManagerPlansPage() {
         footer={<><Button variant="ghost" onClick={() => setDeleteTarget(null)}>{t.common.cancel}</Button><Button variant="danger" loading={submitting} onClick={handleDelete}>{t.common.delete}</Button></>}>
         <p style={{ color: "#e9ecf1" }}>{t.plans.deleteConfirm}</p>
         {deleteTarget && <div className="mt-3 px-4 py-2 rounded-xl border text-sm" style={{ borderColor: "#93000a", background: "#93000a15", color: "#ffb4ab" }}>{deleteTarget.name}</div>}
+        <p className="mt-3 text-xs" style={{ color: "#8b93a1" }}>{t.plans.deleteNote}</p>
       </Modal>
     </DashboardLayout>
   );

@@ -9,6 +9,7 @@ import Badge from "@/components/ui/Badge";
 import Pagination from "@/components/ui/Pagination";
 import { useTranslation } from "@/hooks/useTranslation";
 import { gymsApi } from "@/lib/api";
+import { GYM_TYPES } from "@/lib/manager";
 import { gymTypeLabel } from "@/lib/utils";
 import toast from "react-hot-toast";
 
@@ -372,10 +373,11 @@ export default function AdminGymsPage() {
                 className="w-full px-4 py-3 rounded-xl border text-sm appearance-none"
                 style={inputStyle}
               >
-                <option value="0">Unspecified</option>
-                <option value="1">Male Only</option>
-                <option value="2">Female Only</option>
-                <option value="3">Mixed</option>
+                {GYM_TYPES.map((value) => (
+                  <option key={value} value={String(value)}>
+                    {gymTypeLabel(value)}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
