@@ -27,7 +27,7 @@ import {
 import toast from "react-hot-toast";
 
 export default function ManagerMembersPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [members, setMembers] = useState<GymMember[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
@@ -105,13 +105,13 @@ export default function ManagerMembersPage() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#8b93a1" }} />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#8a8888" }} />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t.members.searchPlaceholder}
               className="w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm input-accent"
-              style={{ background: "#0f1013", borderColor: "#2f3742", color: "#e9ecf1", outline: "none" }}
+              style={{ background: "#0e0e0e", borderColor: "#2a2a2a", color: "#ffffff", outline: "none" }}
             />
           </div>
 
@@ -121,24 +121,24 @@ export default function ManagerMembersPage() {
               value={sortBy}
               onChange={(e) => { setSortBy(e.target.value as "startDate" | "endDate"); setPage(1); }}
               className="px-3 py-2.5 rounded-xl border text-sm cursor-pointer"
-              style={{ background: "#0f1013", borderColor: "#2f3742", color: "#e9ecf1", outline: "none" }}
+              style={{ background: "#0e0e0e", borderColor: "#2a2a2a", color: "#ffffff", outline: "none" }}
             >
-              <option value="endDate" style={{ background: "#0f1013" }}>{t.subscriptions.endDate}</option>
-              <option value="startDate" style={{ background: "#0f1013" }}>{t.subscriptions.startDate}</option>
+              <option value="endDate" style={{ background: "#0e0e0e" }}>{t.subscriptions.endDate}</option>
+              <option value="startDate" style={{ background: "#0e0e0e" }}>{t.subscriptions.startDate}</option>
             </select>
             <button
               type="button"
               onClick={() => setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))}
               title={sortOrder === "asc" ? t.members.sortAsc : t.members.sortDesc}
-              className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border text-xs transition-colors hover:border-[#c8f323] hover:text-[#c8f323]"
-              style={{ borderColor: "#2f3742", color: "#c3cad6", fontFamily: "JetBrains Mono, monospace" }}
+              className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border text-xs transition-colors hover:border-[#cafd00] hover:text-[#cafd00]"
+              style={{ borderColor: "#2a2a2a", color: "#adaaaa", fontFamily: "JetBrains Mono, monospace" }}
             >
               <ArrowDownUp className="w-3.5 h-3.5" />
               {sortOrder === "asc" ? t.members.sortAsc : t.members.sortDesc}
             </button>
           </div>
 
-          <div className="sm:ml-auto flex items-center gap-3 text-xs" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8b93a1" }}>
+          <div className="sm:ml-auto flex items-center gap-3 text-xs" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}>
             <span>{totalCount} {t.members.title}</span>
             {expiringSoon > 0 && (
               <span style={{ color: "#ffd04a" }}>
@@ -151,47 +151,47 @@ export default function ManagerMembersPage() {
         {loading ? (
           <div className="space-y-3">{Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-20 rounded-2xl shimmer" />)}</div>
         ) : members.length === 0 ? (
-          <div className="text-center py-20" style={{ color: "#8b93a1" }}>
+          <div className="text-center py-20" style={{ color: "#8a8888" }}>
             <Users className="w-12 h-12 mx-auto mb-4 opacity-30" />
             <p>{t.common.noData}</p>
           </div>
         ) : (
-          <div className="rounded-2xl border overflow-hidden" style={{ borderColor: "#2f3742", background: "#171a1e" }}>
+          <div className="rounded-2xl border overflow-hidden" style={{ borderColor: "#2a2a2a", background: "#131313" }}>
             {members.map((member, i) => (
               <div
                 key={member.traineeId}
-                className="flex items-center gap-4 px-5 py-4 cursor-pointer hover:bg-[#23272e] transition-colors"
-                style={{ borderBottom: i < members.length - 1 ? "1px solid #23272e" : "none" }}
+                className="flex items-center gap-4 px-5 py-4 cursor-pointer hover:bg-[#20201f] transition-colors"
+                style={{ borderBottom: i < members.length - 1 ? "1px solid #20201f" : "none" }}
                 onClick={() => handleView(member.traineeId)}
               >
                 {member.photoUrl ? (
                   <img src={member.photoUrl} alt={member.name} className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
                 ) : (
                   <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
-                    style={{ background: "#23272e", color: "#c8f323", fontFamily: "Lexend, sans-serif" }}>
+                    style={{ background: "#20201f", color: "#cafd00", fontFamily: "Lexend, sans-serif" }}>
                     {getInitials(member.name)}
                   </div>
                 )}
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="font-medium text-sm" style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}>{member.name}</p>
+                    <p className="font-medium text-sm" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>{member.name}</p>
                     <Badge variant={statusVariant(member.status)} className="hidden sm:inline-flex">
-                      {subscriptionStatusLabel(member.status)}
+                      {subscriptionStatusLabel(member.status, locale)}
                     </Badge>
                   </div>
-                  <p className="text-xs" style={{ color: "#8b93a1" }}>{member.email}</p>
+                  <p className="text-xs" style={{ color: "#8a8888" }}>{member.email}</p>
                 </div>
 
                 <div className="hidden sm:block text-right">
-                  <p className="text-xs font-medium" style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}>
+                  <p className="text-xs font-medium" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>
                     {member.currentPlanName ?? "—"}
                   </p>
                   {member.endDate && (() => {
                     const left = daysRemaining(member.endDate);
                     const soon = left !== null && left >= 0 && left <= 7;
                     return (
-                      <p className="text-xs" style={{ color: soon ? "#ffd04a" : "#8b93a1" }}>
+                      <p className="text-xs" style={{ color: soon ? "#ffd04a" : "#8a8888" }}>
                         {t.members.expires}: {formatDate(member.endDate)}
                         {left !== null && left >= 0 && ` · ${left}d`}
                       </p>
@@ -199,7 +199,7 @@ export default function ManagerMembersPage() {
                   })()}
                 </div>
 
-                <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: "#8b93a1" }} />
+                <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: "#8a8888" }} />
               </div>
             ))}
           </div>
@@ -226,55 +226,55 @@ export default function ManagerMembersPage() {
                 <img src={viewTarget.photoUrl} alt={viewTarget.name} className="w-16 h-16 rounded-2xl object-cover" />
               ) : (
                 <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-bold"
-                  style={{ background: "#23272e", color: "#c8f323", fontFamily: "Lexend, sans-serif" }}>
+                  style={{ background: "#20201f", color: "#cafd00", fontFamily: "Lexend, sans-serif" }}>
                   {getInitials(viewTarget.name)}
                 </div>
               )}
               <div>
-                <h3 className="text-lg font-bold" style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}>{viewTarget.name}</h3>
-                <p className="text-sm" style={{ color: "#8b93a1" }}>{viewTarget.email}</p>
-                {viewTarget.phone && <p className="text-sm" style={{ color: "#c3cad6" }}>{viewTarget.phone}</p>}
+                <h3 className="text-lg font-bold" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>{viewTarget.name}</h3>
+                <p className="text-sm" style={{ color: "#8a8888" }}>{viewTarget.email}</p>
+                {viewTarget.phone && <p className="text-sm" style={{ color: "#adaaaa" }}>{viewTarget.phone}</p>}
               </div>
             </div>
 
             {/* Current Subscription */}
             {viewTarget.currentSubscription && (
-              <div className="p-4 rounded-xl" style={{ background: "#0f1013" }}>
+              <div className="p-4 rounded-xl" style={{ background: "#0e0e0e" }}>
                 <div className="flex items-center justify-between gap-3 mb-3">
-                  <p className="text-xs font-semibold" style={{ fontFamily: "JetBrains Mono, monospace", color: "#c8f323" }}>
+                  <p className="text-xs font-semibold" style={{ fontFamily: "JetBrains Mono, monospace", color: "#cafd00" }}>
                     {t.members.currentSubscription}
                   </p>
                   <Badge variant={statusVariant(viewTarget.currentSubscription.status)}>
-                    {subscriptionStatusLabel(viewTarget.currentSubscription.status)}
+                    {subscriptionStatusLabel(viewTarget.currentSubscription.status, locale)}
                   </Badge>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
                   <div>
-                    <p style={{ color: "#8b93a1" }}>{t.subscriptions.plan}</p>
-                    <p style={{ color: "#e9ecf1" }}>{viewTarget.currentSubscription.planName}</p>
+                    <p style={{ color: "#8a8888" }}>{t.subscriptions.plan}</p>
+                    <p style={{ color: "#ffffff" }}>{viewTarget.currentSubscription.planName}</p>
                   </div>
                   <div>
-                    <p style={{ color: "#8b93a1" }}>{t.common.price}</p>
-                    <p style={{ color: "#c8f323", fontWeight: 600 }}>{formatCurrency(viewTarget.currentSubscription.price)}</p>
+                    <p style={{ color: "#8a8888" }}>{t.common.price}</p>
+                    <p style={{ color: "#cafd00", fontWeight: 600 }}>{formatCurrency(viewTarget.currentSubscription.price)}</p>
                   </div>
                   <div>
-                    <p style={{ color: "#8b93a1" }}>{t.subscriptions.paymentMethod}</p>
-                    <p style={{ color: "#e9ecf1" }}>{paymentMethodLabel(viewTarget.currentSubscription.paymentMethod)}</p>
+                    <p style={{ color: "#8a8888" }}>{t.subscriptions.paymentMethod}</p>
+                    <p style={{ color: "#ffffff" }}>{paymentMethodLabel(viewTarget.currentSubscription.paymentMethod)}</p>
                   </div>
                   <div>
-                    <p style={{ color: "#8b93a1" }}>{t.subscriptions.startDate}</p>
-                    <p style={{ color: "#e9ecf1" }}>{formatDate(viewTarget.currentSubscription.startDate)}</p>
+                    <p style={{ color: "#8a8888" }}>{t.subscriptions.startDate}</p>
+                    <p style={{ color: "#ffffff" }}>{formatDate(viewTarget.currentSubscription.startDate)}</p>
                   </div>
                   <div>
-                    <p style={{ color: "#8b93a1" }}>{t.subscriptions.endDate}</p>
-                    <p style={{ color: "#e9ecf1" }}>{formatDate(viewTarget.currentSubscription.endDate)}</p>
+                    <p style={{ color: "#8a8888" }}>{t.subscriptions.endDate}</p>
+                    <p style={{ color: "#ffffff" }}>{formatDate(viewTarget.currentSubscription.endDate)}</p>
                   </div>
                   {(() => {
                     const left = daysRemaining(viewTarget.currentSubscription.endDate);
                     return left === null ? null : (
                       <div>
-                        <p style={{ color: "#8b93a1" }}>{t.members.daysLeft}</p>
-                        <p style={{ color: left <= 7 ? "#ffd04a" : "#e9ecf1", fontWeight: 600 }}>
+                        <p style={{ color: "#8a8888" }}>{t.members.daysLeft}</p>
+                        <p style={{ color: left <= 7 ? "#ffd04a" : "#ffffff", fontWeight: 600 }}>
                           {left >= 0 ? left : 0}
                         </p>
                       </div>
@@ -287,19 +287,19 @@ export default function ManagerMembersPage() {
             {/* Previous subscriptions — returned by the API but never shown before. */}
             {viewTarget.previousSubscriptions && viewTarget.previousSubscriptions.length > 0 && (
               <div>
-                <p className="text-xs font-semibold mb-2" style={{ fontFamily: "JetBrains Mono, monospace", color: "#c3cad6" }}>
+                <p className="text-xs font-semibold mb-2" style={{ fontFamily: "JetBrains Mono, monospace", color: "#adaaaa" }}>
                   {t.members.previousSubscriptions}
                 </p>
                 <div className="space-y-2 max-h-40 overflow-y-auto">
                   {viewTarget.previousSubscriptions.map((sub) => (
-                    <div key={sub.id} className="flex items-center justify-between gap-3 py-2 px-3 rounded-lg" style={{ background: "#0f1013" }}>
+                    <div key={sub.id} className="flex items-center justify-between gap-3 py-2 px-3 rounded-lg" style={{ background: "#0e0e0e" }}>
                       <div className="min-w-0">
-                        <p className="text-xs truncate" style={{ color: "#e9ecf1" }}>{sub.planName}</p>
-                        <p className="text-[11px]" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8b93a1" }}>
+                        <p className="text-xs truncate" style={{ color: "#ffffff" }}>{sub.planName}</p>
+                        <p className="text-[11px]" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}>
                           {formatDate(sub.startDate)} → {formatDate(sub.endDate)}
                         </p>
                       </div>
-                      <Badge variant={statusVariant(sub.status)}>{subscriptionStatusLabel(sub.status)}</Badge>
+                      <Badge variant={statusVariant(sub.status)}>{subscriptionStatusLabel(sub.status, locale)}</Badge>
                     </div>
                   ))}
                 </div>
@@ -308,33 +308,33 @@ export default function ManagerMembersPage() {
 
             {/* Attendance Stats */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="p-4 rounded-xl text-center" style={{ background: "#23272e" }}>
-                <p className="text-2xl font-bold" style={{ fontFamily: "Lexend, sans-serif", color: "#4ae176" }}>{viewTarget.totalAttendanceCount}</p>
-                <p className="text-xs mt-1" style={{ color: "#8b93a1" }}>Total Visits</p>
+              <div className="p-4 rounded-xl text-center" style={{ background: "#20201f" }}>
+                <p className="text-2xl font-bold" style={{ fontFamily: "Space Grotesk, sans-serif", color: "#4ae176" }}>{viewTarget.totalAttendanceCount}</p>
+                <p className="text-xs mt-1" style={{ color: "#8a8888" }}>{t.members.totalVisits}</p>
               </div>
-              <div className="p-4 rounded-xl text-center" style={{ background: "#23272e" }}>
-                <p className="text-sm font-semibold" style={{ fontFamily: "Lexend, sans-serif", color: "#adc6ff" }}>
+              <div className="p-4 rounded-xl text-center" style={{ background: "#20201f" }}>
+                <p className="text-sm font-semibold" style={{ fontFamily: "Lexend, sans-serif", color: "#7df6ff" }}>
                   {viewTarget.lastAttendanceTime ? formatDate(viewTarget.lastAttendanceTime) : "—"}
                 </p>
-                <p className="text-xs mt-1" style={{ color: "#8b93a1" }}>Last Visit</p>
+                <p className="text-xs mt-1" style={{ color: "#8a8888" }}>{t.members.lastVisit}</p>
               </div>
             </div>
 
-            {/* Recent Attendance */}
+            {/* Attendance Stats */}
             {viewTarget.attendanceHistory && viewTarget.attendanceHistory.length > 0 && (
               <div>
-                <p className="text-xs font-semibold mb-3" style={{ fontFamily: "JetBrains Mono, monospace", color: "#c3cad6" }}>RECENT VISITS</p>
+                <p className="text-xs font-semibold mb-3" style={{ fontFamily: "JetBrains Mono, monospace", color: "#adaaaa" }}>{t.members.recentVisitsLabel}</p>
                 <div className="space-y-2 max-h-40 overflow-y-auto">
                   {viewTarget.attendanceHistory.slice(0, 10).map((att) => {
                     const duration = sessionDuration(att);
                     return (
-                      <div key={att.id} className="flex items-center justify-between gap-3 py-2 px-3 rounded-lg" style={{ background: "#0f1013" }}>
-                        <span className="text-xs" style={{ fontFamily: "JetBrains Mono, monospace", color: "#e9ecf1" }}>
+                      <div key={att.id} className="flex items-center justify-between gap-3 py-2 px-3 rounded-lg" style={{ background: "#0e0e0e" }}>
+                        <span className="text-xs" style={{ fontFamily: "JetBrains Mono, monospace", color: "#ffffff" }}>
                           {formatDateTime(att.checkInTime)}
                         </span>
                         <span
                           className="text-xs"
-                          style={{ color: att.checkOutTime ? "#8b93a1" : "#4ae176" }}
+                          style={{ color: att.checkOutTime ? "#8a8888" : "#4ae176" }}
                         >
                           {att.checkOutTime ? (duration ?? "—") : t.attendance.stillInside}
                         </span>

@@ -43,22 +43,29 @@ export default function DashboardLayout({
     <div
       className="min-h-screen flex"
       dir={isRtl ? "rtl" : "ltr"}
-      style={{ background: "#0f1013" }}
+      style={{ background: "#0e0e0e" }}
     >
       <Sidebar />
 
       {/* Main content */}
+      {/*
+        The sidebar is a fixed-position drawer with its own overlay below
+        `lg` — see Sidebar.tsx — so it already floats over the page on
+        mobile instead of sharing space with it. The margin below is what
+        makes room for it on desktop; it must stay `lg:`-scoped, or a phone
+        also gets squeezed by the same 256px at the exact moment the drawer
+        is covering it anyway.
+      */}
       <div
         className={cn(
-          "flex-1 flex flex-col min-w-0 transition-all duration-300",
+          "flex-1 flex flex-col min-w-0 overflow-x-hidden transition-all duration-300",
           isRtl
-            ? sidebarOpen ? "mr-64" : "mr-16"
-            : sidebarOpen ? "ml-64" : "ml-16"
+            ? sidebarOpen ? "lg:mr-64" : "lg:mr-16"
+            : sidebarOpen ? "lg:ml-64" : "lg:ml-16"
         )}
-        style={{ maxWidth: "calc(100vw - 4rem)" }}
       >
         <TopBar title={title} />
-        <main className="flex-1 p-6 overflow-auto">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 overflow-auto">{children}</main>
       </div>
     </div>
   );

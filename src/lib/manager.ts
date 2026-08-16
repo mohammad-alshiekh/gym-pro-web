@@ -57,12 +57,11 @@ export const CANCELLATION_TYPE = { immediate: 0, cancelAtEnd: 1 } as const;
 
 export const CANCELLATION_TYPES = Object.values(CANCELLATION_TYPE);
 
-export function cancellationTypeLabel(type: number | null | undefined): string {
+export function cancellationTypeLabel(type: number | null | undefined, locale = "en"): string {
   if (type == null) return "—";
-  const map: Record<number, string> = {
-    0: "Immediate",
-    1: "At Period End",
-  };
+  const en: Record<number, string> = { 0: "Immediate", 1: "At Period End" };
+  const ar: Record<number, string> = { 0: "فوري", 1: "في نهاية الفترة" };
+  const map = locale === "ar" ? ar : en;
   return map[type] ?? "—";
 }
 
@@ -71,13 +70,11 @@ export const GENDER_TYPE = { men: 0, women: 1, mixed: 2 } as const;
 
 export const GENDER_TYPES = Object.values(GENDER_TYPE);
 
-export function genderLabel(type: number | null | undefined): string {
+export function genderLabel(type: number | null | undefined, locale = "en"): string {
   if (type == null) return "—";
-  const map: Record<number, string> = {
-    0: "Men",
-    1: "Women",
-    2: "Mixed",
-  };
+  const en: Record<number, string> = { 0: "Men", 1: "Women", 2: "Mixed" };
+  const ar: Record<number, string> = { 0: "ذكور", 1: "إناث", 2: "مختلط" };
+  const map = locale === "ar" ? ar : en;
   return map[type] ?? "—";
 }
 

@@ -20,7 +20,7 @@ export default function StatCard({
   value,
   subtitle,
   icon,
-  accentColor = "#c8f323",
+  accentColor = "#cafd00",
   trend,
   className,
 }: StatCardProps) {
@@ -31,8 +31,8 @@ export default function StatCard({
         className
       )}
       style={{
-        background: "#171a1e",
-        borderColor: "#2f3742",
+        background: "#131313",
+        borderColor: "#2a2a2a",
         boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
       }}
     >
@@ -42,19 +42,19 @@ export default function StatCard({
             className="text-xs font-medium uppercase tracking-widest mb-1"
             style={{
               fontFamily: "JetBrains Mono, monospace",
-              color: "#8b93a1",
+              color: "#8a8888",
             }}
           >
             {title}
           </p>
           <p
             className="text-3xl font-bold"
-            style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}
+            style={{ fontFamily: "Space Grotesk, sans-serif", color: "#ffffff" }}
           >
             {value}
           </p>
           {subtitle && (
-            <p className="text-sm mt-1" style={{ color: "#8b93a1" }}>
+            <p className="text-sm mt-1" style={{ color: "#8a8888" }}>
               {subtitle}
             </p>
           )}
@@ -73,13 +73,13 @@ export default function StatCard({
             className="text-xs font-medium px-2 py-0.5 rounded-full"
             style={{
               fontFamily: "JetBrains Mono, monospace",
-              background: trend.value >= 0 ? "#4ae17615" : "#ffb4ab15",
-              color: trend.value >= 0 ? "#4ae176" : "#ffb4ab",
+              background: trend.value >= 0 ? "#4ae17615" : "#ff6e8115",
+              color: trend.value >= 0 ? "#4ae176" : "#ff6e81",
             }}
           >
             {trend.value >= 0 ? "+" : ""}{trend.value}%
           </span>
-          <span className="text-xs" style={{ color: "#8b93a1" }}>
+          <span className="text-xs" style={{ color: "#8a8888" }}>
             {trend.label}
           </span>
         </div>

@@ -30,7 +30,7 @@ export default function DataTable<T extends Record<string, unknown>>({
     return (
       <div
         className="rounded-2xl border overflow-hidden"
-        style={{ borderColor: "#2f3742" }}
+        style={{ borderColor: "#2a2a2a" }}
       >
         <div className="p-6 space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -47,12 +47,12 @@ export default function DataTable<T extends Record<string, unknown>>({
   return (
     <div
       className="rounded-2xl border overflow-hidden"
-      style={{ borderColor: "#2f3742", background: "#171a1e" }}
+      style={{ borderColor: "#2a2a2a", background: "#131313" }}
     >
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr style={{ borderBottom: "1px solid #2f3742" }}>
+            <tr style={{ borderBottom: "1px solid #2a2a2a" }}>
               {columns.map((col) => (
                 <th
                   key={col.key}
@@ -62,8 +62,8 @@ export default function DataTable<T extends Record<string, unknown>>({
                   )}
                   style={{
                     fontFamily: "JetBrains Mono, monospace",
-                    color: "#8b93a1",
-                    background: "#1c2025",
+                    color: "#8a8888",
+                    background: "#1a1a1a",
                   }}
                 >
                   {col.label}
@@ -77,7 +77,7 @@ export default function DataTable<T extends Record<string, unknown>>({
                 <td
                   colSpan={columns.length}
                   className="px-4 py-12 text-center text-sm"
-                  style={{ color: "#8b93a1" }}
+                  style={{ color: "#8a8888" }}
                 >
                   {emptyMessage}
                 </td>
@@ -88,16 +88,16 @@ export default function DataTable<T extends Record<string, unknown>>({
                   key={keyExtractor(row)}
                   className={cn(
                     "border-b transition-colors",
-                    onRowClick && "cursor-pointer hover:bg-[#23272e]"
+                    onRowClick && "cursor-pointer hover:bg-[#20201f]"
                   )}
-                  style={{ borderColor: "#23272e" }}
+                  style={{ borderColor: "#20201f" }}
                   onClick={() => onRowClick?.(row)}
                 >
                   {columns.map((col) => (
                     <td
                       key={col.key}
                       className={cn("px-4 py-3.5 text-sm", col.className)}
-                      style={{ color: "#e9ecf1" }}
+                      style={{ color: "#ffffff" }}
                     >
                       {col.render
                         ? col.render(row[col.key], row)

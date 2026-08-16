@@ -37,8 +37,8 @@ import {
 } from "@/lib/utils";
 import toast from "react-hot-toast";
 
-const CARD: React.CSSProperties = { background: "#171a1e", borderColor: "#2f3742" };
-const MONO: React.CSSProperties = { fontFamily: "JetBrains Mono, monospace", color: "#8b93a1" };
+const CARD: React.CSSProperties = { background: "#131313", borderColor: "#2a2a2a" };
+const MONO: React.CSSProperties = { fontFamily: "JetBrains Mono, monospace", color: "#8a8888" };
 
 type Action = "approve" | "reject" | "cancel";
 
@@ -52,7 +52,7 @@ function statusVariant(status: number): "warning" | "success" | "danger" | "neut
 }
 
 export default function ManagerSubscriptionsPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [subs, setSubs] = useState<GymSubscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<number | undefined>(undefined);
@@ -121,7 +121,7 @@ export default function ManagerSubscriptionsPage() {
     { value: undefined as number | undefined, label: t.common.all },
     ...SUBSCRIPTION_STATUSES.map((value) => ({
       value: value as number | undefined,
-      label: subscriptionStatusLabel(value),
+      label: subscriptionStatusLabel(value, locale),
     })),
   ];
 
@@ -147,7 +147,7 @@ export default function ManagerSubscriptionsPage() {
               label: t.subscriptions.activeValue,
               value: formatCurrency(summary.revenue),
               icon: CreditCard,
-              color: "#c8f323",
+              color: "#cafd00",
             },
           ].map((tile) => (
             <div
@@ -167,7 +167,7 @@ export default function ManagerSubscriptionsPage() {
                 </p>
                 <p
                   className="text-sm font-bold truncate mt-0.5"
-                  style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}
+                  style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}
                 >
                   {tile.value}
                 </p>
@@ -188,8 +188,8 @@ export default function ManagerSubscriptionsPage() {
                   onClick={() => setStatusFilter(tab.value)}
                   className="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all flex-shrink-0"
                   style={{
-                    background: on ? "#c8f323" : "#23272e",
-                    color: on ? "#293500" : "#c3cad6",
+                    background: on ? "#cafd00" : "#20201f",
+                    color: on ? "#3a4a00" : "#adaaaa",
                     fontFamily: "Lexend, sans-serif",
                   }}
                 >
@@ -202,8 +202,8 @@ export default function ManagerSubscriptionsPage() {
             type="button"
             onClick={fetchSubs}
             title={t.common.refresh}
-            className="p-2 rounded-xl border transition-colors hover:border-[#c8f323] hover:text-[#c8f323] flex-shrink-0"
-            style={{ borderColor: "#2f3742", color: "#8b93a1" }}
+            className="p-2 rounded-xl border transition-colors hover:border-[#cafd00] hover:text-[#cafd00] flex-shrink-0"
+            style={{ borderColor: "#2a2a2a", color: "#8a8888" }}
           >
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
           </button>
@@ -220,11 +220,11 @@ export default function ManagerSubscriptionsPage() {
           <div className="rounded-2xl border py-20 text-center" style={CARD}>
             <div
               className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
-              style={{ background: "#23272e" }}
+              style={{ background: "#20201f" }}
             >
-              <ClipboardList className="w-7 h-7" style={{ color: "#c8f323", opacity: 0.5 }} />
+              <ClipboardList className="w-7 h-7" style={{ color: "#cafd00", opacity: 0.5 }} />
             </div>
-            <p className="text-sm" style={{ color: "#8b93a1" }}>
+            <p className="text-sm" style={{ color: "#8a8888" }}>
               {t.common.noData}
             </p>
           </div>
@@ -247,8 +247,8 @@ export default function ManagerSubscriptionsPage() {
                       <div
                         className="w-11 h-11 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
                         style={{
-                          background: "#23272e",
-                          color: "#c8f323",
+                          background: "#20201f",
+                          color: "#cafd00",
                           fontFamily: "Lexend, sans-serif",
                         }}
                       >
@@ -257,11 +257,11 @@ export default function ManagerSubscriptionsPage() {
                       <div className="min-w-0">
                         <p
                           className="font-semibold text-sm truncate"
-                          style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}
+                          style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}
                         >
                           {sub.traineeName}
                         </p>
-                        <p className="text-xs truncate" style={{ color: "#8b93a1" }}>
+                        <p className="text-xs truncate" style={{ color: "#8a8888" }}>
                           {sub.planName}
                         </p>
                       </div>
@@ -272,7 +272,7 @@ export default function ManagerSubscriptionsPage() {
                         {paymentMethodLabel(sub.paymentMethod)}
                       </Badge>
                       <Badge variant={statusVariant(sub.status)}>
-                        {subscriptionStatusLabel(sub.status)}
+                        {subscriptionStatusLabel(sub.status, locale)}
                       </Badge>
                     </div>
                   </div>
@@ -282,29 +282,29 @@ export default function ManagerSubscriptionsPage() {
                     style={{ fontFamily: "JetBrains Mono, monospace" }}
                   >
                     <div>
-                      <p style={{ color: "#8b93a1" }}>{t.common.price}</p>
-                      <p style={{ color: "#c8f323", fontWeight: 600 }}>
+                      <p style={{ color: "#8a8888" }}>{t.common.price}</p>
+                      <p style={{ color: "#cafd00", fontWeight: 600 }}>
                         {formatCurrency(sub.price)}
                       </p>
                     </div>
                     <div>
-                      <p style={{ color: "#8b93a1" }}>{t.common.duration}</p>
-                      <p style={{ color: "#e9ecf1" }}>
+                      <p style={{ color: "#8a8888" }}>{t.common.duration}</p>
+                      <p style={{ color: "#ffffff" }}>
                         {sub.durationDays} {t.common.days}
                       </p>
                     </div>
                     <div>
-                      <p style={{ color: "#8b93a1" }}>{t.subscriptions.startDate}</p>
-                      <p style={{ color: "#e9ecf1" }}>
+                      <p style={{ color: "#8a8888" }}>{t.subscriptions.startDate}</p>
+                      <p style={{ color: "#ffffff" }}>
                         {sub.startDate ? formatDate(sub.startDate) : "—"}
                       </p>
                     </div>
                     <div>
-                      <p style={{ color: "#8b93a1" }}>{t.subscriptions.endDate}</p>
-                      <p style={{ color: "#e9ecf1" }}>
+                      <p style={{ color: "#8a8888" }}>{t.subscriptions.endDate}</p>
+                      <p style={{ color: "#ffffff" }}>
                         {sub.endDate ? formatDate(sub.endDate) : "—"}
                         {isActive && remaining !== null && remaining >= 0 && (
-                          <span style={{ color: remaining <= 7 ? "#ffd04a" : "#8b93a1" }}>
+                          <span style={{ color: remaining <= 7 ? "#ffd04a" : "#8a8888" }}>
                             {" "}
                             · {remaining}d
                           </span>
@@ -314,9 +314,9 @@ export default function ManagerSubscriptionsPage() {
                   </div>
 
                   {sub.cancellationType != null && (
-                    <p className="mt-3 text-xs" style={{ color: "#ffb4ab" }}>
+                    <p className="mt-3 text-xs" style={{ color: "#ff6e81" }}>
                       {t.subscriptions.cancellationType}:{" "}
-                      {cancellationTypeLabel(sub.cancellationType)}
+                      {cancellationTypeLabel(sub.cancellationType, locale)}
                     </p>
                   )}
 
@@ -324,45 +324,35 @@ export default function ManagerSubscriptionsPage() {
                   {(isPending || canCancel) && (
                     <div
                       className="mt-4 flex flex-wrap items-center gap-2 pt-4 border-t"
-                      style={{ borderColor: "#23272e" }}
+                      style={{ borderColor: "#20201f" }}
                     >
                       {isPending && isManual && (
-                        <button
-                          type="button"
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          icon={<CheckCircle className="w-3.5 h-3.5" />}
                           onClick={() => openAction(sub, "approve")}
-                          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-colors"
-                          style={{
-                            background: "rgba(200,243,35,0.1)",
-                            color: "#c8f323",
-                            border: "1px solid rgba(200,243,35,0.25)",
-                          }}
                         >
-                          <CheckCircle className="w-3.5 h-3.5" />
                           {t.subscriptions.approve}
-                        </button>
+                        </Button>
                       )}
 
                       {isPending && (
-                        <button
-                          type="button"
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          icon={<XCircle className="w-3.5 h-3.5" />}
                           onClick={() => openAction(sub, "reject")}
-                          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-colors"
-                          style={{
-                            background: "rgba(255,180,171,0.1)",
-                            color: "#ffb4ab",
-                            border: "1px solid rgba(255,180,171,0.25)",
-                          }}
                         >
-                          <XCircle className="w-3.5 h-3.5" />
                           {t.subscriptions.reject}
-                        </button>
+                        </Button>
                       )}
 
                       {/* Stripe approves itself once the checkout settles. */}
                       {isPending && !isManual && (
                         <p
                           className="flex items-center gap-1.5 text-xs"
-                          style={{ color: "#8b93a1" }}
+                          style={{ color: "#8a8888" }}
                         >
                           <Info className="w-3.5 h-3.5" />
                           {t.subscriptions.awaitingPayment}
@@ -370,19 +360,14 @@ export default function ManagerSubscriptionsPage() {
                       )}
 
                       {canCancel && (
-                        <button
-                          type="button"
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          icon={<Ban className="w-3.5 h-3.5" />}
                           onClick={() => openAction(sub, "cancel")}
-                          className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-colors"
-                          style={{
-                            background: "rgba(255,180,171,0.1)",
-                            color: "#ffb4ab",
-                            border: "1px solid rgba(255,180,171,0.25)",
-                          }}
                         >
-                          <Ban className="w-3.5 h-3.5" />
                           {t.subscriptions.cancel}
-                        </button>
+                        </Button>
                       )}
 
                       <span className="ml-auto flex items-center gap-1.5 text-[11px]" style={MONO}>
@@ -426,17 +411,17 @@ export default function ManagerSubscriptionsPage() {
         }
       >
         <div className="space-y-3">
-          <p className="text-sm" style={{ color: "#c3cad6" }}>
+          <p className="text-sm" style={{ color: "#adaaaa" }}>
             {actionTarget?.action === "approve" && t.subscriptions.approveConfirm}
             {actionTarget?.action === "reject" && t.subscriptions.rejectConfirm}
             {actionTarget?.action === "cancel" && t.subscriptions.cancelConfirm}
           </p>
           {actionTarget && (
-            <div className="p-3 rounded-xl" style={{ background: "#0f1013" }}>
-              <p className="text-sm font-medium" style={{ color: "#e9ecf1" }}>
+            <div className="p-3 rounded-xl" style={{ background: "#0e0e0e" }}>
+              <p className="text-sm font-medium" style={{ color: "#ffffff" }}>
                 {actionTarget.sub.traineeName}
               </p>
-              <p className="text-xs mt-0.5" style={{ color: "#8b93a1" }}>
+              <p className="text-xs mt-0.5" style={{ color: "#8a8888" }}>
                 {actionTarget.sub.planName} — {formatCurrency(actionTarget.sub.price)} ·{" "}
                 {actionTarget.sub.durationDays} {t.common.days}
               </p>
@@ -462,25 +447,25 @@ export default function ManagerSubscriptionsPage() {
                     disabled={submitting}
                     className="w-full flex items-start gap-2.5 p-3 rounded-xl border text-left transition-colors"
                     style={{
-                      background: on ? "rgba(200,243,35,0.08)" : "#0f1013",
-                      borderColor: on ? "rgba(200,243,35,0.35)" : "#2f3742",
+                      background: on ? "rgba(202,253,0,0.08)" : "#0e0e0e",
+                      borderColor: on ? "rgba(202,253,0,0.35)" : "#2a2a2a",
                     }}
                   >
                     <span
                       className="mt-0.5 w-3.5 h-3.5 rounded-full border flex-shrink-0"
                       style={{
-                        borderColor: on ? "#c8f323" : "#2f3742",
-                        background: on ? "#c8f323" : "transparent",
+                        borderColor: on ? "#cafd00" : "#2a2a2a",
+                        background: on ? "#cafd00" : "transparent",
                       }}
                     />
                     <span className="min-w-0">
                       <span
                         className="block text-sm font-medium"
-                        style={{ color: on ? "#c8f323" : "#e9ecf1" }}
+                        style={{ color: on ? "#cafd00" : "#ffffff" }}
                       >
-                        {cancellationTypeLabel(value)}
+                        {cancellationTypeLabel(value, locale)}
                       </span>
-                      <span className="block text-xs mt-0.5" style={{ color: "#8b93a1" }}>
+                      <span className="block text-xs mt-0.5" style={{ color: "#8a8888" }}>
                         {value === CANCELLATION_TYPE.immediate
                           ? t.subscriptions.immediateHint
                           : t.subscriptions.cancelAtEndHint}

@@ -10,14 +10,14 @@ import { sessionDuration, type AttendanceLog } from "@/lib/manager";
 import { formatDateTime, getInitials } from "@/lib/utils";
 import toast from "react-hot-toast";
 
-const CARD: React.CSSProperties = { background: "#171a1e", borderColor: "#2f3742" };
+const CARD: React.CSSProperties = { background: "#131313", borderColor: "#2a2a2a" };
 const INPUT: React.CSSProperties = {
-  background: "#0f1013",
-  borderColor: "#2f3742",
-  color: "#e9ecf1",
+  background: "#0e0e0e",
+  borderColor: "#2a2a2a",
+  color: "#ffffff",
   outline: "none",
 };
-const MONO: React.CSSProperties = { fontFamily: "JetBrains Mono, monospace", color: "#8b93a1" };
+const MONO: React.CSSProperties = { fontFamily: "JetBrains Mono, monospace", color: "#8a8888" };
 
 function timeOnly(value: string): string {
   const date = new Date(value);
@@ -80,9 +80,9 @@ export default function AttendancePage() {
   }, [logs]);
 
   const tiles = [
-    { label: t.attendance.checkIns, value: stats.total, icon: LogIn, color: "#c8f323" },
+    { label: t.attendance.checkIns, value: stats.total, icon: LogIn, color: "#cafd00" },
     { label: t.attendance.insideNow, value: stats.insideNow, icon: Users, color: "#4ae176" },
-    { label: t.attendance.uniqueMembers, value: stats.unique, icon: Users, color: "#adc6ff" },
+    { label: t.attendance.uniqueMembers, value: stats.unique, icon: Users, color: "#7df6ff" },
     {
       label: t.attendance.avgSession,
       value: stats.avgMinutes ? `${stats.avgMinutes}m` : "—",
@@ -114,7 +114,7 @@ export default function AttendancePage() {
                 </p>
                 <p
                   className="text-sm font-bold truncate mt-0.5"
-                  style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}
+                  style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}
                 >
                   {tile.value}
                 </p>
@@ -128,7 +128,7 @@ export default function AttendancePage() {
           <div className="relative">
             <Calendar
               className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4"
-              style={{ color: "#8b93a1" }}
+              style={{ color: "#8a8888" }}
             />
             <input
               type="date"
@@ -142,7 +142,7 @@ export default function AttendancePage() {
           <div className="relative flex-1 max-w-sm">
             <Search
               className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4"
-              style={{ color: "#8b93a1" }}
+              style={{ color: "#8a8888" }}
             />
             <input
               value={search}
@@ -175,11 +175,11 @@ export default function AttendancePage() {
           <div className="rounded-2xl border py-20 text-center" style={CARD}>
             <div
               className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
-              style={{ background: "#23272e" }}
+              style={{ background: "#20201f" }}
             >
-              <Clock className="w-7 h-7" style={{ color: "#c8f323", opacity: 0.5 }} />
+              <Clock className="w-7 h-7" style={{ color: "#cafd00", opacity: 0.5 }} />
             </div>
-            <p className="text-sm" style={{ color: "#8b93a1" }}>
+            <p className="text-sm" style={{ color: "#8a8888" }}>
               {t.attendance.noRecords}
             </p>
           </div>
@@ -188,7 +188,7 @@ export default function AttendancePage() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[640px]">
                 <thead>
-                  <tr style={{ background: "#1c2025" }}>
+                  <tr style={{ background: "#1a1a1a" }}>
                     {[
                       t.subscriptions.member,
                       t.attendance.checkIn,
@@ -212,16 +212,16 @@ export default function AttendancePage() {
                     return (
                       <tr
                         key={log.id}
-                        className="border-t transition-colors hover:bg-[#1c2025]"
-                        style={{ borderColor: "#23272e" }}
+                        className="border-t transition-colors hover:bg-[#1a1a1a]"
+                        style={{ borderColor: "#20201f" }}
                       >
                         <td className="px-5 py-3.5">
                           <div className="flex items-center gap-2.5 min-w-0">
                             <div
                               className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
                               style={{
-                                background: "#23272e",
-                                color: "#c8f323",
+                                background: "#20201f",
+                                color: "#cafd00",
                                 fontFamily: "Lexend, sans-serif",
                               }}
                             >
@@ -229,7 +229,7 @@ export default function AttendancePage() {
                             </div>
                             <span
                               className="text-sm font-medium truncate"
-                              style={{ color: "#e9ecf1" }}
+                              style={{ color: "#ffffff" }}
                             >
                               {log.traineeName}
                             </span>
@@ -238,7 +238,7 @@ export default function AttendancePage() {
                         <td className="px-5 py-3.5">
                           <span
                             className="text-xs"
-                            style={{ fontFamily: "JetBrains Mono, monospace", color: "#c3cad6" }}
+                            style={{ fontFamily: "JetBrains Mono, monospace", color: "#adaaaa" }}
                             title={formatDateTime(log.checkInTime)}
                           >
                             {timeOnly(log.checkInTime)}
@@ -259,7 +259,7 @@ export default function AttendancePage() {
                           ) : (
                             <span
                               className="text-xs"
-                              style={{ fontFamily: "JetBrains Mono, monospace", color: "#c3cad6" }}
+                              style={{ fontFamily: "JetBrains Mono, monospace", color: "#adaaaa" }}
                               title={formatDateTime(log.checkOutTime!)}
                             >
                               {timeOnly(log.checkOutTime!)}
@@ -272,8 +272,8 @@ export default function AttendancePage() {
                             style={{
                               background: inside
                                 ? "rgba(74,225,118,0.1)"
-                                : "rgba(200,243,35,0.1)",
-                              color: inside ? "#4ae176" : "#c8f323",
+                                : "rgba(202,253,0,0.1)",
+                              color: inside ? "#4ae176" : "#cafd00",
                               fontFamily: "JetBrains Mono, monospace",
                             }}
                           >

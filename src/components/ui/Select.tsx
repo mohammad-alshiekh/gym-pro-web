@@ -23,7 +23,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
         {label && (
           <label
             className="text-xs font-medium uppercase tracking-widest"
-            style={{ fontFamily: "JetBrains Mono, monospace", color: "#c3cad6" }}
+            style={{ fontFamily: "JetBrains Mono, monospace", color: "#adaaaa" }}
           >
             {label}
           </label>
@@ -33,19 +33,19 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             ref={ref}
             className={cn(
               "w-full py-3 px-4 pr-10 rounded-xl border text-sm transition-all appearance-none cursor-pointer",
-              error ? "border-[#ffb4ab]" : "border-[#2f3742]",
+              error ? "border-[#ff6e81]" : "border-[#2a2a2a]",
               className
             )}
             style={{
-              background: "#0f1013",
-              color: "#e9ecf1",
-              fontFamily: "Inter, sans-serif",
+              background: "#0e0e0e",
+              color: "#ffffff",
+              fontFamily: "Manrope, sans-serif",
               outline: "none",
             }}
             {...props}
           >
             {placeholder && (
-              <option value="" style={{ background: "#0f1013" }}>
+              <option value="" style={{ background: "#0e0e0e" }}>
                 {placeholder}
               </option>
             )}
@@ -53,7 +53,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
               <option
                 key={opt.value}
                 value={opt.value}
-                style={{ background: "#0f1013" }}
+                style={{ background: "#0e0e0e" }}
               >
                 {opt.label}
               </option>
@@ -61,11 +61,11 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
           </select>
           <ChevronDown
             className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
-            style={{ color: "#8b93a1" }}
+            style={{ color: "#8a8888" }}
           />
         </div>
         {error && (
-          <p className="text-xs" style={{ color: "#ffb4ab" }}>
+          <p className="text-xs" style={{ color: "#ff6e81" }}>
             {error}
           </p>
         )}

@@ -1,121 +1,152 @@
 /**
- * GymBro - Kinetic Dark Theme
+ * GymBro - Kinetic Theme
  * Edit this file to customize the entire design system.
  * Colors, typography, spacing, and border radii are all defined here.
+ *
+ * Values are transcribed 1:1 from the mobile app's Flutter ThemeData (its
+ * `_KineticColors` / `_LightColors` and dark/light `ThemeData`), so the web
+ * portal and the app share one identity. Only the dark palette is wired up
+ * today (this app has no light-mode toggle); the light values are kept here
+ * ready for when one is added.
  *
  * AI INSTRUCTION: To change the theme, modify the values in this file.
  * The CSS variables are injected via globals.css referencing this structure.
  */
 
 export const theme = {
-  name: "Kinetic Dark",
+  name: "Kinetic",
 
   colors: {
     // Backgrounds & Surfaces
-    surface: "#0f1013",
-    "surface-dim": "#0f1013",
-    "surface-bright": "#333942",
-    "surface-container-lowest": "#0a0b0c",
-    "surface-container-low": "#171a1e",
-    "surface-container": "#1c2025",
-    "surface-container-high": "#23272e",
-    "surface-container-highest": "#2d323a",
-    "on-surface": "#e9ecf1",
-    "on-surface-variant": "#c3cad6",
-    "inverse-surface": "#e9ecf1",
-    "inverse-on-surface": "#1c2025",
-    outline: "#8b93a1",
-    "outline-variant": "#2f3742",
-    "surface-tint": "#aed500",
+    surface: "#0e0e0e",
+    "surface-dim": "#0e0e0e",
+    "surface-bright": "#302f2c",
+    "surface-container-lowest": "#0a0a0a",
+    "surface-container-low": "#131313",
+    "surface-container": "#1a1a1a",
+    "surface-container-high": "#20201f",
+    "surface-container-highest": "#2a2a28",
+    "on-surface": "#ffffff",
+    "on-surface-variant": "#adaaaa",
+    "inverse-surface": "#ffffff",
+    "inverse-on-surface": "#1a1a1a",
+    outline: "#8a8888",
+    "outline-variant": "#2a2a2a",
+    "surface-tint": "#b5de00",
 
-    // Primary (Electric Lime)
-    primary: "#ffffff",
-    "on-primary": "#293500",
-    "primary-container": "#c8f323",
-    "on-primary-container": "#576c00",
-    "inverse-primary": "#526600",
+    // Primary — Electric Lime
+    primary: "#f3ffca",
+    "on-primary": "#3a4a00",
+    "primary-container": "#cafd00",
+    "on-primary-container": "#3a4a00",
+    "inverse-primary": "#4a5c00",
 
-    // Secondary (Green)
-    secondary: "#4ae176",
-    "on-secondary": "#003915",
+    // Secondary — Cyan
+    secondary: "#00eefc",
+    "on-secondary": "#003b40",
     "secondary-container": "#00b954",
-    "on-secondary-container": "#004119",
+    "on-secondary-container": "#003915",
 
-    // Tertiary (Blue)
-    tertiary: "#ffffff",
-    "on-tertiary": "#002e6a",
-    "tertiary-container": "#d8e2ff",
-    "on-tertiary-container": "#0060ce",
+    // Tertiary / info accent (derived from the cyan secondary)
+    tertiary: "#7df6ff",
+    "on-tertiary": "#00363b",
+    "tertiary-container": "#c8fdff",
+    "on-tertiary-container": "#00b8c9",
 
-    // Error
-    error: "#ffb4ab",
-    "on-error": "#690005",
-    "error-container": "#93000a",
-    "on-error-container": "#ffdad6",
+    // Error — Dart reuses its tertiary (soft coral) as the error colour
+    error: "#ff6e81",
+    "on-error": "#3a0009",
+    "error-container": "#5c1620",
+    "on-error-container": "#ffd9dc",
 
     // Fixed Colors
-    "primary-fixed": "#c8f323",
-    "primary-fixed-dim": "#aed500",
-    "on-primary-fixed": "#171e00",
-    "on-primary-fixed-variant": "#3d4d00",
+    "primary-fixed": "#cafd00",
+    "primary-fixed-dim": "#b5de00",
+    "on-primary-fixed": "#3a4a00",
+    "on-primary-fixed-variant": "#4a5c00",
 
-    "secondary-fixed": "#6bff8f",
-    "secondary-fixed-dim": "#4ae176",
-    "on-secondary-fixed": "#002109",
-    "on-secondary-fixed-variant": "#005321",
-
-    "tertiary-fixed": "#d8e2ff",
-    "tertiary-fixed-dim": "#adc6ff",
-    "on-tertiary-fixed": "#001a42",
-    "on-tertiary-fixed-variant": "#004395",
+    "secondary-fixed": "#7df6ff",
+    "secondary-fixed-dim": "#00eefc",
+    "on-secondary-fixed": "#00363b",
+    "on-secondary-fixed-variant": "#004a52",
 
     // Background
-    background: "#0f1013",
-    "on-background": "#e9ecf1",
-    "surface-variant": "#2d323a",
+    background: "#0e0e0e",
+    "on-background": "#ffffff",
+    "surface-variant": "#2a2a28",
 
-    // Brand accent (Electric Lime - primary CTA)
-    accent: "#c8f323",
-    "accent-dim": "#aed500",
+    // Brand accent (Electric Lime — primary CTA)
+    accent: "#cafd00",
+    "accent-dim": "#b5de00",
+  },
+
+  /** Light palette, per the mobile app's `_LightColors` — not yet wired up. */
+  colorsLight: {
+    surface: "#f5f5f5",
+    "surface-container-low": "#eeeeee",
+    "surface-container": "#e0e0e0",
+    "surface-container-high": "#d5d5d5",
+    "surface-container-lowest": "#ffffff",
+    "on-surface": "#0e0e0e",
+    "on-surface-variant": "#424242",
   },
 
   typography: {
     "display-lg": {
-      fontFamily: "Lexend",
-      fontSize: "48px",
+      fontFamily: "Space Grotesk",
+      fontSize: "57px",
       fontWeight: "700",
-      lineHeight: "56px",
+      lineHeight: "64px",
+      letterSpacing: "-0.02em",
+    },
+    "display-md": {
+      fontFamily: "Space Grotesk",
+      fontSize: "45px",
+      fontWeight: "700",
+      lineHeight: "52px",
       letterSpacing: "-0.02em",
     },
     "headline-lg": {
-      fontFamily: "Lexend",
+      fontFamily: "Space Grotesk",
       fontSize: "32px",
-      fontWeight: "600",
+      fontWeight: "700",
       lineHeight: "40px",
     },
     "headline-md": {
-      fontFamily: "Lexend",
-      fontSize: "24px",
-      fontWeight: "600",
-      lineHeight: "32px",
+      fontFamily: "Space Grotesk",
+      fontSize: "28px",
+      fontWeight: "700",
+      lineHeight: "36px",
     },
-    "headline-sm": {
-      fontFamily: "Lexend",
-      fontSize: "20px",
-      fontWeight: "600",
+    "title-lg": {
+      fontFamily: "Manrope",
+      fontSize: "22px",
+      fontWeight: "700",
       lineHeight: "28px",
+    },
+    "title-md": {
+      fontFamily: "Manrope",
+      fontSize: "16px",
+      fontWeight: "600",
+      lineHeight: "24px",
     },
     "body-lg": {
-      fontFamily: "Inter",
-      fontSize: "18px",
-      fontWeight: "400",
-      lineHeight: "28px",
-    },
-    "body-md": {
-      fontFamily: "Inter",
+      fontFamily: "Manrope",
       fontSize: "16px",
       fontWeight: "400",
       lineHeight: "24px",
+    },
+    "body-md": {
+      fontFamily: "Manrope",
+      fontSize: "14px",
+      fontWeight: "400",
+      lineHeight: "20px",
+    },
+    "label-lg": {
+      fontFamily: "Lexend",
+      fontSize: "14px",
+      fontWeight: "600",
+      lineHeight: "20px",
     },
     "label-md": {
       fontFamily: "JetBrains Mono",
@@ -124,11 +155,11 @@ export const theme = {
       lineHeight: "20px",
       letterSpacing: "0.05em",
     },
-    "headline-lg-mobile": {
+    "label-sm": {
       fontFamily: "Lexend",
-      fontSize: "28px",
-      fontWeight: "600",
-      lineHeight: "36px",
+      fontSize: "11px",
+      fontWeight: "500",
+      lineHeight: "16px",
     },
   },
 

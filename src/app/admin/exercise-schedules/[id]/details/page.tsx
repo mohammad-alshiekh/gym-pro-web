@@ -38,7 +38,7 @@ import {
 } from "@/lib/schedules";
 import toast from "react-hot-toast";
 
-export default function ExerciseScheduleDetailPage() {
+export default function ExerciseScheduleDetailsPage() {
   const { t, isRtl } = useTranslation();
   const { byId: catalogue } = useExerciseCatalogue();
   const router = useRouter();
@@ -664,6 +664,15 @@ export default function ExerciseScheduleDetailPage() {
             })}
           </div>
         )}
+
+        {/* ── Action Button to Edit ── */}
+        <div className="flex justify-center mt-8">
+          <Link href={`/admin/exercise-schedules/${schedule.id}/edit`}>
+            <Button variant="primary" icon={<Pencil className="w-4 h-4" />} size="lg">
+              {t.exerciseSchedules.editPlan}
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* ── Delete confirmation ── */}

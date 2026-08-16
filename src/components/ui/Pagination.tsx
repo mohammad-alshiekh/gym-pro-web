@@ -29,7 +29,7 @@ export default function Pagination({
 
   return (
     <div className="flex items-center justify-between mt-4">
-      <p className="text-xs" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8b93a1" }}>
+      <p className="text-xs" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}>
         {totalCount !== undefined && resultsPerPage !== undefined
           ? `Showing ${Math.min((currentPage - 1) * resultsPerPage + 1, totalCount)}–${Math.min(currentPage * resultsPerPage, totalCount)} of ${totalCount}`
           : `Page ${currentPage} of ${totalPages}`}
@@ -39,8 +39,8 @@ export default function Pagination({
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="p-2 rounded-lg transition-colors hover:bg-[#23272e] disabled:opacity-30"
-          style={{ color: "#c3cad6" }}
+          className="p-2 rounded-lg transition-colors hover:bg-[#20201f] disabled:opacity-30"
+          style={{ color: "#adaaaa" }}
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
@@ -51,12 +51,12 @@ export default function Pagination({
             onClick={() => onPageChange(page)}
             className={cn(
               "w-8 h-8 rounded-lg text-xs font-medium transition-all",
-              page === currentPage ? "" : "hover:bg-[#23272e]"
+              page === currentPage ? "" : "hover:bg-[#20201f]"
             )}
             style={{
               fontFamily: "JetBrains Mono, monospace",
-              background: page === currentPage ? "#c8f323" : "transparent",
-              color: page === currentPage ? "#293500" : "#c3cad6",
+              background: page === currentPage ? "#cafd00" : "transparent",
+              color: page === currentPage ? "#3a4a00" : "#adaaaa",
             }}
           >
             {page}
@@ -66,8 +66,8 @@ export default function Pagination({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="p-2 rounded-lg transition-colors hover:bg-[#23272e] disabled:opacity-30"
-          style={{ color: "#c3cad6" }}
+          className="p-2 rounded-lg transition-colors hover:bg-[#20201f] disabled:opacity-30"
+          style={{ color: "#adaaaa" }}
         >
           <ChevronRight className="w-4 h-4" />
         </button>

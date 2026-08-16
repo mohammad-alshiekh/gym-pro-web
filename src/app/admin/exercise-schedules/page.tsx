@@ -117,7 +117,7 @@ export default function ExerciseSchedulesPage() {
             value={stats.days}
             subtitle={t.exerciseSchedules.onThisPage}
             icon={<CalendarDays className="w-5 h-5" />}
-            accentColor="#adc6ff"
+            accentColor="#7df6ff"
           />
           <StatCard
             title={t.exerciseSchedules.totalExercises}
@@ -133,7 +133,7 @@ export default function ExerciseSchedulesPage() {
           <div className="relative flex-1 max-w-sm">
             <Search
               className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4"
-              style={{ color: "#8b93a1" }}
+              style={{ color: "#8a8888" }}
             />
             <input
               value={search}
@@ -141,9 +141,9 @@ export default function ExerciseSchedulesPage() {
               placeholder={t.exerciseSchedules.searchPlaceholder}
               className="w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm input-accent"
               style={{
-                background: "#0f1013",
-                borderColor: "#2f3742",
-                color: "#e9ecf1",
+                background: "#0e0e0e",
+                borderColor: "#2a2a2a",
+                color: "#ffffff",
                 outline: "none",
               }}
             />
@@ -166,13 +166,13 @@ export default function ExerciseSchedulesPage() {
         ) : schedules.length === 0 ? (
           <div
             className="rounded-2xl border py-20 text-center"
-            style={{ background: "#171a1e", borderColor: "#2f3742", color: "#8b93a1" }}
+            style={{ background: "#131313", borderColor: "#2a2a2a", color: "#8a8888" }}
           >
             <div
               className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
-              style={{ background: "#23272e" }}
+              style={{ background: "#20201f" }}
             >
-              <CalendarDays className="w-7 h-7" style={{ color: "#c8f323", opacity: 0.5 }} />
+              <CalendarDays className="w-7 h-7" style={{ color: "#cafd00", opacity: 0.5 }} />
             </div>
             <p className="text-sm mb-5">{t.common.noData}</p>
             <Link href="/admin/exercise-schedules/new">
@@ -187,12 +187,12 @@ export default function ExerciseSchedulesPage() {
               <div
                 key={s.id}
                 className="rounded-2xl border overflow-hidden flex flex-col card-interactive"
-                style={{ background: "#171a1e", borderColor: "#2f3742" }}
+                style={{ background: "#131313", borderColor: "#2a2a2a" }}
               >
                 {/* Cover */}
                 <div
                   className="relative w-full h-32 flex items-center justify-center"
-                  style={{ background: "#23272e" }}
+                  style={{ background: "#20201f" }}
                 >
                   {s.imageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -205,7 +205,7 @@ export default function ExerciseSchedulesPage() {
                       }}
                     />
                   ) : (
-                    <CalendarDays className="w-10 h-10" style={{ color: "#c8f323", opacity: 0.3 }} />
+                    <CalendarDays className="w-10 h-10" style={{ color: "#cafd00", opacity: 0.3 }} />
                   )}
                   <div className="absolute top-3 left-3">
                     <Badge variant={difficultyVariant(s.difficultyLevel)}>
@@ -225,35 +225,35 @@ export default function ExerciseSchedulesPage() {
                     <Link
                       href={`/admin/exercise-schedules/${s.id}`}
                       className="text-sm font-semibold leading-tight hover:underline"
-                      style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}
+                      style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}
                     >
                       {s.nameEn}
                     </Link>
-                    <p className="text-xs mt-1" style={{ color: "#8b93a1" }} dir="rtl" lang="ar">
+                    <p className="text-xs mt-1" style={{ color: "#8a8888" }} dir="rtl" lang="ar">
                       {s.nameAr}
                     </p>
                   </div>
 
                   {s.descriptionEn && (
-                    <p className="text-xs line-clamp-2" style={{ color: "#c3cad6" }}>
+                    <p className="text-xs line-clamp-2" style={{ color: "#adaaaa" }}>
                       {s.descriptionEn}
                     </p>
                   )}
 
                   <div
                     className="flex items-center gap-4 text-xs mt-auto pt-1"
-                    style={{ fontFamily: "JetBrains Mono, monospace", color: "#8b93a1" }}
+                    style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}
                   >
                     <span className="flex items-center gap-1.5">
-                      <CalendarDays className="w-3.5 h-3.5" style={{ color: "#c8f323" }} />
+                      <CalendarDays className="w-3.5 h-3.5" style={{ color: "#cafd00" }} />
                       {s.days?.length ?? 0}
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <Dumbbell className="w-3.5 h-3.5" style={{ color: "#c8f323" }} />
+                      <Dumbbell className="w-3.5 h-3.5" style={{ color: "#cafd00" }} />
                       {countExercises(s)}
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <BarChart3 className="w-3.5 h-3.5" style={{ color: "#c8f323" }} />
+                      <BarChart3 className="w-3.5 h-3.5" style={{ color: "#cafd00" }} />
                       {countSets(s)}
                     </span>
                   </div>
@@ -261,20 +261,20 @@ export default function ExerciseSchedulesPage() {
                   {/* Actions */}
                   <div
                     className="flex items-center gap-2 pt-3 border-t"
-                    style={{ borderColor: "#23272e" }}
+                    style={{ borderColor: "#20201f" }}
                   >
                     <Link
-                      href={`/admin/exercise-schedules/${s.id}`}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs border transition-colors hover:bg-[#23272e]"
-                      style={{ borderColor: "#2f3742", color: "#c3cad6" }}
+                      href={`/admin/exercise-schedules/${s.id}/details`}
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs border transition-colors hover:bg-[#20201f]"
+                      style={{ borderColor: "#2a2a2a", color: "#adaaaa" }}
                     >
                       <Eye className="w-3.5 h-3.5" />
                       {t.common.view}
                     </Link>
                     <Link
                       href={`/admin/exercise-schedules/${s.id}/edit`}
-                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs border transition-colors hover:bg-[#23272e]"
-                      style={{ borderColor: "#2f3742", color: "#c3cad6" }}
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs border transition-colors hover:bg-[#20201f]"
+                      style={{ borderColor: "#2a2a2a", color: "#adaaaa" }}
                     >
                       <Pencil className="w-3.5 h-3.5" />
                       {t.common.edit}
@@ -283,8 +283,8 @@ export default function ExerciseSchedulesPage() {
                       type="button"
                       onClick={() => setDeleteTarget(s)}
                       title={t.common.delete}
-                      className="p-2 rounded-xl transition-colors hover:bg-[#93000a]/20"
-                      style={{ color: "#ffb4ab" }}
+                      className="p-2 rounded-xl transition-colors hover:bg-[#5c1620]/20"
+                      style={{ color: "#ff6e81" }}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -321,10 +321,10 @@ export default function ExerciseSchedulesPage() {
           </>
         }
       >
-        <p className="text-sm" style={{ color: "#c3cad6" }}>
-          <span style={{ color: "#e9ecf1", fontWeight: 600 }}>{deleteTarget?.nameEn}</span>
+        <p className="text-sm" style={{ color: "#adaaaa" }}>
+          <span style={{ color: "#ffffff", fontWeight: 600 }}>{deleteTarget?.nameEn}</span>
         </p>
-        <p className="text-sm mt-2" style={{ color: "#8b93a1" }}>
+        <p className="text-sm mt-2" style={{ color: "#8a8888" }}>
           {deleteTarget?.days?.length ?? 0} {t.exerciseSchedules.days} ·{" "}
           {deleteTarget ? countExercises(deleteTarget) : 0} {t.exerciseSchedules.exercises}
         </p>

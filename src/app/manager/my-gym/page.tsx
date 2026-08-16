@@ -23,6 +23,7 @@ import {
   XCircle,
 } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
+import LocationPicker from "@/components/ui/LocationPicker";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import Modal from "@/components/ui/Modal";
@@ -46,14 +47,14 @@ import {
 } from "@/lib/gym";
 import toast from "react-hot-toast";
 
-const CARD: React.CSSProperties = { background: "#171a1e", borderColor: "#2f3742" };
+const CARD: React.CSSProperties = { background: "#131313", borderColor: "#2a2a2a" };
 const INPUT: React.CSSProperties = {
-  background: "#0f1013",
-  borderColor: "#2f3742",
-  color: "#e9ecf1",
+  background: "#0e0e0e",
+  borderColor: "#2a2a2a",
+  color: "#ffffff",
   outline: "none",
 };
-const MONO: React.CSSProperties = { fontFamily: "JetBrains Mono, monospace", color: "#8b93a1" };
+const MONO: React.CSSProperties = { fontFamily: "JetBrains Mono, monospace", color: "#8a8888" };
 
 function SectionCard({
   icon: Icon,
@@ -74,14 +75,14 @@ function SectionCard({
         <div className="flex items-center gap-2.5 min-w-0">
           <div
             className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: "rgba(200,243,35,0.1)", color: "#c8f323" }}
+            style={{ background: "rgba(202,253,0,0.1)", color: "#cafd00" }}
           >
             <Icon className="w-4 h-4" />
           </div>
           <div className="min-w-0">
             <h3
               className="text-base font-semibold truncate"
-              style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}
+              style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}
             >
               {title}
             </h3>
@@ -108,7 +109,7 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 }
 
 export default function MyGymPage() {
-  const { t, isRtl } = useTranslation();
+  const { t, isRtl, locale } = useTranslation();
 
   const [gym, setGym] = useState<MyGym | null>(null);
   const [loading, setLoading] = useState(true);
@@ -368,11 +369,11 @@ export default function MyGymPage() {
         <div className="rounded-2xl border py-20 text-center" style={CARD}>
           <div
             className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
-            style={{ background: "#23272e" }}
+            style={{ background: "#20201f" }}
           >
-            <Building2 className="w-7 h-7" style={{ color: "#c8f323", opacity: 0.5 }} />
+            <Building2 className="w-7 h-7" style={{ color: "#cafd00", opacity: 0.5 }} />
           </div>
-          <p className="text-sm mb-5" style={{ color: "#8b93a1" }}>
+          <p className="text-sm mb-5" style={{ color: "#8a8888" }}>
             {t.gyms.noGym}
           </p>
           {loadFailed && (
@@ -389,7 +390,7 @@ export default function MyGymPage() {
   const activePlans = gym.plans?.filter((p) => p.isActive).length ?? 0;
 
   const statTiles = [
-    { label: t.gyms.gallery, value: images.length, icon: Images, color: "#c8f323" },
+    { label: t.gyms.gallery, value: images.length, icon: Images, color: "#cafd00" },
     {
       label: t.gyms.services,
       value: `${enabledServices}/8`,
@@ -400,7 +401,7 @@ export default function MyGymPage() {
       label: t.gyms.workingHours,
       value: gym.workingPeriods?.length ?? 0,
       icon: Clock,
-      color: "#adc6ff",
+      color: "#7df6ff",
     },
     { label: t.gyms.plans, value: activePlans, icon: Check, color: "#ffd04a" },
   ];
@@ -416,7 +417,7 @@ export default function MyGymPage() {
               <div className="relative flex-shrink-0">
                 <div
                   className="w-20 h-20 rounded-2xl overflow-hidden flex items-center justify-center border"
-                  style={{ background: "#23272e", borderColor: "#2f3742" }}
+                  style={{ background: "#20201f", borderColor: "#2a2a2a" }}
                 >
                   {logoSrc ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -429,7 +430,7 @@ export default function MyGymPage() {
                       }}
                     />
                   ) : (
-                    <Building2 className="w-9 h-9" style={{ color: "#c8f323", opacity: 0.6 }} />
+                    <Building2 className="w-9 h-9" style={{ color: "#cafd00", opacity: 0.6 }} />
                   )}
                 </div>
                 {editMode && (
@@ -437,8 +438,8 @@ export default function MyGymPage() {
                     type="button"
                     onClick={() => logoInputRef.current?.click()}
                     title={t.gyms.replaceLogo}
-                    className="absolute -bottom-2 -right-2 p-2 rounded-xl border transition-colors hover:border-[#c8f323]"
-                    style={{ background: "#0f1013", borderColor: "#2f3742", color: "#c8f323" }}
+                    className="absolute -bottom-2 -right-2 p-2 rounded-xl border transition-colors hover:border-[#cafd00]"
+                    style={{ background: "#0e0e0e", borderColor: "#2a2a2a", color: "#cafd00" }}
                   >
                     <Upload className="w-3.5 h-3.5" />
                   </button>
@@ -463,22 +464,22 @@ export default function MyGymPage() {
                 ) : (
                   <h2
                     className="text-2xl font-bold tracking-tight"
-                    style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}
+                    style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}
                   >
                     {gym.name}
                   </h2>
                 )}
 
                 <div className="flex flex-wrap items-center gap-2.5">
-                  <Badge variant="default">{gymTypeLabel(gym.gymType)}</Badge>
+                  <Badge variant="default">{gymTypeLabel(gym.gymType, locale)}</Badge>
                   {!editMode && (
                     <>
                       {gym.phone && (
                         <span
                           className="flex items-center gap-1.5 text-sm"
-                          style={{ color: "#c3cad6" }}
+                          style={{ color: "#adaaaa" }}
                         >
-                          <Phone className="w-3.5 h-3.5" style={{ color: "#8b93a1" }} />
+                          <Phone className="w-3.5 h-3.5" style={{ color: "#8a8888" }} />
                           {gym.phone}
                         </span>
                       )}
@@ -487,10 +488,10 @@ export default function MyGymPage() {
                         target="_blank"
                         rel="noopener noreferrer"
                         title={t.gyms.openMap}
-                        className="flex items-center gap-1.5 text-sm transition-colors hover:text-[#c8f323]"
-                        style={{ color: "#c3cad6" }}
+                        className="flex items-center gap-1.5 text-sm transition-colors hover:text-[#cafd00]"
+                        style={{ color: "#adaaaa" }}
                       >
-                        <MapPin className="w-3.5 h-3.5" style={{ color: "#8b93a1" }} />
+                        <MapPin className="w-3.5 h-3.5" style={{ color: "#8a8888" }} />
                         <span style={{ fontFamily: "JetBrains Mono, monospace" }}>
                           {gym.latitude}, {gym.longitude}
                         </span>
@@ -500,7 +501,7 @@ export default function MyGymPage() {
                 </div>
 
                 {!editMode && (
-                  <p className="text-sm max-w-2xl leading-relaxed" style={{ color: "#c3cad6" }}>
+                  <p className="text-sm max-w-2xl leading-relaxed" style={{ color: "#adaaaa" }}>
                     {gym.description || t.gyms.myGymSubtitle}
                   </p>
                 )}
@@ -537,8 +538,8 @@ export default function MyGymPage() {
 
           {/* Editable detail fields */}
           {editMode && (
-            <div className="mt-6 pt-5 border-t space-y-4" style={{ borderColor: "#2f3742" }}>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="mt-6 pt-5 border-t space-y-4" style={{ borderColor: "#2a2a2a" }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <FieldLabel>{t.common.phone}</FieldLabel>
                   <input
@@ -549,25 +550,14 @@ export default function MyGymPage() {
                   />
                 </div>
                 <div>
-                  <FieldLabel>{t.gyms.latitude}</FieldLabel>
-                  <input
-                    type="number"
-                    step="any"
-                    value={form.latitude}
-                    onChange={(e) => patchForm({ latitude: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border text-sm input-accent"
-                    style={{ ...INPUT, fontFamily: "JetBrains Mono, monospace" }}
-                  />
-                </div>
-                <div>
-                  <FieldLabel>{t.gyms.longitude}</FieldLabel>
-                  <input
-                    type="number"
-                    step="any"
-                    value={form.longitude}
-                    onChange={(e) => patchForm({ longitude: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border text-sm input-accent"
-                    style={{ ...INPUT, fontFamily: "JetBrains Mono, monospace" }}
+                  <FieldLabel>{t.gyms.location}</FieldLabel>
+                  <LocationPicker
+                    lat={form.latitude}
+                    lng={form.longitude}
+                    label={t.gyms.location}
+                    onChange={(lat, lng) =>
+                      patchForm({ latitude: String(lat), longitude: String(lng) })
+                    }
                   />
                 </div>
               </div>
@@ -583,10 +573,10 @@ export default function MyGymPage() {
                 />
               </div>
 
-              <p className="text-xs" style={{ color: "#8b93a1" }}>
+              <p className="text-xs" style={{ color: "#8a8888" }}>
                 {t.gyms.logoHint}
                 {logoFile && (
-                  <span style={{ color: "#c8f323" }}> · {logoFile.name}</span>
+                  <span style={{ color: "#cafd00" }}> · {logoFile.name}</span>
                 )}
               </p>
             </div>
@@ -616,7 +606,7 @@ export default function MyGymPage() {
                 </p>
                 <p
                   className="text-sm font-bold truncate mt-0.5"
-                  style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}
+                  style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}
                 >
                   {tile.value}
                 </p>
@@ -647,25 +637,25 @@ export default function MyGymPage() {
                     onClick={() => toggleService(s.serviceType)}
                     className="flex items-center gap-2.5 p-3 rounded-xl border text-left transition-colors disabled:cursor-default"
                     style={{
-                      background: on ? "rgba(200,243,35,0.07)" : "#0f1013",
-                      borderColor: on ? "rgba(200,243,35,0.35)" : "#2f3742",
+                      background: on ? "rgba(202,253,0,0.07)" : "#0e0e0e",
+                      borderColor: on ? "rgba(202,253,0,0.35)" : "#2a2a2a",
                     }}
                   >
                     <div
                       className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                      style={{ background: on ? "#c8f323" : "#23272e" }}
+                      style={{ background: on ? "#cafd00" : "#20201f" }}
                     >
                       {on ? (
-                        <Check className="w-3 h-3" style={{ color: "#293500" }} />
+                        <Check className="w-3 h-3" style={{ color: "#3a4a00" }} />
                       ) : (
-                        <X className="w-3 h-3" style={{ color: "#8b93a1" }} />
+                        <X className="w-3 h-3" style={{ color: "#8a8888" }} />
                       )}
                     </div>
                     <span
                       className="text-xs font-medium truncate"
-                      style={{ color: on ? "#e9ecf1" : "#8b93a1" }}
+                      style={{ color: on ? "#ffffff" : "#8a8888" }}
                     >
-                      {serviceTypeLabel(s.serviceType)}
+                       {serviceTypeLabel(s.serviceType, locale)}
                     </span>
                   </button>
                 );
@@ -679,22 +669,21 @@ export default function MyGymPage() {
             title={t.gyms.workingHours}
             action={
               editMode ? (
-                <button
-                  type="button"
+                <Button
+                  variant="outline"
+                  size="sm"
+                  icon={<Plus className="w-3.5 h-3.5" />}
                   onClick={addPeriod}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
-                  style={{ background: "rgba(200,243,35,0.12)", color: "#c8f323" }}
                 >
-                  <Plus className="w-3.5 h-3.5" />
                   {t.gyms.addPeriod}
-                </button>
+                </Button>
               ) : undefined
             }
           >
             {editMode ? (
               <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
                 {form.workingPeriods.length === 0 && (
-                  <p className="text-xs py-6 text-center" style={{ color: "#8b93a1" }}>
+                  <p className="text-xs py-6 text-center" style={{ color: "#8a8888" }}>
                     {t.gyms.noPeriodsHint}
                   </p>
                 )}
@@ -702,7 +691,7 @@ export default function MyGymPage() {
                   <div
                     key={i}
                     className="grid grid-cols-2 sm:grid-cols-[1.2fr_1fr_1fr_1fr_auto] gap-2 items-center p-2.5 rounded-xl border"
-                    style={{ background: "#0f1013", borderColor: "#2f3742" }}
+                    style={{ background: "#0e0e0e", borderColor: "#2a2a2a" }}
                   >
                     <select
                       value={wp.dayOfWeek}
@@ -711,7 +700,7 @@ export default function MyGymPage() {
                       style={INPUT}
                     >
                       {DAY_KEYS.map((key, idx) => (
-                        <option key={key} value={idx} style={{ background: "#0f1013" }}>
+                        <option key={key} value={idx} style={{ background: "#0e0e0e" }}>
                           {t.gyms[key]}
                         </option>
                       ))}
@@ -737,7 +726,7 @@ export default function MyGymPage() {
                       style={INPUT}
                     >
                       {GENDER_TYPES.map((value) => (
-                        <option key={value} value={value} style={{ background: "#0f1013" }}>
+                        <option key={value} value={value} style={{ background: "#0e0e0e" }}>
                           {genderText(value)}
                         </option>
                       ))}
@@ -746,8 +735,8 @@ export default function MyGymPage() {
                       type="button"
                       onClick={() => removePeriod(i)}
                       title={t.common.delete}
-                      className="p-1.5 rounded-lg justify-self-end transition-colors hover:bg-[#93000a]/20"
-                      style={{ color: "#ffb4ab" }}
+                      className="p-1.5 rounded-lg justify-self-end transition-colors hover:bg-[#5c1620]/20"
+                      style={{ color: "#ff6e81" }}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -760,15 +749,15 @@ export default function MyGymPage() {
                   <div
                     key={i}
                     className="flex items-center justify-between gap-3 p-3 rounded-xl"
-                    style={{ background: "#0f1013" }}
+                    style={{ background: "#0e0e0e" }}
                   >
-                    <span className="text-sm font-medium" style={{ color: "#e9ecf1" }}>
+                    <span className="text-sm font-medium" style={{ color: "#ffffff" }}>
                       {t.gyms[DAY_KEYS[wp.dayOfWeek] ?? "sunday"]}
                     </span>
                     <div className="flex items-center gap-3">
                       <span
                         className="text-xs"
-                        style={{ fontFamily: "JetBrains Mono, monospace", color: "#c8f323" }}
+                        style={{ fontFamily: "JetBrains Mono, monospace", color: "#cafd00" }}
                       >
                         {wp.startTime} – {wp.endTime}
                       </span>
@@ -783,11 +772,11 @@ export default function MyGymPage() {
               </div>
             ) : (
               <div className="py-10 text-center">
-                <Clock className="w-8 h-8 mx-auto mb-2 opacity-25" style={{ color: "#c8f323" }} />
-                <p className="text-sm" style={{ color: "#8b93a1" }}>
+                <Clock className="w-8 h-8 mx-auto mb-2 opacity-25" style={{ color: "#cafd00" }} />
+                <p className="text-sm" style={{ color: "#8a8888" }}>
                   {t.gyms.noPeriods}
                 </p>
-                <p className="text-xs mt-1" style={{ color: "#8b93a1" }}>
+                <p className="text-xs mt-1" style={{ color: "#8a8888" }}>
                   {t.gyms.noPeriodsHint}
                 </p>
               </div>
@@ -827,14 +816,14 @@ export default function MyGymPage() {
             <div className="py-12 text-center">
               <div
                 className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3"
-                style={{ background: "#23272e" }}
+                style={{ background: "#20201f" }}
               >
-                <Images className="w-6 h-6" style={{ color: "#c8f323", opacity: 0.5 }} />
+                <Images className="w-6 h-6" style={{ color: "#cafd00", opacity: 0.5 }} />
               </div>
-              <p className="text-sm" style={{ color: "#8b93a1" }}>
+              <p className="text-sm" style={{ color: "#8a8888" }}>
                 {t.gyms.noImages}
               </p>
-              <p className="text-xs mt-1" style={{ color: "#8b93a1" }}>
+              <p className="text-xs mt-1" style={{ color: "#8a8888" }}>
                 {t.gyms.noImagesHint}
               </p>
             </div>
@@ -844,7 +833,7 @@ export default function MyGymPage() {
                 <div
                   key={img.id}
                   className="relative rounded-xl overflow-hidden border group"
-                  style={{ aspectRatio: "1", background: "#0f1013", borderColor: "#2f3742" }}
+                  style={{ aspectRatio: "1", background: "#0e0e0e", borderColor: "#2a2a2a" }}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -860,8 +849,8 @@ export default function MyGymPage() {
                   <span
                     className="absolute top-2 left-2 px-1.5 py-0.5 rounded-md text-[10px] font-bold"
                     style={{
-                      background: "rgba(15,16,19,0.85)",
-                      color: "#c8f323",
+                      background: "rgba(14,14,14,0.85)",
+                      color: "#cafd00",
                       fontFamily: "JetBrains Mono, monospace",
                     }}
                   >
@@ -879,7 +868,7 @@ export default function MyGymPage() {
                         disabled={index === 0}
                         onClick={() => shiftImage(index, -1)}
                         className="p-1.5 rounded-lg disabled:opacity-30"
-                        style={{ background: "rgba(15,16,19,0.8)", color: "#c3cad6" }}
+                        style={{ background: "rgba(14,14,14,0.8)", color: "#adaaaa" }}
                       >
                         <ChevronLeft className="w-3.5 h-3.5" />
                       </button>
@@ -889,7 +878,7 @@ export default function MyGymPage() {
                         disabled={index === images.length - 1}
                         onClick={() => shiftImage(index, 1)}
                         className="p-1.5 rounded-lg disabled:opacity-30"
-                        style={{ background: "rgba(15,16,19,0.8)", color: "#c3cad6" }}
+                        style={{ background: "rgba(14,14,14,0.8)", color: "#adaaaa" }}
                       >
                         <ChevronRight className="w-3.5 h-3.5" />
                       </button>
@@ -899,7 +888,7 @@ export default function MyGymPage() {
                       title={t.gyms.deleteImage}
                       onClick={() => setDeleteTarget(img)}
                       className="p-1.5 rounded-lg"
-                      style={{ background: "#93000a", color: "#ffdad6" }}
+                      style={{ background: "#5c1620", color: "#ffdad6" }}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -908,7 +897,7 @@ export default function MyGymPage() {
                   {img.description && (
                     <p
                       className="absolute top-2 right-2 max-w-[60%] truncate px-1.5 py-0.5 rounded-md text-[10px]"
-                      style={{ background: "rgba(15,16,19,0.85)", color: "#c3cad6" }}
+                      style={{ background: "rgba(14,14,14,0.85)", color: "#adaaaa" }}
                       title={img.description}
                     >
                       {img.description}
@@ -935,7 +924,7 @@ export default function MyGymPage() {
             action={
               <Link
                 href="/manager/plans"
-                className="text-xs transition-colors hover:text-[#c8f323]"
+                className="text-xs transition-colors hover:text-[#cafd00]"
                 style={MONO}
               >
                 {t.gyms.managePlans} →
@@ -943,7 +932,7 @@ export default function MyGymPage() {
             }
           >
             {!gym.plans?.length ? (
-              <p className="text-sm py-8 text-center" style={{ color: "#8b93a1" }}>
+              <p className="text-sm py-8 text-center" style={{ color: "#8a8888" }}>
                 {t.gyms.noPlans}
               </p>
             ) : (
@@ -952,23 +941,23 @@ export default function MyGymPage() {
                   <div
                     key={plan.id}
                     className="flex items-center justify-between gap-3 p-3 rounded-xl border"
-                    style={{ background: "#0f1013", borderColor: "#2f3742" }}
+                    style={{ background: "#0e0e0e", borderColor: "#2a2a2a" }}
                   >
                     <div className="min-w-0">
                       <p
                         className="text-sm font-semibold truncate"
-                        style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}
+                        style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}
                       >
                         {plan.name}
                       </p>
-                      <p className="text-xs truncate" style={{ color: "#8b93a1" }}>
+                      <p className="text-xs truncate" style={{ color: "#8a8888" }}>
                         {plan.description}
                       </p>
                     </div>
                     <div className="text-right flex-shrink-0">
                       <p
                         className="text-sm font-bold"
-                        style={{ fontFamily: "JetBrains Mono, monospace", color: "#c8f323" }}
+                        style={{ fontFamily: "JetBrains Mono, monospace", color: "#cafd00" }}
                       >
                         {formatCurrency(plan.price)}
                       </p>
@@ -987,24 +976,24 @@ export default function MyGymPage() {
             <div className="flex items-start gap-4">
               <div
                 className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: "#23272e" }}
+                style={{ background: "#20201f" }}
               >
-                <User className="w-6 h-6" style={{ color: "#c8f323" }} />
+                <User className="w-6 h-6" style={{ color: "#cafd00" }} />
               </div>
               <div className="min-w-0 space-y-2">
-                <p className="text-sm font-semibold" style={{ color: "#e9ecf1" }}>
+                <p className="text-sm font-semibold" style={{ color: "#ffffff" }}>
                   {gym.gymManager?.name}
                 </p>
                 <div className="space-y-1.5">
                   <p
                     className="flex items-center gap-2 text-xs truncate"
-                    style={{ color: "#c3cad6" }}
+                    style={{ color: "#adaaaa" }}
                   >
-                    <Mail className="w-3.5 h-3.5" style={{ color: "#8b93a1" }} />
+                    <Mail className="w-3.5 h-3.5" style={{ color: "#8a8888" }} />
                     {gym.gymManager?.email}
                   </p>
-                  <p className="flex items-center gap-2 text-xs" style={{ color: "#c3cad6" }}>
-                    <Phone className="w-3.5 h-3.5" style={{ color: "#8b93a1" }} />
+                  <p className="flex items-center gap-2 text-xs" style={{ color: "#adaaaa" }}>
+                    <Phone className="w-3.5 h-3.5" style={{ color: "#8a8888" }} />
                     {gym.gymManager?.phoneNumber || "—"}
                   </p>
                 </div>
@@ -1035,16 +1024,16 @@ export default function MyGymPage() {
           <button
             type="button"
             onClick={() => imageInputRef.current?.click()}
-            className="w-full rounded-xl border border-dashed overflow-hidden transition-colors hover:border-[#c8f323]"
-            style={{ borderColor: "#2f3742", background: "#0f1013" }}
+            className="w-full rounded-xl border border-dashed overflow-hidden transition-colors hover:border-[#cafd00]"
+            style={{ borderColor: "#2a2a2a", background: "#0e0e0e" }}
           >
             {imagePreview ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={imagePreview} alt="" className="w-full h-48 object-cover" />
             ) : (
               <div className="h-48 flex flex-col items-center justify-center gap-2">
-                <ImagePlus className="w-8 h-8" style={{ color: "#c8f323", opacity: 0.5 }} />
-                <span className="text-sm" style={{ color: "#8b93a1" }}>
+                <ImagePlus className="w-8 h-8" style={{ color: "#cafd00", opacity: 0.5 }} />
+                <span className="text-sm" style={{ color: "#8a8888" }}>
                   {t.gyms.chooseFile}
                 </span>
               </div>
@@ -1097,7 +1086,7 @@ export default function MyGymPage() {
         {deleteTarget && (
           <div
             className="rounded-xl overflow-hidden border"
-            style={{ borderColor: "#2f3742", background: "#0f1013" }}
+            style={{ borderColor: "#2a2a2a", background: "#0e0e0e" }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img

@@ -66,8 +66,8 @@ export default function EditExerciseSchedulePage() {
       <div className="space-y-5">
         <Link
           href={id ? `/admin/exercise-schedules/${id}` : "/admin/exercise-schedules"}
-          className="inline-flex items-center gap-2 text-sm transition-colors hover:text-[#c8f323]"
-          style={{ color: "#8b93a1" }}
+          className="inline-flex items-center gap-2 text-sm transition-colors hover:text-[#cafd00]"
+          style={{ color: "#8a8888" }}
         >
           <ArrowLeft className="w-4 h-4" style={{ transform: isRtl ? "scaleX(-1)" : undefined }} />
           {t.exerciseSchedules.backToPlans}
@@ -83,7 +83,7 @@ export default function EditExerciseSchedulePage() {
         ) : notFound || !initialForm ? (
           <div
             className="p-6 rounded-2xl border text-sm"
-            style={{ background: "rgba(147,0,10,0.12)", borderColor: "#93000a", color: "#ffb4ab" }}
+            style={{ background: "rgba(92,22,32,0.12)", borderColor: "#5c1620", color: "#ff6e81" }}
           >
             {t.exerciseSchedules.planNotFound}
           </div>

@@ -23,22 +23,22 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             className: "toast-dark",
             duration: 3000,
             style: {
-              background: "#23272e",
-              color: "#e9ecf1",
-              border: "1px solid #2f3742",
+              background: "#20201f",
+              color: "#ffffff",
+              border: "1px solid #2a2a2a",
               borderRadius: "0.75rem",
-              fontFamily: "Inter, sans-serif",
+              fontFamily: "Manrope, sans-serif",
             },
             success: {
               iconTheme: {
-                primary: "#c8f323",
-                secondary: "#293500",
+                primary: "#cafd00",
+                secondary: "#3a4a00",
               },
             },
             error: {
               iconTheme: {
-                primary: "#ffb4ab",
-                secondary: "#690005",
+                primary: "#ff6e81",
+                secondary: "#5c1620",
               },
             },
           }}

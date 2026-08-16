@@ -20,7 +20,7 @@ import {
   Cell,
 } from "recharts";
 
-const COLORS = ["#c8f323", "#4ae176", "#adc6ff", "#ffd04a", "#ffb4ab"];
+const COLORS = ["#cafd00", "#4ae176", "#7df6ff", "#ffd04a", "#ff6e81"];
 
 const mockWeeklyData = [
   { day: "Sun", count: 35 },
@@ -52,14 +52,14 @@ export default function ManagerDashboardPage() {
   }, []);
 
   const tooltipStyle = {
-    contentStyle: { background: "#171a1e", border: "1px solid #2f3742", borderRadius: "12px", color: "#e9ecf1" },
-    labelStyle: { color: "#c3cad6" },
+    contentStyle: { background: "#131313", border: "1px solid #2a2a2a", borderRadius: "12px", color: "#ffffff" },
+    labelStyle: { color: "#adaaaa" },
   };
 
   const planData = analytics?.plans?.planMemberCounts?.map((p) => ({
     name: p.planName,
     value: p.activeMembersCount,
-  })) ?? [{ name: "No plans", value: 1 }];
+  })) ?? [{ name: t.gyms.noPlans, value: 1 }];
 
   return (
     <DashboardLayout title={t.dashboard.title} requiredRole="gym_manager">
@@ -70,7 +70,7 @@ export default function ManagerDashboardPage() {
             title={t.dashboard.todayAttendance}
             value={loading ? "..." : analytics?.attendance?.todayCount ?? 0}
             icon={<Users className="w-6 h-6" />}
-            accentColor="#c8f323"
+            accentColor="#cafd00"
           />
           <StatCard
             title={t.dashboard.weeklyAttendance}
@@ -82,7 +82,7 @@ export default function ManagerDashboardPage() {
             title={t.dashboard.monthlyAttendance}
             value={loading ? "..." : analytics?.attendance?.monthCount ?? 0}
             icon={<Activity className="w-6 h-6" />}
-            accentColor="#adc6ff"
+            accentColor="#7df6ff"
           />
           <StatCard
             title={t.dashboard.newSubscriptions}
@@ -94,30 +94,30 @@ export default function ManagerDashboardPage() {
 
         {/* Peak Info */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="rounded-2xl border p-5" style={{ background: "#171a1e", borderColor: "#2f3742" }}>
+          <div className="rounded-2xl border p-5" style={{ background: "#131313", borderColor: "#2a2a2a" }}>
             <div className="flex items-center gap-2 mb-2">
-              <Zap className="w-4 h-4" style={{ color: "#c8f323" }} />
-              <span className="text-xs" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8b93a1" }}>PEAK HOUR</span>
+              <Zap className="w-4 h-4" style={{ color: "#cafd00" }} />
+              <span className="text-xs" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}>{t.dashboard.peakHourLabel}</span>
             </div>
-            <p className="text-2xl font-bold" style={{ fontFamily: "Lexend, sans-serif", color: "#c8f323" }}>
+            <p className="text-2xl font-bold" style={{ fontFamily: "Space Grotesk, sans-serif", color: "#cafd00" }}>
               {loading ? "..." : analytics?.attendance?.peakHour ?? "—"}
             </p>
           </div>
-          <div className="rounded-2xl border p-5" style={{ background: "#171a1e", borderColor: "#2f3742" }}>
+          <div className="rounded-2xl border p-5" style={{ background: "#131313", borderColor: "#2a2a2a" }}>
             <div className="flex items-center gap-2 mb-2">
               <Clock className="w-4 h-4" style={{ color: "#4ae176" }} />
-              <span className="text-xs" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8b93a1" }}>PEAK DAY</span>
+              <span className="text-xs" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}>{t.dashboard.peakDayLabel}</span>
             </div>
-            <p className="text-2xl font-bold" style={{ fontFamily: "Lexend, sans-serif", color: "#4ae176" }}>
+            <p className="text-2xl font-bold" style={{ fontFamily: "Space Grotesk, sans-serif", color: "#4ae176" }}>
               {loading ? "..." : analytics?.attendance?.peakDay ?? "—"}
             </p>
           </div>
-          <div className="rounded-2xl border p-5" style={{ background: "#171a1e", borderColor: "#2f3742" }}>
+          <div className="rounded-2xl border p-5" style={{ background: "#131313", borderColor: "#2a2a2a" }}>
             <div className="flex items-center gap-2 mb-2">
-              <BarChart3 className="w-4 h-4" style={{ color: "#adc6ff" }} />
-              <span className="text-xs" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8b93a1" }}>AVG DAILY</span>
+              <BarChart3 className="w-4 h-4" style={{ color: "#7df6ff" }} />
+              <span className="text-xs" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}>{t.dashboard.avgDailyLabel}</span>
             </div>
-            <p className="text-2xl font-bold" style={{ fontFamily: "Lexend, sans-serif", color: "#adc6ff" }}>
+            <p className="text-2xl font-bold" style={{ fontFamily: "Space Grotesk, sans-serif", color: "#7df6ff" }}>
               {loading ? "..." : analytics?.attendance?.averageDailyAttendance?.toFixed(1) ?? "—"}
             </p>
           </div>
@@ -125,27 +125,27 @@ export default function ManagerDashboardPage() {
 
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 rounded-2xl border p-6" style={{ background: "#171a1e", borderColor: "#2f3742" }}>
-            <h3 className="text-base font-semibold mb-6" style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}>
-              Weekly Attendance
+          <div className="lg:col-span-2 rounded-2xl border p-6" style={{ background: "#131313", borderColor: "#2a2a2a" }}>
+            <h3 className="text-base font-semibold mb-6" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>
+              {t.dashboard.weeklyAttendance}
             </h3>
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={mockWeeklyData} barSize={28}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#23272e" vertical={false} />
-                <XAxis dataKey="day" tick={{ fill: "#8b93a1", fontSize: 12, fontFamily: "JetBrains Mono" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: "#8b93a1", fontSize: 12, fontFamily: "JetBrains Mono" }} axisLine={false} tickLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#20201f" vertical={false} />
+                <XAxis dataKey="day" tick={{ fill: "#8a8888", fontSize: 12, fontFamily: "JetBrains Mono" }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: "#8a8888", fontSize: 12, fontFamily: "JetBrains Mono" }} axisLine={false} tickLine={false} />
                 <Tooltip {...tooltipStyle} />
                 <Bar dataKey="count" radius={[6, 6, 0, 0]}>
                   {mockWeeklyData.map((_, i) => (
-                    <Cell key={i} fill={i === mockWeeklyData.length - 1 ? "#c8f323" : "#2d323a"} />
+                    <Cell key={i} fill={i === mockWeeklyData.length - 1 ? "#cafd00" : "#2a2a28"} />
                   ))}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
 
-          <div className="rounded-2xl border p-6" style={{ background: "#171a1e", borderColor: "#2f3742" }}>
-            <h3 className="text-base font-semibold mb-4" style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}>
+          <div className="rounded-2xl border p-6" style={{ background: "#131313", borderColor: "#2a2a2a" }}>
+            <h3 className="text-base font-semibold mb-4" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>
               {t.dashboard.planDistribution}
             </h3>
             <ResponsiveContainer width="100%" height={160}>
@@ -155,7 +155,7 @@ export default function ManagerDashboardPage() {
                     <Cell key={i} fill={COLORS[i % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ background: "#171a1e", border: "1px solid #2f3742", borderRadius: "12px", color: "#e9ecf1" }} />
+                <Tooltip contentStyle={{ background: "#131313", border: "1px solid #2a2a2a", borderRadius: "12px", color: "#ffffff" }} />
               </PieChart>
             </ResponsiveContainer>
             <div className="mt-3 space-y-1.5">
@@ -163,9 +163,9 @@ export default function ManagerDashboardPage() {
                 <div key={p.name} className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full" style={{ background: COLORS[i % COLORS.length] }} />
-                    <span className="truncate max-w-[120px]" style={{ color: "#c3cad6" }}>{p.name}</span>
+                    <span className="truncate max-w-[120px]" style={{ color: "#adaaaa" }}>{p.name}</span>
                   </div>
-                  <span style={{ fontFamily: "JetBrains Mono, monospace", color: "#e9ecf1" }}>{p.value}</span>
+                  <span style={{ fontFamily: "JetBrains Mono, monospace", color: "#ffffff" }}>{p.value}</span>
                 </div>
               ))}
             </div>
@@ -173,15 +173,15 @@ export default function ManagerDashboardPage() {
         </div>
 
         {/* Subscription Summary */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
             { label: t.dashboard.newSubscriptions, value: analytics?.subscriptions?.newCount ?? 0, color: "#4ae176" },
-            { label: t.dashboard.cancelledSubscriptions, value: analytics?.subscriptions?.cancelledCount ?? 0, color: "#ffb4ab" },
+            { label: t.dashboard.cancelledSubscriptions, value: analytics?.subscriptions?.cancelledCount ?? 0, color: "#ff6e81" },
             { label: t.dashboard.expiredSubscriptions, value: analytics?.subscriptions?.expiredCount ?? 0, color: "#ffd04a" },
           ].map(({ label, value, color }) => (
-            <div key={label} className="rounded-2xl border p-5 text-center" style={{ background: "#171a1e", borderColor: "#2f3742" }}>
-              <p className="text-2xl font-bold" style={{ fontFamily: "Lexend, sans-serif", color }}>{loading ? "..." : value}</p>
-              <p className="text-xs mt-1" style={{ color: "#8b93a1" }}>{label}</p>
+            <div key={label} className="rounded-2xl border p-5 text-center" style={{ background: "#131313", borderColor: "#2a2a2a" }}>
+              <p className="text-2xl font-bold" style={{ fontFamily: "Space Grotesk, sans-serif", color }}>{loading ? "..." : value}</p>
+              <p className="text-xs mt-1" style={{ color: "#8a8888" }}>{label}</p>
             </div>
           ))}
         </div>

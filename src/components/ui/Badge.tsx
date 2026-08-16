@@ -9,12 +9,12 @@ interface BadgeProps {
 }
 
 const variants = {
-  default: { bg: "rgba(200,243,35,0.1)", color: "#c8f323" },
+  default: { bg: "rgba(202,253,0,0.1)", color: "#cafd00" },
   success: { bg: "rgba(74,225,118,0.1)", color: "#4ae176" },
   warning: { bg: "rgba(255,180,0,0.1)", color: "#ffd04a" },
-  danger: { bg: "rgba(255,180,171,0.1)", color: "#ffb4ab" },
-  info: { bg: "rgba(173,198,255,0.1)", color: "#adc6ff" },
-  neutral: { bg: "rgba(195,202,214,0.1)", color: "#c3cad6" },
+  danger: { bg: "rgba(255,110,129,0.1)", color: "#ff6e81" },
+  info: { bg: "rgba(125,246,255,0.1)", color: "#7df6ff" },
+  neutral: { bg: "rgba(173,170,170,0.1)", color: "#adaaaa" },
 };
 
 export default function Badge({ children, variant = "default", className }: BadgeProps) {

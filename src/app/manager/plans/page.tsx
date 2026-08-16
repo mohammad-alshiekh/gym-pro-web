@@ -118,58 +118,58 @@ export default function ManagerPlansPage() {
   };
 
   const setField = (key: keyof FormState, value: string) => setForm(p => ({ ...p, [key]: value }));
-  const inputStyle = { background: "#0f1013", borderColor: "#2f3742", color: "#e9ecf1", outline: "none", fontFamily: "Inter, sans-serif" };
-  const labelStyle = { fontFamily: "JetBrains Mono, monospace", color: "#c3cad6", fontSize: "11px", textTransform: "uppercase" as const, letterSpacing: "0.1em" };
+  const inputStyle = { background: "#0e0e0e", borderColor: "#2a2a2a", color: "#ffffff", outline: "none", fontFamily: "Manrope, sans-serif" };
+  const labelStyle = { fontFamily: "JetBrains Mono, monospace", color: "#adaaaa", fontSize: "11px", textTransform: "uppercase" as const, letterSpacing: "0.1em" };
 
   return (
     <DashboardLayout title={t.plans.title} requiredRole="gym_manager">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <p className="text-sm" style={{ color: "#8b93a1" }}>{plans.length} plan{plans.length !== 1 ? "s" : ""}</p>
+          <p className="text-sm" style={{ color: "#8a8888" }}>{plans.length} {t.plans.plansCountPlural}</p>
           <Button icon={<Plus className="w-4 h-4" />} onClick={openCreate}>{t.plans.createPlan}</Button>
         </div>
 
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">{Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-44 rounded-2xl shimmer" />)}</div>
         ) : plans.length === 0 ? (
-          <div className="text-center py-20" style={{ color: "#8b93a1" }}><ScrollText className="w-12 h-12 mx-auto mb-4 opacity-30" /><p>No plans yet</p></div>
+          <div className="text-center py-20" style={{ color: "#8a8888" }}><ScrollText className="w-12 h-12 mx-auto mb-4 opacity-30" /><p>{t.plans.noPlansYet}</p></div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {plans.map((plan) => (
-              <div key={plan.id} className="rounded-2xl border p-6 flex flex-col gap-4 card-interactive" style={{ background: "#171a1e", borderColor: plan.isActive ? "#2f3742" : "#93000a30" }}>
+              <div key={plan.id} className="rounded-2xl border p-6 flex flex-col gap-4 card-interactive" style={{ background: "#131313", borderColor: plan.isActive ? "#2a2a2a" : "#5c162030" }}>
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-base leading-tight" style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}>{plan.name}</p>
-                    {plan.description && <p className="text-xs mt-1 line-clamp-2" style={{ color: "#8b93a1" }}>{plan.description}</p>}
+                    <p className="font-semibold text-base leading-tight" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>{plan.name}</p>
+                    {plan.description && <p className="text-xs mt-1 line-clamp-2" style={{ color: "#8a8888" }}>{plan.description}</p>}
                   </div>
-                  <Badge variant={plan.isActive ? "success" : "danger"}>{plan.isActive ? "Active" : "Inactive"}</Badge>
+                  <Badge variant={plan.isActive ? "success" : "danger"}>{plan.isActive ? t.plans.activeLabel : t.plans.inactiveLabel}</Badge>
                 </div>
 
                 <div className="flex items-center gap-4">
                   <div>
-                    <p className="text-2xl font-bold" style={{ fontFamily: "Lexend, sans-serif", color: "#c8f323" }}>
+                    <p className="text-2xl font-bold" style={{ fontFamily: "Space Grotesk, sans-serif", color: "#cafd00" }}>
                       {formatCurrency(plan.price)}
                     </p>
                   </div>
-                  <div className="px-3 py-1 rounded-full text-sm" style={{ background: "#c8f32315", color: "#c8f323", fontFamily: "JetBrains Mono, monospace" }}>
-                    {plan.durationDays} days
+                  <div className="px-3 py-1 rounded-full text-sm" style={{ background: "#cafd0015", color: "#cafd00", fontFamily: "JetBrains Mono, monospace" }}>
+                    {plan.durationDays} {t.plans.daysLabel}
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 pt-2 border-t" style={{ borderColor: "#23272e" }}>
-                  <button onClick={() => openEdit(plan)} className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border text-xs transition-colors hover:bg-[#23272e]" style={{ borderColor: "#2f3742", color: "#c3cad6" }}>
-                    <Edit2 className="w-3.5 h-3.5" />Edit
+                <div className="flex items-center gap-2 pt-2 border-t" style={{ borderColor: "#20201f" }}>
+                  <button onClick={() => openEdit(plan)} className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border text-xs transition-colors hover:bg-[#20201f]" style={{ borderColor: "#2a2a2a", color: "#adaaaa" }}>
+                    <Edit2 className="w-3.5 h-3.5" />{t.plans.edit}
                   </button>
                   {!plan.isActive ? (
-                    <button onClick={() => handleReactivate(plan)} title={t.plans.reactivatePlan} className="p-2 rounded-xl hover:bg-[#c8f32315] transition-colors" style={{ color: "#c8f323" }}>
+                    <button onClick={() => handleReactivate(plan)} title={t.plans.reactivatePlan} className="p-2 rounded-xl hover:bg-[#cafd0015] transition-colors" style={{ color: "#cafd00" }}>
                       <RotateCcw className="w-4 h-4" />
                     </button>
                   ) : (
-                    <button onClick={() => handleDeactivate(plan)} title={t.plans.deactivatePlan} className="p-2 rounded-xl hover:bg-[#23272e] transition-colors" style={{ color: "#8b93a1" }}>
+                    <button onClick={() => handleDeactivate(plan)} title={t.plans.deactivatePlan} className="p-2 rounded-xl hover:bg-[#20201f] transition-colors" style={{ color: "#8a8888" }}>
                       <EyeOff className="w-4 h-4" />
                     </button>
                   )}
-                  <button onClick={() => setDeleteTarget(plan)} title={t.plans.deletePlan} className="p-2 rounded-xl hover:bg-[#93000a]/20" style={{ color: "#ffb4ab" }}>
+                  <button onClick={() => setDeleteTarget(plan)} title={t.plans.deletePlan} className="p-2 rounded-xl hover:bg-[#5c1620]/20" style={{ color: "#ff6e81" }}>
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -182,7 +182,7 @@ export default function ManagerPlansPage() {
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editTarget ? t.plans.editPlan : t.plans.createPlan}
         footer={<><Button variant="ghost" onClick={() => setModalOpen(false)}>{t.common.cancel}</Button><Button loading={submitting} onClick={handleSave}>{editTarget ? t.common.update : t.common.create}</Button></>}>
         <div className="space-y-4">
-          {[{ key: "name", label: t.plans.planName, placeholder: "Gold Monthly Membership" }, { key: "durationDays", label: t.plans.durationDays, placeholder: "30", type: "number" }, { key: "price", label: `${t.plans.price} (EGP)`, placeholder: "1200", type: "number" }].map(({ key, label, placeholder, type }) => (
+          {[{ key: "name", label: t.plans.planName, placeholder: "Gold Monthly Membership" }, { key: "durationDays", label: t.plans.durationDays, placeholder: "30", type: "number" }, { key: "price", label: `${t.plans.price} (USD)`, placeholder: "1200", type: "number" }].map(({ key, label, placeholder, type }) => (
             <div key={key}>
               <label style={labelStyle} className="block mb-1.5">{label}</label>
               <input value={String(form[key as keyof FormState])} onChange={(e) => setField(key as keyof FormState, e.target.value)} placeholder={placeholder} type={type ?? "text"} className="w-full px-4 py-3 rounded-xl border text-sm input-accent" style={inputStyle} />
@@ -194,16 +194,16 @@ export default function ManagerPlansPage() {
           </div>
           {/* The API rejects price/duration edits once the plan has active subscribers. */}
           {editTarget && (
-            <p className="text-xs" style={{ color: "#8b93a1" }}>{t.plans.editLockNote}</p>
+            <p className="text-xs" style={{ color: "#8a8888" }}>{t.plans.editLockNote}</p>
           )}
         </div>
       </Modal>
 
       <Modal open={!!deleteTarget} onClose={() => setDeleteTarget(null)} title={t.plans.deletePlan} size="sm"
         footer={<><Button variant="ghost" onClick={() => setDeleteTarget(null)}>{t.common.cancel}</Button><Button variant="danger" loading={submitting} onClick={handleDelete}>{t.common.delete}</Button></>}>
-        <p style={{ color: "#e9ecf1" }}>{t.plans.deleteConfirm}</p>
-        {deleteTarget && <div className="mt-3 px-4 py-2 rounded-xl border text-sm" style={{ borderColor: "#93000a", background: "#93000a15", color: "#ffb4ab" }}>{deleteTarget.name}</div>}
-        <p className="mt-3 text-xs" style={{ color: "#8b93a1" }}>{t.plans.deleteNote}</p>
+        <p style={{ color: "#ffffff" }}>{t.plans.deleteConfirm}</p>
+        {deleteTarget && <div className="mt-3 px-4 py-2 rounded-xl border text-sm" style={{ borderColor: "#5c1620", background: "#5c162015", color: "#ff6e81" }}>{deleteTarget.name}</div>}
+        <p className="mt-3 text-xs" style={{ color: "#8a8888" }}>{t.plans.deleteNote}</p>
       </Modal>
     </DashboardLayout>
   );

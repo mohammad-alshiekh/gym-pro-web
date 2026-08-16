@@ -45,8 +45,8 @@ export default function NewExerciseSchedulePage() {
       <div className="space-y-5">
         <Link
           href="/admin/exercise-schedules"
-          className="inline-flex items-center gap-2 text-sm transition-colors hover:text-[#c8f323]"
-          style={{ color: "#8b93a1" }}
+          className="inline-flex items-center gap-2 text-sm transition-colors hover:text-[#cafd00]"
+          style={{ color: "#8a8888" }}
         >
           <ArrowLeft className="w-4 h-4" style={{ transform: isRtl ? "scaleX(-1)" : undefined }} />
           {t.exerciseSchedules.backToPlans}

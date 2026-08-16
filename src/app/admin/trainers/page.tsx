@@ -56,7 +56,7 @@ const defaultForm: CoachFormState = {
 };
 
 export default function AdminTrainersPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [coaches, setCoaches] = useState<Coach[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
@@ -80,11 +80,11 @@ export default function AdminTrainersPage() {
       setCoaches(res.data?.items ?? []);
       setTotalCount(res.data?.totalCount ?? 0);
     } catch {
-      toast.error("Failed to load coaches");
+      toast.error(t.coaches.toastFailedLoadCoaches);
     } finally {
       setLoading(false);
     }
-  }, [search, page]);
+  }, [search, page, t]);
 
   useEffect(() => {
     fetchCoaches();
@@ -92,7 +92,7 @@ export default function AdminTrainersPage() {
 
   const handleCreate = async () => {
     if (!form.fullName || !form.email || !form.password) {
-      toast.error("Name, email and password are required");
+      toast.error(t.coaches.toastNameEmailPasswordRequired);
       return;
     }
     setSubmitting(true);
@@ -113,7 +113,7 @@ export default function AdminTrainersPage() {
       setForm(defaultForm);
       fetchCoaches();
     } catch {
-      toast.error("Failed to create coach");
+      toast.error(t.coaches.toastFailedCreateCoach);
     } finally {
       setSubmitting(false);
     }
@@ -124,16 +124,16 @@ export default function AdminTrainersPage() {
   };
 
   const inputStyle = {
-    background: "#0f1013",
-    borderColor: "#2f3742",
-    color: "#e9ecf1",
+    background: "#0e0e0e",
+    borderColor: "#2a2a2a",
+    color: "#ffffff",
     outline: "none",
-    fontFamily: "Inter, sans-serif",
+    fontFamily: "Manrope, sans-serif",
   };
 
   const labelStyle = {
     fontFamily: "JetBrains Mono, monospace",
-    color: "#c3cad6",
+    color: "#adaaaa",
     fontSize: "11px",
     fontWeight: 500,
     textTransform: "uppercase" as const,
@@ -145,13 +145,13 @@ export default function AdminTrainersPage() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#8b93a1" }} />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#8a8888" }} />
             <input
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              placeholder="Search coaches..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm input-accent"
-              style={{ ...inputStyle }}
+value={search}
+               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+               placeholder={t.coaches.searchPlaceholder}
+               className="w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm input-accent"
+               style={{ ...inputStyle }}
             />
           </div>
           <Button icon={<Plus className="w-4 h-4" />} onClick={() => setCreateOpen(true)}>
@@ -166,7 +166,7 @@ export default function AdminTrainersPage() {
             ))}
           </div>
         ) : coaches.length === 0 ? (
-          <div className="text-center py-20" style={{ color: "#8b93a1" }}>
+          <div className="text-center py-20" style={{ color: "#8a8888" }}>
             <UserCheck className="w-12 h-12 mx-auto mb-4 opacity-30" />
             <p>{t.common.noData}</p>
           </div>
@@ -176,64 +176,64 @@ export default function AdminTrainersPage() {
               <div
                 key={coach.id}
                 className="rounded-2xl border p-5 flex flex-col gap-3 card-interactive"
-                style={{ background: "#171a1e", borderColor: "#2f3742" }}
+                style={{ background: "#131313", borderColor: "#2a2a2a" }}
               >
                 <div className="flex items-center gap-3">
                   {coach.profilePictureUrl ? (
                     <img src={coach.profilePictureUrl} alt={coach.name} className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
                   ) : (
                     <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold"
-                      style={{ background: "#23272e", color: "#c8f323", fontFamily: "Lexend, sans-serif" }}>
+                      style={{ background: "#20201f", color: "#cafd00", fontFamily: "Lexend, sans-serif" }}>
                       {getInitials(coach.name)}
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm truncate" style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}>
+                    <p className="font-semibold text-sm truncate" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>
                       {coach.name}
                     </p>
-                    <p className="text-xs truncate" style={{ color: "#8b93a1" }}>{coach.email}</p>
+                    <p className="text-xs truncate" style={{ color: "#8a8888" }}>{coach.email}</p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
                   {coach.isVerifiedByAdmin ? (
-                    <Badge variant="success">Verified</Badge>
+                    <Badge variant="success">{t.coaches.verified}</Badge>
                   ) : (
-                    <Badge variant="neutral">Unverified</Badge>
+                    <Badge variant="neutral">{t.coaches.unverified}</Badge>
                   )}
                   {coach.isAvailableForClients && (
-                    <Badge variant="info">Available</Badge>
+                    <Badge variant="info">{t.coaches.available}</Badge>
                   )}
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 text-center">
                   <div>
-                    <p className="text-base font-bold" style={{ fontFamily: "Lexend, sans-serif", color: "#c8f323" }}>
+                    <p className="text-base font-bold" style={{ fontFamily: "Lexend, sans-serif", color: "#cafd00" }}>
                       {coach.yearsOfExperience ?? 0}
                     </p>
-                    <p className="text-xs" style={{ color: "#8b93a1" }}>yrs exp</p>
+                    <p className="text-xs" style={{ color: "#8a8888" }}>{t.coaches.yrsExp}</p>
                   </div>
                   <div>
                     <p className="text-base font-bold" style={{ fontFamily: "Lexend, sans-serif", color: "#4ae176" }}>
                       {coach.numberOfClients}
                     </p>
-                    <p className="text-xs" style={{ color: "#8b93a1" }}>clients</p>
+                    <p className="text-xs" style={{ color: "#8a8888" }}>{t.coaches.clientsCount}</p>
                   </div>
                   <div>
                     <p className="text-base font-bold" style={{ fontFamily: "Lexend, sans-serif", color: "#ffd04a" }}>
                       {coach.averageRatings?.toFixed(1) ?? "0"}
                     </p>
-                    <p className="text-xs" style={{ color: "#8b93a1" }}>rating</p>
+                    <p className="text-xs" style={{ color: "#8a8888" }}>{t.coaches.ratingCount}</p>
                   </div>
                 </div>
 
                 <button
                   onClick={() => setViewTarget(coach)}
-                  className="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-medium transition-colors hover:bg-[#23272e]"
-                  style={{ color: "#c3cad6", border: "1px solid #2f3742" }}
+                  className="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-medium transition-colors hover:bg-[#20201f]"
+                  style={{ color: "#adaaaa", border: "1px solid #2a2a2a" }}
                 >
                   <Eye className="w-3.5 h-3.5" />
-                  View Details
+                  {t.coaches.viewDetails}
                 </button>
               </div>
             ))}
@@ -264,13 +264,13 @@ export default function AdminTrainersPage() {
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[
-            { key: "fullName", label: "Full Name", placeholder: "John Doe" },
-            { key: "email", label: "Email", placeholder: "coach@example.com", type: "email" },
-            { key: "password", label: "Password", placeholder: "Min 8 characters", type: "password" },
-            { key: "phoneNumber", label: "Phone", placeholder: "+201000000000" },
-            { key: "yearsOfExperience", label: "Years of Experience", placeholder: "10", type: "number" },
-            { key: "facebookUrl", label: "Facebook URL", placeholder: "https://facebook.com/..." },
-            { key: "instagramUrl", label: "Instagram URL", placeholder: "https://instagram.com/..." },
+            { key: "fullName", label: t.coaches.fullName, placeholder: t.coaches.fullNamePlaceholder },
+            { key: "email", label: t.coaches.email, placeholder: "coach@example.com", type: "email" },
+            { key: "password", label: t.coaches.password, placeholder: t.coaches.managerPasswordPlaceholder, type: "password" },
+            { key: "phoneNumber", label: t.coaches.phone, placeholder: t.gyms.phoneExample },
+            { key: "yearsOfExperience", label: t.coaches.yearsOfExperience, placeholder: "10", type: "number" },
+            { key: "facebookUrl", label: t.coaches.facebookUrl, placeholder: "https://facebook.com/..." },
+            { key: "instagramUrl", label: t.coaches.instagramUrl, placeholder: "https://instagram.com/..." },
           ].map(({ key, label, placeholder, type }) => (
             <div key={key}>
               <label style={labelStyle} className="block mb-1.5">{label}</label>
@@ -285,12 +285,12 @@ export default function AdminTrainersPage() {
             </div>
           ))}
           <div className="sm:col-span-2">
-            <label style={labelStyle} className="block mb-1.5">Bio</label>
+            <label style={labelStyle} className="block mb-1.5">{t.coaches.bio}</label>
             <textarea
               value={form.bio}
               onChange={(e) => setField("bio", e.target.value)}
               rows={3}
-              placeholder="Certified personal trainer with 10 years of experience..."
+              placeholder={t.coaches.bioPlaceholder}
               className="w-full px-4 py-3 rounded-xl border text-sm input-accent resize-none"
               style={inputStyle}
             />
@@ -300,58 +300,58 @@ export default function AdminTrainersPage() {
               type="button"
               onClick={() => setField("isVerifiedByAdmin", !form.isVerifiedByAdmin)}
               className="w-10 h-6 rounded-full transition-all flex-shrink-0"
-              style={{ background: form.isVerifiedByAdmin ? "#c8f323" : "#2d323a" }}
+              style={{ background: form.isVerifiedByAdmin ? "#cafd00" : "#2a2a28" }}
             >
               <span
                 className="block w-4 h-4 rounded-full transition-all mx-1"
                 style={{
-                  background: form.isVerifiedByAdmin ? "#293500" : "#8b93a1",
+                  background: form.isVerifiedByAdmin ? "#3a4a00" : "#8a8888",
                   transform: form.isVerifiedByAdmin ? "translateX(16px)" : "translateX(0)",
                 }}
               />
             </button>
-            <span className="text-sm" style={{ color: "#e9ecf1" }}>Verify coach immediately</span>
+            <span className="text-sm" style={{ color: "#ffffff" }}>Verify coach immediately</span>
           </div>
         </div>
       </Modal>
 
       {/* View Coach Modal */}
       {viewTarget && (
-        <Modal open={!!viewTarget} onClose={() => setViewTarget(null)} title="Coach Details" size="md">
+        <Modal open={!!viewTarget} onClose={() => setViewTarget(null)} title={t.coaches.coachDetails} size="md">
           <div className="space-y-5">
             <div className="flex items-center gap-4">
               {viewTarget.profilePictureUrl ? (
                 <img src={viewTarget.profilePictureUrl} alt={viewTarget.name} className="w-20 h-20 rounded-2xl object-cover" />
               ) : (
                 <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-2xl font-bold"
-                  style={{ background: "#23272e", color: "#c8f323", fontFamily: "Lexend, sans-serif" }}>
+                  style={{ background: "#20201f", color: "#cafd00", fontFamily: "Lexend, sans-serif" }}>
                   {getInitials(viewTarget.name)}
                 </div>
               )}
               <div>
-                <h3 className="text-lg font-bold" style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}>{viewTarget.name}</h3>
-                <p className="text-sm" style={{ color: "#8b93a1" }}>{viewTarget.email}</p>
+                <h3 className="text-lg font-bold" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>{viewTarget.name}</h3>
+                <p className="text-sm" style={{ color: "#8a8888" }}>{viewTarget.email}</p>
                 <div className="flex gap-2 mt-2">
                   {viewTarget.isVerifiedByAdmin ? (
-                    <Badge variant="success"><CheckCircle className="w-3 h-3 mr-1" />Verified</Badge>
+                    <Badge variant="success"><CheckCircle className="w-3 h-3 mr-1" />{t.coaches.verified}</Badge>
                   ) : (
-                    <Badge variant="neutral">Unverified</Badge>
+                    <Badge variant="neutral">{t.coaches.unverified}</Badge>
                   )}
                 </div>
               </div>
             </div>
             {viewTarget.bio && (
-              <p className="text-sm" style={{ color: "#c3cad6" }}>{viewTarget.bio}</p>
+              <p className="text-sm" style={{ color: "#adaaaa" }}>{viewTarget.bio}</p>
             )}
             <div className="grid grid-cols-3 gap-3">
               {[
-                { label: "Experience", value: `${viewTarget.yearsOfExperience ?? 0} yrs`, color: "#c8f323" },
-                { label: "Clients", value: viewTarget.numberOfClients, color: "#4ae176" },
-                { label: "Rating", value: `${viewTarget.averageRatings?.toFixed(1)} ★`, color: "#ffd04a" },
+                { label: t.coaches.experienceLabel, value: `${viewTarget.yearsOfExperience ?? 0} ${t.coaches.yrsExp}`, color: "#cafd00" },
+                { label: t.coaches.clientsLabel, value: viewTarget.numberOfClients, color: "#4ae176" },
+                { label: t.coaches.ratingLabel, value: `${viewTarget.averageRatings?.toFixed(1)} ★`, color: "#ffd04a" },
               ].map(({ label, value, color }) => (
-                <div key={label} className="rounded-xl p-3 text-center" style={{ background: "#23272e" }}>
+                <div key={label} className="rounded-xl p-3 text-center" style={{ background: "#20201f" }}>
                   <p className="text-lg font-bold" style={{ fontFamily: "Lexend, sans-serif", color }}>{value}</p>
-                  <p className="text-xs" style={{ color: "#8b93a1" }}>{label}</p>
+                  <p className="text-xs" style={{ color: "#8a8888" }}>{label}</p>
                 </div>
               ))}
             </div>

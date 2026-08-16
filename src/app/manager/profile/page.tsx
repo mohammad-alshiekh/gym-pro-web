@@ -54,21 +54,21 @@ export default function ManagerProfilePage() {
   };
 
   const inputStyle = {
-    background: "#0f1013",
-    borderColor: "#2f3742",
-    color: "#e9ecf1",
+    background: "#0e0e0e",
+    borderColor: "#2a2a2a",
+    color: "#ffffff",
     outline: "none",
-    fontFamily: "Inter, sans-serif",
+    fontFamily: "Manrope, sans-serif",
     fontSize: "14px",
     padding: "12px 16px",
     borderRadius: "12px",
-    border: "1px solid #2f3742",
+    border: "1px solid #2a2a2a",
     width: "100%",
   };
 
   const labelStyle = {
     fontFamily: "JetBrains Mono, monospace",
-    color: "#c3cad6",
+    color: "#adaaaa",
     fontSize: "11px",
     fontWeight: 500,
     textTransform: "uppercase" as const,
@@ -81,31 +81,31 @@ export default function ManagerProfilePage() {
     <DashboardLayout title={t.profile.title} requiredRole="gym_manager">
       <div className="max-w-lg mx-auto space-y-6">
         {/* Avatar */}
-        <div className="rounded-2xl border p-8 flex flex-col items-center gap-4" style={{ background: "#171a1e", borderColor: "#2f3742" }}>
+        <div className="rounded-2xl border p-8 flex flex-col items-center gap-4" style={{ background: "#131313", borderColor: "#2a2a2a" }}>
           {loading ? (
             <div className="w-24 h-24 rounded-full shimmer" />
           ) : (
             <>
               <div
                 className="w-24 h-24 rounded-full flex items-center justify-center text-3xl font-bold"
-                style={{ background: "#23272e", color: "#c8f323", fontFamily: "Lexend, sans-serif", border: "3px solid #2f3742" }}
+                style={{ background: "#20201f", color: "#cafd00", fontFamily: "Lexend, sans-serif", border: "3px solid #2a2a2a" }}
               >
                 {profile ? getInitials(profile.name) : "?"}
               </div>
-              <div className="text-center">
-                <p className="text-lg font-bold" style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}>{profile?.name}</p>
-                <p className="text-sm" style={{ color: "#8b93a1" }}>{profile?.email}</p>
-                <div className="mt-2 px-3 py-1 rounded-full inline-block" style={{ background: "#c8f32315" }}>
-                  <span className="text-xs font-medium" style={{ fontFamily: "JetBrains Mono, monospace", color: "#c8f323" }}>GYM MANAGER</span>
-                </div>
-              </div>
+               <div className="text-center">
+                 <p className="text-lg font-bold" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>{profile?.name}</p>
+                 <p className="text-sm" style={{ color: "#8a8888" }}>{profile?.email}</p>
+                 <div className="mt-2 px-3 py-1 rounded-full inline-block" style={{ background: "#cafd0015" }}>
+                   <span className="text-xs font-medium" style={{ fontFamily: "JetBrains Mono, monospace", color: "#cafd00" }}>{t.profile.gymManagerBadge}</span>
+                 </div>
+               </div>
             </>
           )}
         </div>
 
         {/* Edit Form */}
-        <div className="rounded-2xl border p-6" style={{ background: "#171a1e", borderColor: "#2f3742" }}>
-          <h3 className="text-base font-semibold mb-5" style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}>
+        <div className="rounded-2xl border p-6" style={{ background: "#131313", borderColor: "#2a2a2a" }}>
+          <h3 className="text-base font-semibold mb-5" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>
             {t.profile.updateProfile}
           </h3>
           <div className="space-y-4">
@@ -154,9 +154,9 @@ export default function ManagerProfilePage() {
 
         {/* Info Card */}
         {profile?.gymId && (
-          <div className="rounded-2xl border p-5" style={{ background: "#171a1e", borderColor: "#2f3742" }}>
-            <p className="text-xs mb-2" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8b93a1" }}>GYM ID</p>
-            <p className="text-sm font-mono" style={{ color: "#c3cad6" }}>{profile.gymId}</p>
+          <div className="rounded-2xl border p-5" style={{ background: "#131313", borderColor: "#2a2a2a" }}>
+            <p className="text-xs mb-2" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}>{t.profile.gymIdLabel}</p>
+            <p className="text-sm font-mono" style={{ color: "#adaaaa" }}>{profile.gymId}</p>
           </div>
         )}
       </div>

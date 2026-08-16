@@ -53,16 +53,16 @@ export default function QrCodePage() {
   return (
     <DashboardLayout title={t.nav.qrCode} requiredRole="gym_manager">
       <div className="max-w-lg mx-auto space-y-6">
-        <div className="rounded-2xl border p-8 text-center" style={{ background: "#171a1e", borderColor: "#2f3742" }}>
+        <div className="rounded-2xl border p-8 text-center" style={{ background: "#131313", borderColor: "#2a2a2a" }}>
           <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: "#c8f32315" }}>
-              <QrCode className="w-6 h-6" style={{ color: "#c8f323" }} />
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: "#cafd0015" }}>
+              <QrCode className="w-6 h-6" style={{ color: "#cafd00" }} />
             </div>
             <div className="text-left">
-              <h2 className="text-lg font-bold" style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}>
+              <h2 className="text-lg font-bold" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>
                 {t.gyms.qrCode}
               </h2>
-              <p className="text-xs" style={{ color: "#8b93a1" }}>{t.gyms.qrInstructions}</p>
+              <p className="text-xs" style={{ color: "#8a8888" }}>{t.gyms.qrInstructions}</p>
             </div>
           </div>
 
@@ -73,22 +73,22 @@ export default function QrCodePage() {
               <div className="w-64 h-64 mx-auto rounded-2xl overflow-hidden p-4" style={{ background: "white" }}>
                 <img src={qrData.qrCodeBase64} alt="Check-in QR Code" className="w-full h-full object-contain" />
               </div>
-              <div className="mt-4 px-4 py-2 rounded-xl inline-block" style={{ background: "#23272e" }}>
-                <p className="text-xs" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8b93a1" }}>Token:</p>
-                <p className="text-xs font-mono break-all" style={{ color: "#c8f323" }}>
+              <div className="mt-4 px-4 py-2 rounded-xl inline-block" style={{ background: "#20201f" }}>
+                <p className="text-xs" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}>Token:</p>
+                <p className="text-xs font-mono break-all" style={{ color: "#cafd00" }}>
                   {qrData.qrToken.substring(0, 32)}...
                 </p>
               </div>
             </div>
           ) : (
-            <div className="w-64 h-64 mx-auto rounded-2xl flex items-center justify-center" style={{ background: "#23272e" }}>
-              <QrCode className="w-16 h-16 opacity-20" style={{ color: "#c8f323" }} />
+            <div className="w-64 h-64 mx-auto rounded-2xl flex items-center justify-center" style={{ background: "#20201f" }}>
+              <QrCode className="w-16 h-16 opacity-20" style={{ color: "#cafd00" }} />
             </div>
           )}
 
           <div className="flex items-center justify-center gap-3 mt-6">
             <Button variant="secondary" icon={<Download className="w-4 h-4" />} onClick={handleDownload} disabled={!qrData?.qrCodeBase64}>
-              Download
+              {t.auth.download}
             </Button>
             <Button icon={<RefreshCw className="w-4 h-4" />} loading={regenerating} onClick={handleRegenerate}>
               {t.gyms.regenerateQr}
@@ -96,21 +96,21 @@ export default function QrCodePage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border p-5" style={{ background: "#171a1e", borderColor: "#2f3742" }}>
-          <h3 className="text-sm font-semibold mb-3" style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}>
-            How to use
+        <div className="rounded-2xl border p-5" style={{ background: "#131313", borderColor: "#2a2a2a" }}>
+          <h3 className="text-sm font-semibold mb-3" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>
+            {t.auth.howToUse}
           </h3>
           <div className="space-y-3">
             {[
-              "Print or display this QR code at the gym reception desk",
-              "Members scan the code with the GymBro app to check in",
-              "Regenerate the QR code if you suspect it has been compromised",
-              "Each regeneration invalidates the previous token immediately",
+              t.auth.qrStep1,
+              t.auth.qrStep2,
+              t.auth.qrStep3,
+              t.auth.qrStep4,
             ].map((step, i) => (
-              <div key={i} className="flex gap-3 text-sm" style={{ color: "#c3cad6" }}>
+              <div key={i} className="flex gap-3 text-sm" style={{ color: "#adaaaa" }}>
                 <span
                   className="flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold"
-                  style={{ background: "#c8f323", color: "#293500" }}
+                  style={{ background: "#cafd00", color: "#3a4a00" }}
                 >
                   {i + 1}
                 </span>

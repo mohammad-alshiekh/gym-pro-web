@@ -57,26 +57,26 @@ export default function Modal({
           sizeClasses[size]
         )}
         style={{
-          background: "#171a1e",
-          borderColor: "#2f3742",
+          background: "#131313",
+          borderColor: "#2a2a2a",
           boxShadow: "0 20px 60px rgba(0,0,0,0.8)",
         }}
       >
         {/* Header */}
         <div
           className="flex items-center justify-between px-6 py-4 border-b flex-shrink-0"
-          style={{ borderColor: "#2f3742" }}
+          style={{ borderColor: "#2a2a2a" }}
         >
           <h2
             className="text-lg font-semibold"
-            style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}
+            style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}
           >
             {title}
           </h2>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg transition-colors hover:bg-[#23272e]"
-            style={{ color: "#8b93a1" }}
+            className="p-1.5 rounded-lg transition-colors hover:bg-[#20201f]"
+            style={{ color: "#8a8888" }}
           >
             <X className="w-5 h-5" />
           </button>
@@ -89,7 +89,7 @@ export default function Modal({
         {footer && (
           <div
             className="flex items-center justify-end gap-3 px-6 py-4 border-t flex-shrink-0"
-            style={{ borderColor: "#2f3742" }}
+            style={{ borderColor: "#2a2a2a" }}
           >
             {footer}
           </div>

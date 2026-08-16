@@ -67,33 +67,33 @@ export default function ManagerAnalyticsPage() {
   }, []);
 
   const tooltipStyle = {
-    contentStyle: { background: "#171a1e", border: "1px solid #2f3742", borderRadius: "12px", color: "#e9ecf1" },
-    labelStyle: { color: "#c3cad6" },
+    contentStyle: { background: "#131313", border: "1px solid #2a2a2a", borderRadius: "12px", color: "#ffffff" },
+    labelStyle: { color: "#adaaaa" },
   };
 
   return (
     <DashboardLayout title={t.analytics.title} requiredRole="gym_manager">
       <div className="space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard title="Today" value={loading ? "..." : analytics?.attendance?.todayCount ?? 0} icon={<Activity className="w-6 h-6" />} accentColor="#c8f323" />
-          <StatCard title="This Week" value={loading ? "..." : analytics?.attendance?.weekCount ?? 0} icon={<BarChart3 className="w-6 h-6" />} accentColor="#4ae176" />
-          <StatCard title="This Month" value={loading ? "..." : analytics?.attendance?.monthCount ?? 0} icon={<BarChart3 className="w-6 h-6" />} accentColor="#adc6ff" />
-          <StatCard title="Daily Average" value={loading ? "..." : analytics?.attendance?.averageDailyAttendance?.toFixed(1) ?? 0} icon={<TrendingUp className="w-6 h-6" />} accentColor="#ffd04a" />
+          <StatCard title={t.analytics.today} value={loading ? "..." : analytics?.attendance?.todayCount ?? 0} icon={<Activity className="w-6 h-6" />} accentColor="#cafd00" />
+          <StatCard title={t.analytics.thisWeek} value={loading ? "..." : analytics?.attendance?.weekCount ?? 0} icon={<BarChart3 className="w-6 h-6" />} accentColor="#4ae176" />
+          <StatCard title={t.analytics.thisMonth} value={loading ? "..." : analytics?.attendance?.monthCount ?? 0} icon={<BarChart3 className="w-6 h-6" />} accentColor="#7df6ff" />
+          <StatCard title={t.analytics.dailyAverage} value={loading ? "..." : analytics?.attendance?.averageDailyAttendance?.toFixed(1) ?? 0} icon={<TrendingUp className="w-6 h-6" />} accentColor="#ffd04a" />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Hourly Distribution */}
-          <div className="rounded-2xl border p-6" style={{ background: "#171a1e", borderColor: "#2f3742" }}>
-            <h3 className="text-base font-semibold mb-6" style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}>Hourly Traffic Distribution</h3>
+          <div className="rounded-2xl border p-6" style={{ background: "#131313", borderColor: "#2a2a2a" }}>
+            <h3 className="text-base font-semibold mb-6" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>{t.analytics.hourlyTraffic}</h3>
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={mockHourlyData} barSize={20}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#23272e" vertical={false} />
-                <XAxis dataKey="hour" tick={{ fill: "#8b93a1", fontSize: 11, fontFamily: "JetBrains Mono" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: "#8b93a1", fontSize: 11, fontFamily: "JetBrains Mono" }} axisLine={false} tickLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#20201f" vertical={false} />
+                <XAxis dataKey="hour" tick={{ fill: "#8a8888", fontSize: 11, fontFamily: "JetBrains Mono" }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: "#8a8888", fontSize: 11, fontFamily: "JetBrains Mono" }} axisLine={false} tickLine={false} />
                 <Tooltip {...tooltipStyle} />
                 <Bar dataKey="visits" radius={[4, 4, 0, 0]}>
                   {mockHourlyData.map((_, i) => (
-                    <Cell key={i} fill={i === 6 ? "#c8f323" : "#2d323a"} />
+                    <Cell key={i} fill={i === 6 ? "#cafd00" : "#2a2a28"} />
                   ))}
                 </Bar>
               </BarChart>
@@ -101,13 +101,13 @@ export default function ManagerAnalyticsPage() {
           </div>
 
           {/* Weekly Radar */}
-          <div className="rounded-2xl border p-6" style={{ background: "#171a1e", borderColor: "#2f3742" }}>
-            <h3 className="text-base font-semibold mb-6" style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}>Weekly Pattern</h3>
+          <div className="rounded-2xl border p-6" style={{ background: "#131313", borderColor: "#2a2a2a" }}>
+            <h3 className="text-base font-semibold mb-6" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>{t.analytics.weeklyPattern}</h3>
             <ResponsiveContainer width="100%" height={220}>
               <RadarChart data={mockRadarData}>
-                <PolarGrid stroke="#23272e" />
-                <PolarAngleAxis dataKey="subject" tick={{ fill: "#8b93a1", fontSize: 12, fontFamily: "JetBrains Mono" }} />
-                <Radar name="Visits" dataKey="A" stroke="#c8f323" fill="#c8f323" fillOpacity={0.15} strokeWidth={2} />
+                <PolarGrid stroke="#20201f" />
+                <PolarAngleAxis dataKey="subject" tick={{ fill: "#8a8888", fontSize: 12, fontFamily: "JetBrains Mono" }} />
+                <Radar name="Visits" dataKey="A" stroke="#cafd00" fill="#cafd00" fillOpacity={0.15} strokeWidth={2} />
               </RadarChart>
             </ResponsiveContainer>
           </div>
@@ -115,22 +115,22 @@ export default function ManagerAnalyticsPage() {
 
         {/* Plan Membership */}
         {analytics?.plans?.planMemberCounts && analytics.plans.planMemberCounts.length > 0 && (
-          <div className="rounded-2xl border p-6" style={{ background: "#171a1e", borderColor: "#2f3742" }}>
-            <h3 className="text-base font-semibold mb-6" style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}>Members by Plan</h3>
+          <div className="rounded-2xl border p-6" style={{ background: "#131313", borderColor: "#2a2a2a" }}>
+            <h3 className="text-base font-semibold mb-6" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>{t.analytics.membersByPlan}</h3>
             <div className="space-y-3">
               {analytics.plans.planMemberCounts.map((p, i) => {
                 const maxCount = Math.max(...analytics.plans!.planMemberCounts!.map(x => x.activeMembersCount));
                 const pct = maxCount > 0 ? (p.activeMembersCount / maxCount) * 100 : 0;
-                const colors = ["#c8f323", "#4ae176", "#adc6ff", "#ffd04a"];
+                const colors = ["#cafd00", "#4ae176", "#7df6ff", "#ffd04a"];
                 return (
                   <div key={p.planId}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm" style={{ color: "#e9ecf1" }}>{p.planName}</span>
+                      <span className="text-sm" style={{ color: "#ffffff" }}>{p.planName}</span>
                       <span className="text-sm font-semibold" style={{ fontFamily: "JetBrains Mono, monospace", color: colors[i % colors.length] }}>
-                        {p.activeMembersCount} members
+                        {p.activeMembersCount} {t.analytics.membersCount.replace("{count}", String(p.activeMembersCount))}
                       </span>
                     </div>
-                    <div className="h-2 rounded-full overflow-hidden" style={{ background: "#23272e" }}>
+                    <div className="h-2 rounded-full overflow-hidden" style={{ background: "#20201f" }}>
                       <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: colors[i % colors.length] }} />
                     </div>
                   </div>
@@ -141,15 +141,15 @@ export default function ManagerAnalyticsPage() {
         )}
 
         {/* Subscription Stats */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
-            { label: "New This Month", value: analytics?.subscriptions?.newCount ?? 0, color: "#4ae176" },
-            { label: "Cancelled", value: analytics?.subscriptions?.cancelledCount ?? 0, color: "#ffb4ab" },
-            { label: "Expired", value: analytics?.subscriptions?.expiredCount ?? 0, color: "#ffd04a" },
+            { label: t.analytics.newThisMonth, value: analytics?.subscriptions?.newCount ?? 0, color: "#4ae176" },
+            { label: t.analytics.cancelled, value: analytics?.subscriptions?.cancelledCount ?? 0, color: "#ff6e81" },
+            { label: t.analytics.expired, value: analytics?.subscriptions?.expiredCount ?? 0, color: "#ffd04a" },
           ].map(({ label, value, color }) => (
-            <div key={label} className="rounded-2xl border p-5 text-center" style={{ background: "#171a1e", borderColor: "#2f3742" }}>
-              <p className="text-2xl font-bold" style={{ fontFamily: "Lexend, sans-serif", color }}>{loading ? "..." : value}</p>
-              <p className="text-xs mt-1" style={{ color: "#8b93a1" }}>{label}</p>
+            <div key={label} className="rounded-2xl border p-5 text-center" style={{ background: "#131313", borderColor: "#2a2a2a" }}>
+              <p className="text-2xl font-bold" style={{ fontFamily: "Space Grotesk, sans-serif", color }}>{loading ? "..." : value}</p>
+              <p className="text-xs mt-1" style={{ color: "#8a8888" }}>{label}</p>
             </div>
           ))}
         </div>

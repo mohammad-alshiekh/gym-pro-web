@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { Plus, Layers, Search, Edit2, Trash2 } from "lucide-react";
+import Link from "next/link"; // ✅ استيراد Link للتنقل
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
@@ -96,50 +97,88 @@ export default function MuscleGroupsPage() {
   };
 
   const setField = (key: keyof FormState, value: string | boolean) => setForm(p => ({ ...p, [key]: value }));
-  const inputStyle = { background: "#0f1013", borderColor: "#2f3742", color: "#e9ecf1", outline: "none" };
-  const labelStyle = { fontFamily: "JetBrains Mono, monospace", color: "#c3cad6", fontSize: "11px", textTransform: "uppercase" as const, letterSpacing: "0.1em" };
+  const inputStyle = { background: "#0e0e0e", borderColor: "#2a2a2a", color: "#ffffff", outline: "none" };
+  const labelStyle = { fontFamily: "JetBrains Mono, monospace", color: "#adaaaa", fontSize: "11px", textTransform: "uppercase" as const, letterSpacing: "0.1em" };
 
   return (
     <DashboardLayout title={t.muscleGroups.title} requiredRole="super_admin">
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#8b93a1" }} />
-            <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder="Search..." className="w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm input-accent" style={{ ...inputStyle }} />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#8a8888" }} />
+            <input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder={t.muscleGroups.searchPlaceholder} className="w-full pl-10 pr-4 py-2.5 rounded-xl border text-sm input-accent" style={{ ...inputStyle }} />
           </div>
           <Button icon={<Plus className="w-4 h-4" />} onClick={openCreate}>{t.muscleGroups.createGroup}</Button>
         </div>
 
+        {/* حالة التحميل (Shimmer Cards) */}
         {loading ? (
-          <div className="space-y-2">{Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-16 rounded-xl shimmer" />)}</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-36 rounded-xl shimmer" style={{ background: "#1a1a1a" }} />
+            ))}
+          </div>
         ) : items.length === 0 ? (
-          <div className="text-center py-20" style={{ color: "#8b93a1" }}><Layers className="w-12 h-12 mx-auto mb-4 opacity-30" /><p>{t.common.noData}</p></div>
+          <div className="text-center py-20" style={{ color: "#8a8888" }}><Layers className="w-12 h-12 mx-auto mb-4 opacity-30" /><p>{t.common.noData}</p></div>
         ) : (
-          <div className="rounded-2xl border overflow-hidden" style={{ borderColor: "#2f3742", background: "#171a1e" }}>
-            {items.map((item, i) => (
-              <div key={item.id} className="flex items-center gap-4 px-5 py-4 hover:bg-[#23272e] transition-colors" style={{ borderBottom: i < items.length - 1 ? "1px solid #23272e" : "none" }}>
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#c8f32315" }}>
-                  <Layers className="w-5 h-5" style={{ color: "#c8f323" }} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm" style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}>{item.nameEn}</p>
-                  <p className="text-xs" style={{ color: "#8b93a1", direction: "rtl", textAlign: "left" }}>{item.nameAr}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Badge variant={item.isActive ? "success" : "neutral"}>{item.isActive ? "Active" : "Inactive"}</Badge>
-                  <span className="text-xs" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8b93a1" }}>
-                    {(item.exercises as unknown[])?.length ?? 0} exercises
-                  </span>
-                  <button onClick={() => openEdit(item)} className="p-1.5 rounded-lg hover:bg-[#2d323a]" style={{ color: "#c3cad6" }}><Edit2 className="w-4 h-4" /></button>
-                  <button onClick={() => setDeleteTarget(item)} className="p-1.5 rounded-lg hover:bg-[#93000a]/20" style={{ color: "#ffb4ab" }}><Trash2 className="w-4 h-4" /></button>
+          /* شبكة البطاقات */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {items.map((item) => (
+              <div
+                key={item.id}
+               // href={`/admin/muscle-groups/${item.id}`}
+                className="block transition-all duration-200 hover:scale-[1.01] hover:border-[#cafd00]"
+              >
+                <div
+                  className="p-5 rounded-xl border flex flex-col h-full gap-3"
+                  style={{ background: "#131313", borderColor: "#2a2a2a" }}
+                >
+                  {/* رأس البطاقة: الأيقونة والاسم */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#cafd0015" }}>
+                      <Layers className="w-5 h-5" style={{ color: "#cafd00" }} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>{item.nameEn}</p>
+                      <p className="text-xs" style={{ color: "#8a8888", direction: "rtl", textAlign: "left" }}>{item.nameAr}</p>
+                    </div>
+                  </div>
+
+                  {/* منتصف البطاقة: الحالة وعدد التمارين */}
+                  <div className="flex items-center justify-between mt-1">
+                    <Badge variant={item.isActive ? "success" : "neutral"}>{item.isActive ? t.common.active : t.common.inactive}</Badge>
+<span className="text-xs" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}>
+                       {(item.exercises as unknown[])?.length ?? 0} {t.exercises.exercisesCount}
+                     </span>
+                  </div>
+
+                  {/* أزرار التحكم */}
+                  <div className="flex items-center justify-end gap-1 pt-2 mt-auto border-t" style={{ borderColor: "#20201f" }}>
+                    <button
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); openEdit(item); }}
+                      className="p-1.5 rounded-lg hover:bg-[#2a2a28]"
+                      style={{ color: "#adaaaa" }}
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteTarget(item); }}
+                      className="p-1.5 rounded-lg hover:bg-[#5c1620]/20"
+                      style={{ color: "#ff6e81" }}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
+        
         <Pagination currentPage={page} totalPages={Math.ceil(totalCount / perPage) || 1} onPageChange={setPage} totalCount={totalCount} resultsPerPage={perPage} />
       </div>
 
+      {/* Modal للإضافة/التعديل */}
       <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editTarget ? t.muscleGroups.editGroup : t.muscleGroups.createGroup}
         footer={<><Button variant="ghost" onClick={() => setModalOpen(false)}>{t.common.cancel}</Button><Button loading={submitting} onClick={handleSave}>{editTarget ? t.common.update : t.common.create}</Button></>}>
         <div className="space-y-4">
@@ -150,17 +189,20 @@ export default function MuscleGroupsPage() {
             </div>
           ))}
           <div className="flex items-center gap-3">
-            <button type="button" onClick={() => setField("isActive", !form.isActive)} className="w-10 h-6 rounded-full transition-all flex-shrink-0" style={{ background: form.isActive ? "#c8f323" : "#2d323a" }}>
-              <span className="block w-4 h-4 rounded-full transition-all mx-1" style={{ background: form.isActive ? "#293500" : "#8b93a1", transform: form.isActive ? "translateX(16px)" : "translateX(0)" }} />
+            <button type="button" onClick={() => setField("isActive", !form.isActive)} className="w-10 h-6 rounded-full transition-all flex-shrink-0" style={{ background: form.isActive ? "#cafd00" : "#2a2a28" }}>
+              <span className="block w-4 h-4 rounded-full transition-all mx-1" style={{ background: form.isActive ? "#3a4a00" : "#8a8888", transform: form.isActive ? "translateX(16px)" : "translateX(0)" }} />
             </button>
-            <span className="text-sm" style={{ color: "#e9ecf1" }}>Active</span>
+            <span className="text-sm" style={{ color: "#ffffff" }}>
+                  {t.common.active}
+                </span>
           </div>
         </div>
       </Modal>
 
+      {/* Modal للحذف */}
       <Modal open={!!deleteTarget} onClose={() => setDeleteTarget(null)} title={t.muscleGroups.deleteConfirm} size="sm"
         footer={<><Button variant="ghost" onClick={() => setDeleteTarget(null)}>{t.common.cancel}</Button><Button variant="danger" loading={submitting} onClick={handleDelete}>{t.common.delete}</Button></>}>
-        <p style={{ color: "#e9ecf1" }}>Delete &quot;{deleteTarget?.nameEn}&quot;?</p>
+        <p style={{ color: "#ffffff" }}>Delete &quot;{deleteTarget?.nameEn}&quot;?</p>
       </Modal>
     </DashboardLayout>
   );

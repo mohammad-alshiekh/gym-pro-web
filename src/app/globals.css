@@ -1,54 +1,58 @@
-@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=Lexend:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
 
 @import "tailwindcss";
 
-/* ─── Kinetic Dark v2 ─────────────────────────────────────────────────────────
-   Same electric-lime identity, rebalanced neutrals: the olive-tinted greys are
-   now cool slate, the ground sits deeper, and text contrast is lifted.
+/* ─── Kinetic ─────────────────────────────────────────────────────────────────
+   Same design system as the GymBro mobile app (Flutter): exact colour and
+   type values from its ThemeData, so the web portal and the app read as one
+   product. Space Grotesk carries display/headline moments, Manrope carries
+   body and section titles, Lexend carries compact UI labels — matching the
+   app's TextTheme role-for-role.
    ─────────────────────────────────────────────────────────────────────────── */
 :root {
   /* Surfaces */
-  --color-surface: #0f1013;
-  --color-surface-dim: #0f1013;
-  --color-surface-bright: #333942;
-  --color-surface-container-lowest: #0a0b0c;
-  --color-surface-container-low: #171a1e;
-  --color-surface-container: #1c2025;
-  --color-surface-container-high: #23272e;
-  --color-surface-container-highest: #2d323a;
-  --color-on-surface: #e9ecf1;
-  --color-on-surface-variant: #c3cad6;
-  --color-outline: #8b93a1;
-  --color-outline-variant: #2f3742;
+  --color-surface: #0e0e0e;
+  --color-surface-dim: #0e0e0e;
+  --color-surface-bright: #302f2c;
+  --color-surface-container-lowest: #0a0a0a;
+  --color-surface-container-low: #131313;
+  --color-surface-container: #1a1a1a;
+  --color-surface-container-high: #20201f;
+  --color-surface-container-highest: #2a2a28;
+  --color-on-surface: #ffffff;
+  --color-on-surface-variant: #adaaaa;
+  --color-outline: #8a8888;
+  --color-outline-variant: #2a2a2a;
 
-  /* Primary (Electric Lime) */
-  --color-primary: #ffffff;
-  --color-on-primary: #293500;
-  --color-primary-container: #c8f323;
-  --color-accent: #c8f323;
-  --color-accent-dim: #aed500;
-  --color-surface-tint: #aed500;
+  /* Primary — Electric Lime */
+  --color-primary: #f3ffca;
+  --color-on-primary: #3a4a00;
+  --color-primary-container: #cafd00;
+  --color-accent: #cafd00;
+  --color-accent-dim: #b5de00;
+  --color-surface-tint: #b5de00;
 
-  /* Secondary (Green) */
-  --color-secondary: #4ae176;
-  --color-on-secondary: #003915;
+  /* Secondary — Cyan */
+  --color-secondary: #00eefc;
+  --color-on-secondary: #003b40;
   --color-secondary-container: #00b954;
 
-  /* Tertiary (Blue) */
-  --color-tertiary-container: #d8e2ff;
-  --color-on-tertiary-container: #0060ce;
+  /* Tertiary / info accent (derived from the cyan secondary) */
+  --color-tertiary-container: #c8fdff;
+  --color-on-tertiary-container: #00b8c9;
 
-  /* Error */
-  --color-error: #ffb4ab;
-  --color-error-container: #93000a;
+  /* Error — Dart reuses its tertiary (soft coral) as the error colour */
+  --color-error: #ff6e81;
+  --color-error-container: #5c1620;
 
   /* Background */
-  --color-background: #0f1013;
-  --color-on-background: #e9ecf1;
+  --color-background: #0e0e0e;
+  --color-on-background: #ffffff;
 
   /* Typography */
+  --font-display: "Space Grotesk", sans-serif;
   --font-headline: "Lexend", sans-serif;
-  --font-body: "Inter", sans-serif;
+  --font-body: "Manrope", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
   /* Radius */
@@ -69,6 +73,14 @@
 
 html {
   scroll-behavior: smooth;
+  /* This app never renders a light surface, but without this the browser still
+     falls back to its own light UA styling for things it draws itself —
+     scrollbars, the <input type="file"> picker button, date/time pickers,
+     <select> dropdown panels. On an OS/browser set to dark, that produces a
+     stray light, square-cornered widget sitting in the middle of an otherwise
+     fully dark, rounded UI. Declaring the scheme makes every native control
+     use its dark rendering everywhere, consistently. */
+  color-scheme: dark;
 }
 
 body {
@@ -76,7 +88,7 @@ body {
   /* Faint lime bloom in the top-left keeps the flat dark ground from reading dead. */
   background-image: radial-gradient(
     900px 500px at 0% 0%,
-    rgba(200, 243, 35, 0.045),
+    rgba(202,253,0, 0.045),
     transparent 60%
   );
   background-attachment: fixed;
@@ -139,7 +151,7 @@ body {
 
 .card-interactive:hover {
   transform: translateY(-2px);
-  border-color: rgba(200, 243, 35, 0.35);
+  border-color: rgba(202,253,0, 0.35);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
 }
 
@@ -159,7 +171,7 @@ body {
 .input-accent:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 2px rgba(200, 243, 35, 0.15);
+  box-shadow: 0 0 0 2px rgba(202,253,0, 0.15);
 }
 
 /* ─── Sidebar transition ──────────────────────────────────────────────────── */
@@ -172,6 +184,43 @@ body {
   transition: stroke-dashoffset 0.5s ease;
   transform-origin: 50% 50%;
   transform: rotate(-90deg);
+}
+
+/* ─── Button loading shimmer ──────────────────────────────────────────────── */
+/* A diagonal light sweep across a submitting button: it leads with white (the
+   "catching the light" highlight) and trails off into the app's own accent
+   lime — its one signature colour — rather than a flat translucent band. The
+   `plus-lighter` blend keeps it reading as light hitting the surface on every
+   Button variant (the lime primary, the dark secondary/ghost, the red danger)
+   instead of a colour wash sitting on top of it; unsupported browsers just
+   fall back to a normal blend, which still looks intentional. */
+@keyframes btn-shimmer-sweep {
+  0% { transform: translateX(-130%) skewX(-12deg); }
+  100% { transform: translateX(230%) skewX(-12deg); }
+}
+
+.btn-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: -20% -10%;
+  width: 40%;
+  background: linear-gradient(
+    100deg,
+    transparent 12%,
+    rgba(255, 255, 255, 0.65) 40%,
+    rgba(202,253,0, 0.55) 62%,
+    transparent 85%
+  );
+  mix-blend-mode: plus-lighter;
+  animation: btn-shimmer-sweep 1.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-shimmer::after {
+    animation: none;
+    opacity: 0;
+  }
 }
 
 /* ─── Shimmer loading effect ──────────────────────────────────────────────── */
@@ -196,4 +245,53 @@ body {
   background: var(--color-surface-container-high) !important;
   color: var(--color-on-surface) !important;
   border: 1px solid var(--color-outline-variant) !important;
+}
+
+/* ─── Native file inputs ──────────────────────────────────────────────────── */
+/* The two file inputs in the app are visually hidden behind custom buttons,
+   but this keeps any future <input type="file"> on-brand by default instead
+   of falling back to the browser's sharp-cornered native button. */
+input[type="file"]::file-selector-button {
+  margin-inline-end: 0.75rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-outline-variant);
+  background: var(--color-surface-container-high);
+  color: var(--color-on-surface);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: border-color 0.18s ease, color 0.18s ease;
+}
+
+input[type="file"]::file-selector-button:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* ─── Leaflet — retheme the light-mode-only default skin ─────────────────── */
+.leaflet-container {
+  background: var(--color-surface-container-lowest);
+  font-family: var(--font-body);
+}
+
+.leaflet-control-zoom a,
+.leaflet-control-attribution,
+.leaflet-bar {
+  background: var(--color-surface-container-low) !important;
+  border-color: var(--color-outline-variant) !important;
+  color: var(--color-on-surface) !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: var(--color-surface-container-high) !important;
+  color: var(--color-accent) !important;
+}
+
+.leaflet-control-attribution {
+  font-size: 10px;
+}
+
+.leaflet-control-attribution a {
+  color: var(--color-outline) !important;
 }

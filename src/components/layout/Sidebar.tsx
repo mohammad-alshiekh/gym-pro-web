@@ -193,35 +193,35 @@ export default function Sidebar() {
           !sidebarOpen && "max-lg:hidden"
         )}
         style={{
-          background: "#0f1013",
-          borderRight: isRtl ? "none" : "1px solid #2f3742",
-          borderLeft: isRtl ? "1px solid #2f3742" : "none",
+          background: "#0e0e0e",
+          borderRight: isRtl ? "none" : "1px solid #2a2a2a",
+          borderLeft: isRtl ? "1px solid #2a2a2a" : "none",
         }}
       >
         {/* Logo */}
         <div
           className="flex items-center gap-3 px-4 py-5 border-b"
-          style={{ borderColor: "#2f3742", minHeight: "72px" }}
+          style={{ borderColor: "#2a2a2a", minHeight: "72px" }}
         >
           <div
             className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: "#c8f323" }}
+            style={{ background: "#cafd00" }}
           >
-            <Dumbbell className="w-5 h-5" style={{ color: "#293500" }} />
+            <Dumbbell className="w-5 h-5" style={{ color: "#3a4a00" }} />
           </div>
           {sidebarOpen && (
             <div className="overflow-hidden">
               <p
                 className="text-base font-bold leading-tight truncate"
-                style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}
+                style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}
               >
                 GymBro
               </p>
               <p
                 className="text-xs truncate"
-                style={{ fontFamily: "JetBrains Mono, monospace", color: "#8b93a1" }}
+                style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}
               >
-                {role === "super_admin" ? "Super Admin" : "Gym Manager"}
+                {role === "super_admin" ? t.auth.superAdmin : t.auth.gymManager}
               </p>
             </div>
           )}
@@ -237,11 +237,11 @@ export default function Sidebar() {
                 href={item.href}
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group relative",
-                  "hover:bg-[#23272e]",
-                  isActive ? "bg-[#23272e]" : "text-[#c3cad6]"
+                  "hover:bg-[#20201f]",
+                  isActive ? "bg-[#20201f]" : "text-[#adaaaa]"
                 )}
                 style={{
-                  color: isActive ? "#c8f323" : undefined,
+                  color: isActive ? "#cafd00" : undefined,
                 }}
                 title={!sidebarOpen ? item.label : undefined}
               >
@@ -252,14 +252,14 @@ export default function Sidebar() {
                       "absolute top-1/2 -translate-y-1/2 w-1 h-6 rounded-full",
                       isRtl ? "-right-2" : "-left-2"
                     )}
-                    style={{ background: "#c8f323" }}
+                    style={{ background: "#cafd00" }}
                   />
                 )}
                 <span className="flex-shrink-0">{item.icon}</span>
                 {sidebarOpen && (
                   <span
                     className="text-sm font-medium truncate"
-                    style={{ fontFamily: "Inter, sans-serif" }}
+                    style={{ fontFamily: "Manrope, sans-serif" }}
                   >
                     {item.label}
                   </span>
@@ -271,7 +271,7 @@ export default function Sidebar() {
                       "absolute hidden group-hover:flex items-center px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap z-50 pointer-events-none",
                       isRtl ? "right-14" : "left-14"
                     )}
-                    style={{ background: "#2d323a", color: "#e9ecf1", border: "1px solid #2f3742" }}
+                    style={{ background: "#2a2a28", color: "#ffffff", border: "1px solid #2a2a2a" }}
                   >
                     {item.label}
                   </div>
@@ -282,15 +282,15 @@ export default function Sidebar() {
         </nav>
 
         {/* Bottom */}
-        <div className="p-2 border-t" style={{ borderColor: "#2f3742" }}>
+        <div className="p-2 border-t" style={{ borderColor: "#2a2a2a" }}>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl transition-all hover:bg-[#93000a]/20 text-[#ffb4ab]"
+            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl transition-all hover:bg-[#5c1620]/20 text-[#ff6e81]"
             title={!sidebarOpen ? t.auth.logout : undefined}
           >
             <LogOut className="w-5 h-5 flex-shrink-0" />
             {sidebarOpen && (
-              <span className="text-sm font-medium" style={{ fontFamily: "Inter, sans-serif" }}>
+              <span className="text-sm font-medium" style={{ fontFamily: "Manrope, sans-serif" }}>
                 {t.auth.logout}
               </span>
             )}
@@ -304,7 +304,7 @@ export default function Sidebar() {
             "absolute top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center z-40",
             isRtl ? "-left-3" : "-right-3"
           )}
-          style={{ background: "#c8f323", color: "#293500" }}
+          style={{ background: "#cafd00", color: "#3a4a00" }}
         >
           {isRtl
             ? sidebarOpen ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />

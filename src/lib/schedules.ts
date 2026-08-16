@@ -126,7 +126,7 @@ export function difficultyColor(level: number): string {
   const key = difficultyKey(level);
   if (key === "beginner") return "#4ae176";
   if (key === "intermediate") return "#ffd04a";
-  return "#ffb4ab";
+  return "#ff6e81";
 }
 
 // ─── Aggregations ────────────────────────────────────────────────────────────

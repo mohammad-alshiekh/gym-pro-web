@@ -54,16 +54,16 @@ interface ScheduleBuilderProps {
 // ─── Local styled primitives ─────────────────────────────────────────────────
 
 const inputStyle: React.CSSProperties = {
-  background: "#0f1013",
-  borderColor: "#2f3742",
-  color: "#e9ecf1",
+  background: "#0e0e0e",
+  borderColor: "#2a2a2a",
+  color: "#ffffff",
   outline: "none",
-  fontFamily: "Inter, sans-serif",
+  fontFamily: "Manrope, sans-serif",
 };
 
 const monoLabel: React.CSSProperties = {
   fontFamily: "JetBrains Mono, monospace",
-  color: "#8b93a1",
+  color: "#8a8888",
 };
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
@@ -101,8 +101,8 @@ function TextField({
         className="w-full py-2.5 px-3.5 rounded-xl border text-sm transition-all input-accent"
         style={{
           ...inputStyle,
-          borderColor: invalid ? "#ffb4ab" : "#2f3742",
-          background: invalid ? "rgba(147,0,10,0.08)" : "#0f1013",
+          borderColor: invalid ? "#ff6e81" : "#2a2a2a",
+          background: invalid ? "rgba(92,22,32,0.08)" : "#0e0e0e",
         }}
       />
     </div>
@@ -156,8 +156,8 @@ function IconButton({
       aria-label={title}
       onClick={onClick}
       disabled={disabled}
-      className="p-1.5 rounded-lg transition-colors disabled:opacity-25 disabled:cursor-not-allowed hover:bg-[#23272e]"
-      style={{ color: danger ? "#ffb4ab" : "#8b93a1" }}
+      className="p-1.5 rounded-lg transition-colors disabled:opacity-25 disabled:cursor-not-allowed hover:bg-[#20201f]"
+      style={{ color: danger ? "#ff6e81" : "#8a8888" }}
     >
       {children}
     </button>
@@ -400,19 +400,19 @@ export default function ScheduleBuilder({
       <section
         ref={(el) => registerAnchor("plan", el)}
         className="rounded-2xl border p-5 sm:p-6 space-y-5"
-        style={{ background: "#171a1e", borderColor: "#2f3742" }}
+        style={{ background: "#131313", borderColor: "#2a2a2a" }}
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <div
               className="w-9 h-9 rounded-xl flex items-center justify-center"
-              style={{ background: "rgba(200,243,35,0.1)", color: "#c8f323" }}
+              style={{ background: "rgba(202,253,0,0.1)", color: "#cafd00" }}
             >
               <Layers className="w-4 h-4" />
             </div>
             <h2
               className="text-base font-semibold"
-              style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}
+              style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}
             >
               {t.exerciseSchedules.planDetails}
             </h2>
@@ -424,19 +424,19 @@ export default function ScheduleBuilder({
               onClick={() => patch({ isActive: !form.isActive })}
               className="flex items-center gap-2.5 px-3 py-2 rounded-xl border transition-colors"
               style={{
-                borderColor: form.isActive ? "#4ae176" : "#2f3742",
+                borderColor: form.isActive ? "#4ae176" : "#2a2a2a",
                 background: form.isActive ? "rgba(74,225,118,0.08)" : "transparent",
               }}
               title={t.exerciseSchedules.publishedHint}
             >
               <span
                 className="relative w-9 h-5 rounded-full transition-colors flex-shrink-0"
-                style={{ background: form.isActive ? "#4ae176" : "#2f3742" }}
+                style={{ background: form.isActive ? "#4ae176" : "#2a2a2a" }}
               >
                 <span
                   className="absolute top-0.5 w-4 h-4 rounded-full transition-all"
                   style={{
-                    background: "#0f1013",
+                    background: "#0e0e0e",
                     left: form.isActive ? "1.125rem" : "0.125rem",
                   }}
                 />
@@ -445,7 +445,7 @@ export default function ScheduleBuilder({
                 className="text-xs font-medium"
                 style={{
                   fontFamily: "JetBrains Mono, monospace",
-                  color: form.isActive ? "#4ae176" : "#8b93a1",
+                  color: form.isActive ? "#4ae176" : "#8a8888",
                 }}
               >
                 {form.isActive ? t.exerciseSchedules.published : t.common.inactive}
@@ -489,7 +489,7 @@ export default function ScheduleBuilder({
             <div className="relative">
               <ImageIcon
                 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4"
-                style={{ color: "#8b93a1" }}
+                style={{ color: "#8a8888" }}
               />
               <input
                 value={form.imageUrl}
@@ -499,7 +499,7 @@ export default function ScheduleBuilder({
                 style={inputStyle}
               />
             </div>
-            <p className="text-xs" style={{ color: "#8b93a1" }}>
+            <p className="text-xs" style={{ color: "#8a8888" }}>
               {t.exerciseSchedules.imageUrlHint}
             </p>
           </div>
@@ -518,9 +518,9 @@ export default function ScheduleBuilder({
                     className="flex-1 py-2.5 rounded-xl border text-xs font-medium transition-all"
                     style={{
                       fontFamily: "JetBrains Mono, monospace",
-                      background: isActive ? `${accent}18` : "#0f1013",
-                      borderColor: isActive ? accent : "#2f3742",
-                      color: isActive ? accent : "#c3cad6",
+                      background: isActive ? `${accent}18` : "#0e0e0e",
+                      borderColor: isActive ? accent : "#2a2a2a",
+                      color: isActive ? accent : "#adaaaa",
                     }}
                   >
                     {t.exerciseSchedules[difficultyKey(level)]}
@@ -536,7 +536,7 @@ export default function ScheduleBuilder({
             <FieldLabel>{t.exerciseSchedules.coverPreview}</FieldLabel>
             <div
               className="w-full max-w-md h-36 rounded-xl overflow-hidden border"
-              style={{ background: "#23272e", borderColor: "#2f3742" }}
+              style={{ background: "#20201f", borderColor: "#2a2a2a" }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -558,18 +558,18 @@ export default function ScheduleBuilder({
           <div className="flex items-center gap-2.5">
             <div
               className="w-9 h-9 rounded-xl flex items-center justify-center"
-              style={{ background: "rgba(200,243,35,0.1)", color: "#c8f323" }}
+              style={{ background: "rgba(202,253,0,0.1)", color: "#cafd00" }}
             >
               <CalendarDays className="w-4 h-4" />
             </div>
             <div>
               <h2
                 className="text-base font-semibold"
-                style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}
+                style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}
               >
                 {t.exerciseSchedules.days}
               </h2>
-              <p className="text-xs" style={{ color: "#8b93a1" }}>
+              <p className="text-xs" style={{ color: "#8a8888" }}>
                 {t.exerciseSchedules.unsavedHint}
               </p>
             </div>
@@ -577,16 +577,16 @@ export default function ScheduleBuilder({
 
           <div
             className="flex items-center gap-3 text-xs"
-            style={{ fontFamily: "JetBrains Mono, monospace", color: "#8b93a1" }}
+            style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}
           >
             <span>
               {totals.days} {t.exerciseSchedules.days}
             </span>
-            <span style={{ color: "#2f3742" }}>·</span>
+            <span style={{ color: "#2a2a2a" }}>·</span>
             <span>
               {totals.exercises} {t.exerciseSchedules.exercises}
             </span>
-            <span style={{ color: "#2f3742" }}>·</span>
+            <span style={{ color: "#2a2a2a" }}>·</span>
             <span>
               {totals.sets} {t.exerciseSchedules.sets}
             </span>
@@ -604,18 +604,18 @@ export default function ScheduleBuilder({
               ref={(el) => registerAnchor(day.key, el)}
               className="rounded-2xl border overflow-hidden transition-colors"
               style={{
-                background: "#171a1e",
-                borderColor: dayInvalid ? "#ffb4ab" : "#2f3742",
+                background: "#131313",
+                borderColor: dayInvalid ? "#ff6e81" : "#2a2a2a",
               }}
             >
               {/* Day header */}
               <div
                 className="flex items-center gap-3 px-4 sm:px-5 py-3.5 border-b"
-                style={{ background: "#1c2025", borderColor: "#2f3742" }}
+                style={{ background: "#1a1a1a", borderColor: "#2a2a2a" }}
               >
                 <div
                   className="flex flex-col items-center justify-center w-10 h-10 rounded-xl flex-shrink-0"
-                  style={{ background: "#c8f323", color: "#293500" }}
+                  style={{ background: "#cafd00", color: "#3a4a00" }}
                 >
                   <span className="text-[8px] font-bold uppercase tracking-widest leading-none opacity-80">
                     {t.exerciseSchedules.day}
@@ -636,15 +636,15 @@ export default function ScheduleBuilder({
                   <div className="flex items-center gap-2">
                     <p
                       className="text-sm font-semibold truncate"
-                      style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}
+                      style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}
                     >
                       {day.nameEn || `${t.exerciseSchedules.day} ${dayIdx + 1}`}
                     </p>
                     {day.exercises.length === 0 && (
                       <Chip
                         label={t.exerciseSchedules.emptyDayBadge}
-                        color="#8b93a1"
-                        background="rgba(195,202,214,0.1)"
+                        color="#8a8888"
+                        background="rgba(173,170,170,0.1)"
                       />
                     )}
                   </div>
@@ -685,8 +685,8 @@ export default function ScheduleBuilder({
                   <button
                     type="button"
                     onClick={() => toggleDay(day.key)}
-                    className="p-1.5 rounded-lg transition-colors hover:bg-[#23272e] ml-1"
-                    style={{ color: "#c3cad6" }}
+                    className="p-1.5 rounded-lg transition-colors hover:bg-[#20201f] ml-1"
+                    style={{ color: "#adaaaa" }}
                     aria-label={
                       isCollapsed ? t.exerciseSchedules.expandAll : t.exerciseSchedules.collapseAll
                     }
@@ -737,7 +737,7 @@ export default function ScheduleBuilder({
                     {day.exercises.length === 0 && (
                       <div
                         className="rounded-xl border border-dashed py-8 text-center text-sm"
-                        style={{ borderColor: "#2f3742", color: "#8b93a1" }}
+                        style={{ borderColor: "#2a2a2a", color: "#8a8888" }}
                       >
                         <Dumbbell className="w-7 h-7 mx-auto mb-2 opacity-30" />
                         {t.exerciseSchedules.noExercises}
@@ -758,20 +758,20 @@ export default function ScheduleBuilder({
                           ref={(el) => registerAnchor(ex.key, el)}
                           className="rounded-xl border transition-colors"
                           style={{
-                            background: "#0f1013",
-                            borderColor: exInvalid ? "#ffb4ab" : "#2f3742",
+                            background: "#0e0e0e",
+                            borderColor: exInvalid ? "#ff6e81" : "#2a2a2a",
                           }}
                         >
                           {/* Exercise header */}
                           <div
                             className="flex items-center gap-3 p-3 border-b"
-                            style={{ borderColor: "#23272e" }}
+                            style={{ borderColor: "#20201f" }}
                           >
                             <span
                               className="w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold flex-shrink-0"
                               style={{
-                                background: "#23272e",
-                                color: "#c8f323",
+                                background: "#20201f",
+                                color: "#cafd00",
                                 fontFamily: "JetBrains Mono, monospace",
                               }}
                             >
@@ -781,7 +781,7 @@ export default function ScheduleBuilder({
                             {/* Thumbnail */}
                             <div
                               className="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0"
-                              style={{ background: "#23272e" }}
+                              style={{ background: "#20201f" }}
                             >
                               {thumb ? (
                                 // eslint-disable-next-line @next/next/no-img-element
@@ -797,7 +797,7 @@ export default function ScheduleBuilder({
                               ) : (
                                 <Dumbbell
                                   className="w-4 h-4"
-                                  style={{ color: "#c8f323", opacity: 0.4 }}
+                                  style={{ color: "#cafd00", opacity: 0.4 }}
                                 />
                               )}
                             </div>
@@ -806,14 +806,14 @@ export default function ScheduleBuilder({
                               <div className="min-w-0 flex-1">
                                 <p
                                   className="text-sm font-semibold truncate"
-                                  style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}
+                                  style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}
                                 >
                                   {ex.exerciseNameEn}
                                 </p>
                                 {ex.exerciseNameAr && (
                                   <p
                                     className="text-xs truncate"
-                                    style={{ color: "#8b93a1" }}
+                                    style={{ color: "#8a8888" }}
                                     dir="rtl"
                                     lang="ar"
                                   >
@@ -829,15 +829,15 @@ export default function ScheduleBuilder({
                                     />
                                     <Chip
                                       label={meta.equipmentEn || t.exerciseSchedules.noEquipment}
-                                      color="#8b93a1"
-                                      background="rgba(195,202,214,0.08)"
+                                      color="#8a8888"
+                                      background="rgba(173,170,170,0.08)"
                                     />
                                     {(meta.primaryMuscleGroups ?? []).slice(0, 3).map((m) => (
                                       <Chip
                                         key={m.id}
                                         label={m.nameEn}
-                                        color="#adc6ff"
-                                        background="rgba(173,198,255,0.1)"
+                                        color="#7df6ff"
+                                        background="rgba(125,246,255,0.1)"
                                       />
                                     ))}
                                   </div>
@@ -849,10 +849,10 @@ export default function ScheduleBuilder({
                                 onClick={() =>
                                   setPicker({ mode: "single", dayKey: day.key, exKey: ex.key })
                                 }
-                                className="flex-1 text-left text-sm px-3 py-2 rounded-lg border border-dashed transition-colors hover:border-[#c8f323] hover:text-[#c8f323]"
+                                className="flex-1 text-left text-sm px-3 py-2 rounded-lg border border-dashed transition-colors hover:border-[#cafd00] hover:text-[#cafd00]"
                                 style={{
-                                  borderColor: exInvalid ? "#ffb4ab" : "#2f3742",
-                                  color: exInvalid ? "#ffb4ab" : "#8b93a1",
+                                  borderColor: exInvalid ? "#ff6e81" : "#2a2a2a",
+                                  color: exInvalid ? "#ff6e81" : "#8a8888",
                                 }}
                               >
                                 {t.exerciseSchedules.chooseExercise}
@@ -866,8 +866,8 @@ export default function ScheduleBuilder({
                                   onClick={() =>
                                     setPicker({ mode: "single", dayKey: day.key, exKey: ex.key })
                                   }
-                                  className="text-xs px-2.5 py-1 rounded-lg border transition-colors hover:border-[#c8f323] hover:text-[#c8f323]"
-                                  style={{ borderColor: "#2f3742", color: "#c3cad6" }}
+                                  className="text-xs px-2.5 py-1 rounded-lg border transition-colors hover:border-[#cafd00] hover:text-[#cafd00]"
+                                  style={{ borderColor: "#2a2a2a", color: "#adaaaa" }}
                                 >
                                   {t.exerciseSchedules.changeExercise}
                                 </button>
@@ -927,8 +927,8 @@ export default function ScheduleBuilder({
                                         <span
                                           className="flex items-center justify-center w-7 h-7 rounded-lg text-xs font-bold"
                                           style={{
-                                            background: "#23272e",
-                                            color: "#c3cad6",
+                                            background: "#20201f",
+                                            color: "#adaaaa",
                                             fontFamily: "JetBrains Mono, monospace",
                                           }}
                                         >
@@ -997,10 +997,10 @@ export default function ScheduleBuilder({
                               <button
                                 type="button"
                                 onClick={() => addSet(day.key, ex.key)}
-                                className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-colors hover:border-[#c8f323] hover:text-[#c8f323]"
+                                className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border text-xs font-medium transition-colors hover:border-[#cafd00] hover:text-[#cafd00]"
                                 style={{
-                                  borderColor: "#2f3742",
-                                  color: "#c3cad6",
+                                  borderColor: "#2a2a2a",
+                                  color: "#adaaaa",
                                   fontFamily: "JetBrains Mono, monospace",
                                 }}
                               >
@@ -1016,8 +1016,8 @@ export default function ScheduleBuilder({
                     <button
                       type="button"
                       onClick={() => setPicker({ mode: "multi", dayKey: day.key })}
-                      className="w-full py-3 rounded-xl border border-dashed text-sm font-medium transition-colors hover:border-[#c8f323] hover:text-[#c8f323] flex items-center justify-center gap-2"
-                      style={{ borderColor: "#2f3742", color: "#c3cad6" }}
+                      className="w-full py-3 rounded-xl border border-dashed text-sm font-medium transition-colors hover:border-[#cafd00] hover:text-[#cafd00] flex items-center justify-center gap-2"
+                      style={{ borderColor: "#2a2a2a", color: "#adaaaa" }}
                     >
                       <Plus className="w-4 h-4" />
                       {t.exerciseSchedules.addExercise}
@@ -1032,8 +1032,8 @@ export default function ScheduleBuilder({
         <button
           type="button"
           onClick={addDay}
-          className="w-full py-4 rounded-2xl border border-dashed text-sm font-semibold transition-colors hover:border-[#c8f323] hover:text-[#c8f323] flex items-center justify-center gap-2"
-          style={{ borderColor: "#2f3742", color: "#c3cad6", fontFamily: "Lexend, sans-serif" }}
+          className="w-full py-4 rounded-2xl border border-dashed text-sm font-semibold transition-colors hover:border-[#cafd00] hover:text-[#cafd00] flex items-center justify-center gap-2"
+          style={{ borderColor: "#2a2a2a", color: "#adaaaa", fontFamily: "Lexend, sans-serif" }}
         >
           <Plus className="w-4 h-4" />
           {t.exerciseSchedules.addDay}
@@ -1044,8 +1044,8 @@ export default function ScheduleBuilder({
       <div
         className="fixed bottom-0 left-0 right-0 z-20 border-t px-4 sm:px-6 py-3"
         style={{
-          background: "rgba(15,16,19,0.92)",
-          borderColor: "#2f3742",
+          background: "rgba(14,14,14,0.92)",
+          borderColor: "#2a2a2a",
           backdropFilter: "blur(8px)",
         }}
       >
@@ -1062,14 +1062,14 @@ export default function ScheduleBuilder({
               <span
                 key={i}
                 className="flex items-center gap-1.5 text-xs"
-                style={{ fontFamily: "JetBrains Mono, monospace", color: "#8b93a1" }}
+                style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}
               >
-                <s.icon className="w-3.5 h-3.5" style={{ color: "#c8f323" }} />
+                <s.icon className="w-3.5 h-3.5" style={{ color: "#cafd00" }} />
                 {s.value}
               </span>
             ))}
             {problem && (
-              <span className="text-xs" style={{ color: "#ffb4ab" }}>
+              <span className="text-xs" style={{ color: "#ff6e81" }}>
                 {t.exerciseSchedules.fixHighlighted}
               </span>
             )}

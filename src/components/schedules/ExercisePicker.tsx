@@ -38,11 +38,11 @@ interface ExercisePickerProps {
 const PER_PAGE = 10;
 
 const selectStyle: React.CSSProperties = {
-  background: "#0f1013",
-  borderColor: "#2f3742",
-  color: "#e9ecf1",
+  background: "#0e0e0e",
+  borderColor: "#2a2a2a",
+  color: "#ffffff",
   outline: "none",
-  fontFamily: "Inter, sans-serif",
+  fontFamily: "Manrope, sans-serif",
 };
 
 export default function ExercisePicker({
@@ -100,7 +100,7 @@ export default function ExercisePicker({
           <div className="flex items-center justify-between gap-4 w-full">
             <span
               className="text-xs"
-              style={{ fontFamily: "JetBrains Mono, monospace", color: "#8b93a1" }}
+              style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}
             >
               {picked.length} {t.exerciseSchedules.selectedCount}
             </span>
@@ -126,7 +126,7 @@ export default function ExercisePicker({
         <div className="relative">
           <Search
             className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4"
-            style={{ color: "#8b93a1" }}
+            style={{ color: "#8a8888" }}
           />
           <input
             autoFocus
@@ -140,8 +140,8 @@ export default function ExercisePicker({
             <button
               type="button"
               onClick={() => patchFilters({ query: "" })}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded-md hover:bg-[#23272e]"
-              style={{ color: "#8b93a1" }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded-md hover:bg-[#20201f]"
+              style={{ color: "#8a8888" }}
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -151,12 +151,12 @@ export default function ExercisePicker({
         {/* ── Filters ── */}
         <div
           className="rounded-xl border p-3 space-y-3"
-          style={{ background: "#0f1013", borderColor: "#2f3742" }}
+          style={{ background: "#0e0e0e", borderColor: "#2a2a2a" }}
         >
           <div className="flex items-center justify-between gap-3">
             <span
               className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-widest"
-              style={{ fontFamily: "JetBrains Mono, monospace", color: "#8b93a1" }}
+              style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}
             >
               <SlidersHorizontal className="w-3.5 h-3.5" />
               {t.exerciseSchedules.filters}
@@ -168,8 +168,8 @@ export default function ExercisePicker({
                   setFilters(EMPTY_FILTERS);
                   setPage(1);
                 }}
-                className="flex items-center gap-1.5 text-xs transition-colors hover:text-[#c8f323]"
-                style={{ color: "#8b93a1" }}
+                className="flex items-center gap-1.5 text-xs transition-colors hover:text-[#cafd00]"
+                style={{ color: "#8a8888" }}
               >
                 <RotateCcw className="w-3 h-3" />
                 {t.exerciseSchedules.clearFilters}
@@ -185,7 +185,7 @@ export default function ExercisePicker({
                 level === ""
                   ? t.exerciseSchedules.allLevels
                   : t.exerciseSchedules[difficultyKey(level)];
-              const accent = level === "" ? "#c8f323" : difficultyColor(level);
+              const accent = level === "" ? "#cafd00" : difficultyColor(level);
               return (
                 <button
                   key={String(level)}
@@ -195,8 +195,8 @@ export default function ExercisePicker({
                   style={{
                     fontFamily: "JetBrains Mono, monospace",
                     background: isActive ? `${accent}18` : "transparent",
-                    borderColor: isActive ? accent : "#2f3742",
-                    color: isActive ? accent : "#c3cad6",
+                    borderColor: isActive ? accent : "#2a2a2a",
+                    color: isActive ? accent : "#adaaaa",
                   }}
                 >
                   {label}
@@ -215,7 +215,7 @@ export default function ExercisePicker({
             >
               <option value="">{t.exerciseSchedules.allMuscles}</option>
               {facets.muscles.map((m) => (
-                <option key={m.id} value={m.id} style={{ background: "#0f1013" }}>
+                <option key={m.id} value={m.id} style={{ background: "#0e0e0e" }}>
                   {m.nameEn}
                 </option>
               ))}
@@ -229,7 +229,7 @@ export default function ExercisePicker({
             >
               <option value="">{t.exerciseSchedules.allEquipment}</option>
               {facets.equipment.map((eq) => (
-                <option key={eq} value={eq} style={{ background: "#0f1013" }}>
+                <option key={eq} value={eq} style={{ background: "#0e0e0e" }}>
                   {eq}
                 </option>
               ))}
@@ -241,7 +241,7 @@ export default function ExercisePicker({
         {!loading && !failed && (
           <p
             className="text-xs"
-            style={{ fontFamily: "JetBrains Mono, monospace", color: "#8b93a1" }}
+            style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}
           >
             {results.length} {t.exerciseSchedules.resultsCount}
           </p>
@@ -250,7 +250,7 @@ export default function ExercisePicker({
         {/* ── Results ── */}
         {loading ? (
           <div className="space-y-2">
-            <p className="text-xs text-center pb-1" style={{ color: "#8b93a1" }}>
+            <p className="text-xs text-center pb-1" style={{ color: "#8a8888" }}>
               {t.exerciseSchedules.loadingCatalogue}
             </p>
             {Array.from({ length: 6 }).map((_, i) => (
@@ -259,7 +259,7 @@ export default function ExercisePicker({
           </div>
         ) : failed ? (
           <div className="text-center py-12 space-y-4">
-            <p className="text-sm" style={{ color: "#ffb4ab" }}>
+            <p className="text-sm" style={{ color: "#ff6e81" }}>
               {t.exerciseSchedules.catalogueFailed}
             </p>
             <Button variant="secondary" size="sm" onClick={reload}>
@@ -267,7 +267,7 @@ export default function ExercisePicker({
             </Button>
           </div>
         ) : pageItems.length === 0 ? (
-          <div className="text-center py-12" style={{ color: "#8b93a1" }}>
+          <div className="text-center py-12" style={{ color: "#8a8888" }}>
             <Dumbbell className="w-10 h-10 mx-auto mb-3 opacity-30" />
             <p className="text-sm">{t.exerciseSchedules.noExercisesFound}</p>
           </div>
@@ -284,16 +284,16 @@ export default function ExercisePicker({
                   key={ex.id}
                   type="button"
                   onClick={() => handleRowClick(ex)}
-                  className="w-full flex items-center gap-3 p-2.5 rounded-xl border text-left transition-all hover:border-[#c8f323]"
+                  className="w-full flex items-center gap-3 p-2.5 rounded-xl border text-left transition-all hover:border-[#cafd00]"
                   style={{
-                    background: chosen ? "rgba(200,243,35,0.07)" : "#0f1013",
-                    borderColor: chosen ? "#c8f323" : "#2f3742",
+                    background: chosen ? "rgba(202,253,0,0.07)" : "#0e0e0e",
+                    borderColor: chosen ? "#cafd00" : "#2a2a2a",
                   }}
                 >
                   {/* Thumbnail */}
                   <div
                     className="w-14 h-14 rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0"
-                    style={{ background: "#23272e" }}
+                    style={{ background: "#20201f" }}
                   >
                     {thumb ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -307,7 +307,7 @@ export default function ExercisePicker({
                         }}
                       />
                     ) : (
-                      <Dumbbell className="w-5 h-5" style={{ color: "#c8f323", opacity: 0.4 }} />
+                      <Dumbbell className="w-5 h-5" style={{ color: "#cafd00", opacity: 0.4 }} />
                     )}
                   </div>
 
@@ -316,7 +316,7 @@ export default function ExercisePicker({
                     <div className="flex items-center gap-2">
                       <p
                         className="text-sm font-semibold truncate"
-                        style={{ fontFamily: "Lexend, sans-serif", color: "#e9ecf1" }}
+                        style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}
                       >
                         {ex.nameEn}
                       </p>
@@ -324,8 +324,8 @@ export default function ExercisePicker({
                         <span
                           className="text-[9px] px-1.5 py-0.5 rounded-md flex-shrink-0"
                           style={{
-                            background: "rgba(195,202,214,0.12)",
-                            color: "#c3cad6",
+                            background: "rgba(173,170,170,0.12)",
+                            color: "#adaaaa",
                             fontFamily: "JetBrains Mono, monospace",
                           }}
                         >
@@ -335,7 +335,7 @@ export default function ExercisePicker({
                     </div>
                     <p
                       className="text-xs truncate"
-                      style={{ color: "#8b93a1" }}
+                      style={{ color: "#8a8888" }}
                       dir="rtl"
                       lang="ar"
                     >
@@ -355,8 +355,8 @@ export default function ExercisePicker({
                       <span
                         className="text-[10px] px-1.5 py-0.5 rounded-md"
                         style={{
-                          background: "rgba(195,202,214,0.08)",
-                          color: "#8b93a1",
+                          background: "rgba(173,170,170,0.08)",
+                          color: "#8a8888",
                           fontFamily: "JetBrains Mono, monospace",
                         }}
                       >
@@ -366,7 +366,7 @@ export default function ExercisePicker({
                         <span
                           key={m.id}
                           className="text-[10px] px-1.5 py-0.5 rounded-md"
-                          style={{ background: "rgba(173,198,255,0.1)", color: "#adc6ff" }}
+                          style={{ background: "rgba(125,246,255,0.1)", color: "#7df6ff" }}
                         >
                           {m.nameEn}
                         </span>
@@ -378,9 +378,9 @@ export default function ExercisePicker({
                   <div
                     className="w-6 h-6 rounded-lg border flex items-center justify-center flex-shrink-0"
                     style={{
-                      borderColor: chosen ? "#c8f323" : "#2f3742",
-                      background: chosen ? "#c8f323" : "transparent",
-                      color: chosen ? "#293500" : "#2f3742",
+                      borderColor: chosen ? "#cafd00" : "#2a2a2a",
+                      background: chosen ? "#cafd00" : "transparent",
+                      color: chosen ? "#3a4a00" : "#2a2a2a",
                     }}
                   >
                     {chosen ? <Check className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
