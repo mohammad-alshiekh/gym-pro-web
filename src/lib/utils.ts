@@ -5,18 +5,41 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatDate(date: string | Date | null | undefined): string {
-  if (!date) return "—";
-  return new Date(date).toLocaleDateString("en-US", {
+/**
+ * Arabic month names, but Latin digits (`-u-nu-latn`) — Arabic-Indic numerals
+ * would clash with the Latin figures the mono-styled stats use everywhere else.
+ */
+function intlLocale(locale: string): string {
+  return locale === "ar" ? "ar-EG-u-nu-latn" : "en-US";
+}
+
+/** Guards against the API's occasional unparseable timestamps. */
+function parseDate(date: string | Date | null | undefined): Date | null {
+  if (!date) return null;
+  const d = date instanceof Date ? date : new Date(date);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+export function formatDate(
+  date: string | Date | null | undefined,
+  locale = "en"
+): string {
+  const d = parseDate(date);
+  if (!d) return "—";
+  return d.toLocaleDateString(intlLocale(locale), {
     year: "numeric",
     month: "short",
     day: "numeric",
   });
 }
 
-export function formatDateTime(date: string | Date | null | undefined): string {
-  if (!date) return "—";
-  return new Date(date).toLocaleString("en-US", {
+export function formatDateTime(
+  date: string | Date | null | undefined,
+  locale = "en"
+): string {
+  const d = parseDate(date);
+  if (!d) return "—";
+  return d.toLocaleString(intlLocale(locale), {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -79,10 +102,9 @@ export function serviceTypeLabel(type: number, locale = "en"): string {
 }
 
 /** GymPaymentMethodEnum — 0 is an online Stripe checkout, 1 is cash at reception. */
-export function paymentMethodLabel(method: number): string {
-  const map: Record<number, string> = {
-    0: "Card (Stripe)",
-    1: "Cash",
-  };
+export function paymentMethodLabel(method: number, locale = "en"): string {
+  const en: Record<number, string> = { 0: "Card (Stripe)", 1: "Cash" };
+  const ar: Record<number, string> = { 0: "بطاقة (Stripe)", 1: "نقداً" };
+  const map = locale === "ar" ? ar : en;
   return map[method] ?? "Unknown";
 }

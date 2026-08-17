@@ -24,6 +24,12 @@ export interface CatalogueExercise {
   imageUrl?: string | null;
   videoUrl?: string | null;
   isActive?: boolean;
+  /** ForceEnum — see FORCE_KEYS. Null for exercises with no push/pull axis. */
+  force?: number | null;
+  /** MechanicEnum — see MECHANIC_KEYS. */
+  mechanic?: number | null;
+  /** CategoryEnum — see CATEGORY_KEYS. */
+  category?: number | null;
   equipmentEn?: string | null;
   equipmentAr?: string | null;
   descriptionEn?: string | null;
@@ -32,6 +38,66 @@ export interface CatalogueExercise {
   instructionsAr?: string[] | null;
   primaryMuscleGroups?: MuscleGroupRef[];
   secondaryMuscleGroups?: MuscleGroupRef[];
+}
+
+/** Write shape of POST /Exercise and PUT /Exercise/{id}. Only the names are required. */
+export interface ExerciseInput {
+  nameEn: string;
+  nameAr: string;
+  descriptionEn: string | null;
+  descriptionAr: string | null;
+  instructionsEn: string[] | null;
+  instructionsAr: string[] | null;
+  level: number | null;
+  videoUrl: string | null;
+  imageUrl: string | null;
+  isActive: boolean;
+  force: number | null;
+  mechanic: number | null;
+  category: number | null;
+  equipmentEn: string | null;
+  equipmentAr: string | null;
+  primaryMuscleGroupIds: string[];
+  secondaryMuscleGroupIds: string[];
+}
+
+// ─── Classification enums ────────────────────────────────────────────────────
+
+/**
+ * The API types force/mechanic/category as bare integers, so the enum members
+ * are not in the OpenAPI document. These orders were confirmed against all 873
+ * catalogue rows and their free-exercise-db source records — the array index is
+ * the wire value.
+ */
+export const FORCE_KEYS = ["pull", "push", "static"] as const;
+
+export const MECHANIC_KEYS = ["compound", "isolation"] as const;
+
+export const CATEGORY_KEYS = [
+  "strength",
+  "stretching",
+  "plyometrics",
+  "powerlifting",
+  "olympicWeightlifting",
+  "strongman",
+  "cardio",
+] as const;
+
+export type ForceKey = (typeof FORCE_KEYS)[number];
+export type MechanicKey = (typeof MECHANIC_KEYS)[number];
+export type CategoryKey = (typeof CATEGORY_KEYS)[number];
+
+/** Enum value → i18n key, or null when unset or out of the known range. */
+export function forceKey(value?: number | null): ForceKey | null {
+  return value == null ? null : FORCE_KEYS[value] ?? null;
+}
+
+export function mechanicKey(value?: number | null): MechanicKey | null {
+  return value == null ? null : MECHANIC_KEYS[value] ?? null;
+}
+
+export function categoryKey(value?: number | null): CategoryKey | null {
+  return value == null ? null : CATEGORY_KEYS[value] ?? null;
 }
 
 /** Exercise images are relative paths into the free-exercise-db image set. */
@@ -70,6 +136,15 @@ export function loadExerciseCatalogue(): Promise<CatalogueExercise[]> {
     });
 
   return inFlight;
+}
+
+/**
+ * Drops the memoised catalogue so the next `loadExerciseCatalogue()` refetches.
+ * Call after creating or updating an exercise — the schedule builder's picker
+ * reads from this cache and would otherwise show the pre-edit row all session.
+ */
+export function invalidateExerciseCatalogue(): void {
+  cache = null;
 }
 
 // ─── Filtering ───────────────────────────────────────────────────────────────

@@ -128,7 +128,7 @@ export default function AdminTraineesPage() {
                   <div className="flex-1 space-y-1.5 text-sm" style={{ color: "#a0a0a0" }}>
                     <p>📧 {trainee.email}</p>
                     <p>📞 {trainee.phoneNumber ?? "—"}</p>
-                    <p>🎂 {formatDate(trainee.birthDate)}</p>
+                    <p>🎂 {formatDate(trainee.birthDate, locale)}</p>
                   </div>
 
                   {/* تذييل البطاقة (النوع) */}

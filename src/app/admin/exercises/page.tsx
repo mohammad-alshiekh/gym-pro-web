@@ -2,10 +2,12 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { ArrowRight, Dumbbell, Search } from "lucide-react";
+import { ArrowRight, Dumbbell, Edit2, Plus, Search } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import Pagination from "@/components/ui/Pagination";
 import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
+import ExerciseFormModal from "@/components/exercises/ExerciseFormModal";
 import { useTranslation } from "@/hooks/useTranslation";
 import { exercisesApi } from "@/lib/api";
 import { exerciseImageUrl, type CatalogueExercise } from "@/lib/exercises";
@@ -23,6 +25,8 @@ export default function AdminExercisesPage() {
   const [search, setSearch] = useState("");
   const [debounced, setDebounced] = useState("");
   const [loading, setLoading] = useState(true);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editTarget, setEditTarget] = useState<Exercise | null>(null);
 
   const perPage = 12;
 
@@ -56,6 +60,19 @@ export default function AdminExercisesPage() {
     fetchExercises();
   }, [fetchExercises]);
 
+  const openCreate = () => {
+    setEditTarget(null);
+    setFormOpen(true);
+  };
+
+  const openEdit = (e: React.MouseEvent, exercise: Exercise) => {
+    // The card is a Link — keep the click from navigating to the detail page.
+    e.preventDefault();
+    e.stopPropagation();
+    setEditTarget(exercise);
+    setFormOpen(true);
+  };
+
   return (
     <DashboardLayout title={t.exercises.title} requiredRole="super_admin">
       <div className="space-y-6">
@@ -79,11 +96,16 @@ export default function AdminExercisesPage() {
               }}
             />
           </div>
-          <div
-            className="text-sm flex-shrink-0"
-            style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}
-          >
-            {totalCount} {t.exercises.title}
+          <div className="flex items-center gap-4 flex-shrink-0">
+            <div
+              className="text-sm"
+              style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}
+            >
+              {totalCount} {t.exercises.title}
+            </div>
+            <Button icon={<Plus className="w-4 h-4" />} onClick={openCreate}>
+              {t.exercises.createExercise}
+            </Button>
           </div>
         </div>
 
@@ -189,16 +211,28 @@ export default function AdminExercisesPage() {
                     </div>
                   )}
 
-                  <span
-                    className="mt-auto pt-2 flex items-center gap-1.5 text-xs font-medium transition-colors group-hover:text-[#cafd00]"
-                    style={{ color: "#8a8888", fontFamily: "JetBrains Mono, monospace" }}
-                  >
-                    {t.common.details}
-                    <ArrowRight
-                      className="w-3.5 h-3.5"
-                      style={{ transform: isRtl ? "scaleX(-1)" : undefined }}
-                    />
-                  </span>
+                  <div className="mt-auto pt-2 flex items-center justify-between gap-2">
+                    <span
+                      className="flex items-center gap-1.5 text-xs font-medium transition-colors group-hover:text-[#cafd00]"
+                      style={{ color: "#8a8888", fontFamily: "JetBrains Mono, monospace" }}
+                    >
+                      {t.common.details}
+                      <ArrowRight
+                        className="w-3.5 h-3.5"
+                        style={{ transform: isRtl ? "scaleX(-1)" : undefined }}
+                      />
+                    </span>
+                    <button
+                      type="button"
+                      onClick={(e) => openEdit(e, ex)}
+                      title={t.common.edit}
+                      aria-label={`${t.common.edit} — ${isRtl ? ex.nameAr || ex.nameEn : ex.nameEn}`}
+                      className="p-1.5 rounded-lg transition-colors hover:bg-[#2a2a28]"
+                      style={{ color: "#adaaaa" }}
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </Link>
               );
             })}
@@ -213,6 +247,13 @@ export default function AdminExercisesPage() {
           resultsPerPage={perPage}
         />
       </div>
+
+      <ExerciseFormModal
+        open={formOpen}
+        onClose={() => setFormOpen(false)}
+        exercise={editTarget}
+        onSaved={fetchExercises}
+      />
     </DashboardLayout>
   );
 }

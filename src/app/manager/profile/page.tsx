@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { UserCircle, Save } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, Save } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import Button from "@/components/ui/Button";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -13,7 +14,7 @@ import { getInitials } from "@/lib/utils";
 import toast from "react-hot-toast";
 
 export default function ManagerProfilePage() {
-  const { t } = useTranslation();
+  const { t, isRtl } = useTranslation();
   const [profile, setProfile] = useState<ManagerProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -80,6 +81,19 @@ export default function ManagerProfilePage() {
   return (
     <DashboardLayout title={t.profile.title} requiredRole="gym_manager">
       <div className="max-w-lg mx-auto space-y-6">
+        {/* This page is no longer in the sidebar — My Gym is the way back. */}
+        <Link
+          href="/manager/my-gym"
+          className="inline-flex items-center gap-2 text-sm transition-colors hover:text-[#cafd00]"
+          style={{ color: "#8a8888" }}
+        >
+          <ArrowLeft
+            className="w-4 h-4"
+            style={{ transform: isRtl ? "scaleX(-1)" : undefined }}
+          />
+          {t.nav.myGym}
+        </Link>
+
         {/* Avatar */}
         <div className="rounded-2xl border p-8 flex flex-col items-center gap-4" style={{ background: "#131313", borderColor: "#2a2a2a" }}>
           {loading ? (
@@ -114,7 +128,7 @@ export default function ManagerProfilePage() {
               <input
                 value={form.name}
                 onChange={(e) => setForm(p => ({ ...p, name: e.target.value }))}
-                placeholder="Full Name"
+                placeholder={t.profile.placeholderFullName}
                 style={inputStyle}
                 className="input-accent"
               />
@@ -124,8 +138,9 @@ export default function ManagerProfilePage() {
               <input
                 value={form.email}
                 onChange={(e) => setForm(p => ({ ...p, email: e.target.value }))}
-                placeholder="email@example.com"
+                placeholder={t.profile.placeholderEmail}
                 type="email"
+                dir="ltr"
                 style={inputStyle}
                 className="input-accent"
               />
@@ -135,7 +150,8 @@ export default function ManagerProfilePage() {
               <input
                 value={form.phone}
                 onChange={(e) => setForm(p => ({ ...p, phone: e.target.value }))}
-                placeholder="+201000000000"
+                placeholder={t.profile.placeholderPhone}
+                dir="ltr"
                 style={inputStyle}
                 className="input-accent"
               />

@@ -21,8 +21,8 @@ import {
   QrCode,
   ClipboardList,
   Clock,
-  UserCircle,
   ScrollText,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { clearAuth, getUserRole, type UserRole } from "@/lib/auth";
@@ -88,12 +88,12 @@ export default function Sidebar() {
       icon: <Layers className="w-5 h-5" />,
       roles: ["super_admin"],
     },
-    {
-      label: t.nav.equipment,
-      href: "/admin/equipment",
-      icon: <Package className="w-5 h-5" />,
-      roles: ["super_admin"],
-    },
+    // {
+    //   label: t.nav.equipment,
+    //   href: "/admin/equipment",
+    //   icon: <Package className="w-5 h-5" />,
+    //   roles: ["super_admin"],
+    // },
     {
       label: t.nav.exerciseSchedules,
       href: "/admin/exercise-schedules",
@@ -101,23 +101,23 @@ export default function Sidebar() {
       roles: ["super_admin"],
     },
     {
-      label: t.nav.transactions,
-      href: "/admin/transactions",
-      icon: <CreditCard className="w-5 h-5" />,
+      label: t.nav.aiPlans,
+      href: "/admin/ai-plan-packages",
+      icon: <Sparkles className="w-5 h-5" />,
       roles: ["super_admin"],
     },
+    // {
+    //   label: t.nav.transactions,
+    //   href: "/admin/transactions",
+    //   icon: <CreditCard className="w-5 h-5" />,
+    //   roles: ["super_admin"],
+    // },
 
     // Gym Manager
     {
       label: t.nav.dashboard,
       href: "/manager/dashboard",
       icon: <LayoutDashboard className="w-5 h-5" />,
-      roles: ["gym_manager"],
-    },
-    {
-      label: t.nav.myGym,
-      href: "/manager/my-gym",
-      icon: <Building2 className="w-5 h-5" />,
       roles: ["gym_manager"],
     },
     {
@@ -156,10 +156,12 @@ export default function Sidebar() {
       icon: <QrCode className="w-5 h-5" />,
       roles: ["gym_manager"],
     },
+    // Last in the manager nav, and the only way into /manager/profile — the
+    // profile link lives on the My Gym page's manager card.
     {
-      label: t.nav.profile,
-      href: "/manager/profile",
-      icon: <UserCircle className="w-5 h-5" />,
+      label: t.nav.myGym,
+      href: "/manager/my-gym",
+      icon: <Building2 className="w-5 h-5" />,
       roles: ["gym_manager"],
     },
   ];

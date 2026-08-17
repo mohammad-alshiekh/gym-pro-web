@@ -8,7 +8,8 @@
 
 import axios from "axios";
 import { attachApiLogger } from "@/lib/apiLogger";
-import type { CatalogueExercise } from "@/lib/exercises";
+import type { AiPlanPackage, AiPlanPackageInput } from "@/lib/aiPlans";
+import type { CatalogueExercise, ExerciseInput } from "@/lib/exercises";
 import type { MyGym } from "@/lib/gym";
 import type {
   AttendanceLog,
@@ -350,6 +351,40 @@ export const exercisesApi = {
   }) => apiClient.get<Paginated<CatalogueExercise>>("/Exercise", { params }),
 
   getById: (id: string) => apiClient.get<CatalogueExercise>(`/Exercise/${id}`),
+
+  create: (data: ExerciseInput) =>
+    apiClient.post<CatalogueExercise>("/Exercise", data),
+
+  update: (id: string, data: ExerciseInput) =>
+    apiClient.put<CatalogueExercise>(`/Exercise/${id}`, data),
+
+  // No DELETE on /Exercise — retire an exercise with `isActive: false` instead.
+};
+
+// ─── AI Plan Packages ────────────────────────────────────────────────────────
+
+export const aiPlanPackagesApi = {
+  /**
+   * `activeOnly` defaults to true server-side, which would hide deactivated
+   * tiers — the admin panel always wants the full list.
+   */
+  getAll: (activeOnly = false) =>
+    apiClient.get<AiPlanPackage[]>("/ai-plan-packages", { params: { activeOnly } }),
+
+  getById: (id: string) => apiClient.get<AiPlanPackage>(`/ai-plan-packages/${id}`),
+
+  create: (data: AiPlanPackageInput) =>
+    apiClient.post<AiPlanPackage>("/ai-plan-packages", data),
+
+  update: (id: string, data: AiPlanPackageInput) =>
+    apiClient.put<AiPlanPackage>(`/ai-plan-packages/${id}`, data),
+
+  /**
+   * Returns 204 either way, but only removes the row when the package has
+   * never been bought — otherwise the server deactivates it and it comes back
+   * in the next list with `isActive: false`. Always re-fetch after calling.
+   */
+  delete: (id: string) => apiClient.delete<void>(`/ai-plan-packages/${id}`),
 };
 
 // ─── Exercise Schedules ──────────────────────────────────────────────────────

@@ -269,7 +269,7 @@ export default function ManagerSubscriptionsPage() {
 
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <Badge variant={isManual ? "neutral" : "info"}>
-                        {paymentMethodLabel(sub.paymentMethod)}
+                        {paymentMethodLabel(sub.paymentMethod, locale)}
                       </Badge>
                       <Badge variant={statusVariant(sub.status)}>
                         {subscriptionStatusLabel(sub.status, locale)}
@@ -296,13 +296,13 @@ export default function ManagerSubscriptionsPage() {
                     <div>
                       <p style={{ color: "#8a8888" }}>{t.subscriptions.startDate}</p>
                       <p style={{ color: "#ffffff" }}>
-                        {sub.startDate ? formatDate(sub.startDate) : "—"}
+                        {sub.startDate ? formatDate(sub.startDate, locale) : "—"}
                       </p>
                     </div>
                     <div>
                       <p style={{ color: "#8a8888" }}>{t.subscriptions.endDate}</p>
                       <p style={{ color: "#ffffff" }}>
-                        {sub.endDate ? formatDate(sub.endDate) : "—"}
+                        {sub.endDate ? formatDate(sub.endDate, locale) : "—"}
                         {isActive && remaining !== null && remaining >= 0 && (
                           <span style={{ color: remaining <= 7 ? "#ffd04a" : "#8a8888" }}>
                             {" "}
@@ -372,7 +372,7 @@ export default function ManagerSubscriptionsPage() {
 
                       <span className="ml-auto flex items-center gap-1.5 text-[11px]" style={MONO}>
                         <CalendarDays className="w-3 h-3" />
-                        {formatDate(sub.creationTime)}
+                        {formatDate(sub.creationTime, locale)}
                       </span>
                     </div>
                   )}

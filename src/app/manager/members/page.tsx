@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { ArrowDownUp, ChevronRight, Search, Users } from "lucide-react";
+import Link from "next/link";
+import { ArrowDown, ArrowUp, ChevronDown, ChevronRight, Search, Users } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import Modal from "@/components/ui/Modal";
 import Badge from "@/components/ui/Badge";
 import Pagination from "@/components/ui/Pagination";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -12,32 +12,21 @@ import { apiErrorMessage } from "@/lib/apiError";
 import {
   SUBSCRIPTION_STATUS,
   daysRemaining,
-  sessionDuration,
   type GymMember,
-  type GymMemberDetail,
 } from "@/lib/manager";
-import {
-  formatCurrency,
-  formatDate,
-  formatDateTime,
-  getInitials,
-  paymentMethodLabel,
-  subscriptionStatusLabel,
-} from "@/lib/utils";
+import { formatDate, getInitials, subscriptionStatusLabel } from "@/lib/utils";
 import toast from "react-hot-toast";
 
 export default function ManagerMembersPage() {
-  const { t, locale } = useTranslation();
+  const { t, locale, isRtl } = useTranslation();
   const [members, setMembers] = useState<GymMember[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
-  const [viewTarget, setViewTarget] = useState<GymMemberDetail | null>(null);
   const [sortBy, setSortBy] = useState<"startDate" | "endDate">("endDate");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [debounced, setDebounced] = useState("");
-  const [loadingDetail, setLoadingDetail] = useState(false);
 
   const perPage = 10;
 
@@ -69,18 +58,6 @@ export default function ManagerMembersPage() {
   }, [debounced, sortBy, sortOrder, page, t]);
 
   useEffect(() => { fetchMembers(); }, [fetchMembers]);
-
-  const handleView = async (traineeId: string) => {
-    setLoadingDetail(true);
-    try {
-      const res = await membersApi.getById(traineeId);
-      setViewTarget(res.data);
-    } catch (err) {
-      toast.error(apiErrorMessage(err, t.members.detailFailed));
-    } finally {
-      setLoadingDetail(false);
-    }
-  };
 
   const statusVariant = (status: number): "warning" | "success" | "danger" | "neutral" => {
     if (status === SUBSCRIPTION_STATUS.pending) return "warning";
@@ -115,26 +92,62 @@ export default function ManagerMembersPage() {
             />
           </div>
 
-          {/* Sorting — the endpoint supports startDate / endDate, asc / desc. */}
-          <div className="flex items-center gap-2">
-            <select
-              value={sortBy}
-              onChange={(e) => { setSortBy(e.target.value as "startDate" | "endDate"); setPage(1); }}
-              className="px-3 py-2.5 rounded-xl border text-sm cursor-pointer"
-              style={{ background: "#0e0e0e", borderColor: "#2a2a2a", color: "#ffffff", outline: "none" }}
+          {/*
+            Sorting — the endpoint supports startDate / endDate, asc / desc.
+            Field and direction are one segmented control: they are a single
+            decision, and pairing them keeps the row from looking like two
+            unrelated widgets. The direction toggle is icon-only so it can't
+            change width as the label flips.
+          */}
+          <div
+            className="flex items-stretch rounded-xl border overflow-hidden flex-shrink-0 transition-colors focus-within:border-[#cafd00]"
+            style={{ background: "#0e0e0e", borderColor: "#2a2a2a" }}
+          >
+            <span
+              className="hidden sm:flex items-center ps-3.5 pe-1 text-[10px] uppercase tracking-widest select-none"
+              style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}
             >
-              <option value="endDate" style={{ background: "#0e0e0e" }}>{t.subscriptions.endDate}</option>
-              <option value="startDate" style={{ background: "#0e0e0e" }}>{t.subscriptions.startDate}</option>
-            </select>
+              {t.members.sortBy}
+            </span>
+
+            <div className="relative flex items-center">
+              <select
+                value={sortBy}
+                onChange={(e) => {
+                  setSortBy(e.target.value as "startDate" | "endDate");
+                  setPage(1);
+                }}
+                aria-label={t.members.sortBy}
+                className="appearance-none bg-transparent py-2.5 ps-2.5 pe-9 text-sm cursor-pointer outline-none"
+                style={{ color: "#ffffff", fontFamily: "Manrope, sans-serif" }}
+              >
+                {/* Options render in the OS popup — they need their own dark background. */}
+                <option value="endDate" style={{ background: "#131313", color: "#ffffff" }}>
+                  {t.subscriptions.endDate}
+                </option>
+                <option value="startDate" style={{ background: "#131313", color: "#ffffff" }}>
+                  {t.subscriptions.startDate}
+                </option>
+              </select>
+              <ChevronDown
+                className="absolute end-3 w-4 h-4 pointer-events-none"
+                style={{ color: "#8a8888" }}
+              />
+            </div>
+
             <button
               type="button"
               onClick={() => setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"))}
               title={sortOrder === "asc" ? t.members.sortAsc : t.members.sortDesc}
-              className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border text-xs transition-colors hover:border-[#cafd00] hover:text-[#cafd00]"
-              style={{ borderColor: "#2a2a2a", color: "#adaaaa", fontFamily: "JetBrains Mono, monospace" }}
+              aria-label={sortOrder === "asc" ? t.members.sortAsc : t.members.sortDesc}
+              className="flex items-center justify-center px-3 transition-colors hover:bg-[#20201f] hover:text-[#cafd00]"
+              style={{ borderInlineStart: "1px solid #2a2a2a", color: "#adaaaa" }}
             >
-              <ArrowDownUp className="w-3.5 h-3.5" />
-              {sortOrder === "asc" ? t.members.sortAsc : t.members.sortDesc}
+              {sortOrder === "asc" ? (
+                <ArrowUp className="w-4 h-4" />
+              ) : (
+                <ArrowDown className="w-4 h-4" />
+              )}
             </button>
           </div>
 
@@ -158,11 +171,11 @@ export default function ManagerMembersPage() {
         ) : (
           <div className="rounded-2xl border overflow-hidden" style={{ borderColor: "#2a2a2a", background: "#131313" }}>
             {members.map((member, i) => (
-              <div
+              <Link
                 key={member.traineeId}
-                className="flex items-center gap-4 px-5 py-4 cursor-pointer hover:bg-[#20201f] transition-colors"
+                href={`/manager/members/${member.traineeId}`}
+                className="flex items-center gap-4 px-5 py-4 hover:bg-[#20201f] transition-colors"
                 style={{ borderBottom: i < members.length - 1 ? "1px solid #20201f" : "none" }}
-                onClick={() => handleView(member.traineeId)}
               >
                 {member.photoUrl ? (
                   <img src={member.photoUrl} alt={member.name} className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
@@ -192,15 +205,18 @@ export default function ManagerMembersPage() {
                     const soon = left !== null && left >= 0 && left <= 7;
                     return (
                       <p className="text-xs" style={{ color: soon ? "#ffd04a" : "#8a8888" }}>
-                        {t.members.expires}: {formatDate(member.endDate)}
+                        {t.members.expires}: {formatDate(member.endDate, locale)}
                         {left !== null && left >= 0 && ` · ${left}d`}
                       </p>
                     );
                   })()}
                 </div>
 
-                <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: "#8a8888" }} />
-              </div>
+                <ChevronRight
+                  className="w-4 h-4 flex-shrink-0"
+                  style={{ color: "#8a8888", transform: isRtl ? "scaleX(-1)" : undefined }}
+                />
+              </Link>
             ))}
           </div>
         )}
@@ -214,139 +230,6 @@ export default function ManagerMembersPage() {
         />
       </div>
 
-      {/* Member Detail Modal */}
-      <Modal open={!!viewTarget || loadingDetail} onClose={() => setViewTarget(null)} title="Member Profile" size="lg">
-        {loadingDetail ? (
-          <div className="space-y-3">{Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-16 rounded-xl shimmer" />)}</div>
-        ) : viewTarget ? (
-          <div className="space-y-5">
-            {/* Header */}
-            <div className="flex items-center gap-4">
-              {viewTarget.photoUrl ? (
-                <img src={viewTarget.photoUrl} alt={viewTarget.name} className="w-16 h-16 rounded-2xl object-cover" />
-              ) : (
-                <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-bold"
-                  style={{ background: "#20201f", color: "#cafd00", fontFamily: "Lexend, sans-serif" }}>
-                  {getInitials(viewTarget.name)}
-                </div>
-              )}
-              <div>
-                <h3 className="text-lg font-bold" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>{viewTarget.name}</h3>
-                <p className="text-sm" style={{ color: "#8a8888" }}>{viewTarget.email}</p>
-                {viewTarget.phone && <p className="text-sm" style={{ color: "#adaaaa" }}>{viewTarget.phone}</p>}
-              </div>
-            </div>
-
-            {/* Current Subscription */}
-            {viewTarget.currentSubscription && (
-              <div className="p-4 rounded-xl" style={{ background: "#0e0e0e" }}>
-                <div className="flex items-center justify-between gap-3 mb-3">
-                  <p className="text-xs font-semibold" style={{ fontFamily: "JetBrains Mono, monospace", color: "#cafd00" }}>
-                    {t.members.currentSubscription}
-                  </p>
-                  <Badge variant={statusVariant(viewTarget.currentSubscription.status)}>
-                    {subscriptionStatusLabel(viewTarget.currentSubscription.status, locale)}
-                  </Badge>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
-                  <div>
-                    <p style={{ color: "#8a8888" }}>{t.subscriptions.plan}</p>
-                    <p style={{ color: "#ffffff" }}>{viewTarget.currentSubscription.planName}</p>
-                  </div>
-                  <div>
-                    <p style={{ color: "#8a8888" }}>{t.common.price}</p>
-                    <p style={{ color: "#cafd00", fontWeight: 600 }}>{formatCurrency(viewTarget.currentSubscription.price)}</p>
-                  </div>
-                  <div>
-                    <p style={{ color: "#8a8888" }}>{t.subscriptions.paymentMethod}</p>
-                    <p style={{ color: "#ffffff" }}>{paymentMethodLabel(viewTarget.currentSubscription.paymentMethod)}</p>
-                  </div>
-                  <div>
-                    <p style={{ color: "#8a8888" }}>{t.subscriptions.startDate}</p>
-                    <p style={{ color: "#ffffff" }}>{formatDate(viewTarget.currentSubscription.startDate)}</p>
-                  </div>
-                  <div>
-                    <p style={{ color: "#8a8888" }}>{t.subscriptions.endDate}</p>
-                    <p style={{ color: "#ffffff" }}>{formatDate(viewTarget.currentSubscription.endDate)}</p>
-                  </div>
-                  {(() => {
-                    const left = daysRemaining(viewTarget.currentSubscription.endDate);
-                    return left === null ? null : (
-                      <div>
-                        <p style={{ color: "#8a8888" }}>{t.members.daysLeft}</p>
-                        <p style={{ color: left <= 7 ? "#ffd04a" : "#ffffff", fontWeight: 600 }}>
-                          {left >= 0 ? left : 0}
-                        </p>
-                      </div>
-                    );
-                  })()}
-                </div>
-              </div>
-            )}
-
-            {/* Previous subscriptions — returned by the API but never shown before. */}
-            {viewTarget.previousSubscriptions && viewTarget.previousSubscriptions.length > 0 && (
-              <div>
-                <p className="text-xs font-semibold mb-2" style={{ fontFamily: "JetBrains Mono, monospace", color: "#adaaaa" }}>
-                  {t.members.previousSubscriptions}
-                </p>
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {viewTarget.previousSubscriptions.map((sub) => (
-                    <div key={sub.id} className="flex items-center justify-between gap-3 py-2 px-3 rounded-lg" style={{ background: "#0e0e0e" }}>
-                      <div className="min-w-0">
-                        <p className="text-xs truncate" style={{ color: "#ffffff" }}>{sub.planName}</p>
-                        <p className="text-[11px]" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}>
-                          {formatDate(sub.startDate)} → {formatDate(sub.endDate)}
-                        </p>
-                      </div>
-                      <Badge variant={statusVariant(sub.status)}>{subscriptionStatusLabel(sub.status, locale)}</Badge>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Attendance Stats */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="p-4 rounded-xl text-center" style={{ background: "#20201f" }}>
-                <p className="text-2xl font-bold" style={{ fontFamily: "Space Grotesk, sans-serif", color: "#4ae176" }}>{viewTarget.totalAttendanceCount}</p>
-                <p className="text-xs mt-1" style={{ color: "#8a8888" }}>{t.members.totalVisits}</p>
-              </div>
-              <div className="p-4 rounded-xl text-center" style={{ background: "#20201f" }}>
-                <p className="text-sm font-semibold" style={{ fontFamily: "Lexend, sans-serif", color: "#7df6ff" }}>
-                  {viewTarget.lastAttendanceTime ? formatDate(viewTarget.lastAttendanceTime) : "—"}
-                </p>
-                <p className="text-xs mt-1" style={{ color: "#8a8888" }}>{t.members.lastVisit}</p>
-              </div>
-            </div>
-
-            {/* Attendance Stats */}
-            {viewTarget.attendanceHistory && viewTarget.attendanceHistory.length > 0 && (
-              <div>
-                <p className="text-xs font-semibold mb-3" style={{ fontFamily: "JetBrains Mono, monospace", color: "#adaaaa" }}>{t.members.recentVisitsLabel}</p>
-                <div className="space-y-2 max-h-40 overflow-y-auto">
-                  {viewTarget.attendanceHistory.slice(0, 10).map((att) => {
-                    const duration = sessionDuration(att);
-                    return (
-                      <div key={att.id} className="flex items-center justify-between gap-3 py-2 px-3 rounded-lg" style={{ background: "#0e0e0e" }}>
-                        <span className="text-xs" style={{ fontFamily: "JetBrains Mono, monospace", color: "#ffffff" }}>
-                          {formatDateTime(att.checkInTime)}
-                        </span>
-                        <span
-                          className="text-xs"
-                          style={{ color: att.checkOutTime ? "#8a8888" : "#4ae176" }}
-                        >
-                          {att.checkOutTime ? (duration ?? "—") : t.attendance.stillInside}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-          </div>
-        ) : null}
-      </Modal>
     </DashboardLayout>
   );
 }

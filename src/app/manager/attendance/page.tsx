@@ -19,18 +19,31 @@ const INPUT: React.CSSProperties = {
 };
 const MONO: React.CSSProperties = { fontFamily: "JetBrains Mono, monospace", color: "#8a8888" };
 
-function timeOnly(value: string): string {
+function timeOnly(value: string, locale: string): string {
   const date = new Date(value);
   return Number.isNaN(date.getTime())
     ? "—"
-    : date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+    : date.toLocaleTimeString(locale === "ar" ? "ar-EG-u-nu-latn" : "en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+}
+
+/**
+ * Today in UTC, matching how the API stores and filters `checkInTime` — the
+ * `date` query parameter is compared against the UTC date, so the picker has
+ * to speak the same calendar. Deriving this from the browser's local date
+ * instead would query the wrong day for part of every day.
+ */
+function todayForFilter(): string {
+  return new Date().toISOString().split("T")[0];
 }
 
 export default function AttendancePage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [logs, setLogs] = useState<AttendanceLog[]>([]);
   const [loading, setLoading] = useState(true);
-  const [dateFilter, setDateFilter] = useState(new Date().toISOString().split("T")[0]);
+  const [dateFilter, setDateFilter] = useState(todayForFilter());
   const [search, setSearch] = useState("");
 
   const fetchLogs = useCallback(async () => {
@@ -134,10 +147,25 @@ export default function AttendancePage() {
               type="date"
               value={dateFilter}
               onChange={(e) => setDateFilter(e.target.value)}
+              title={t.attendance.filterByDate}
               className="pl-10 pr-4 py-2.5 rounded-xl border text-sm input-accent"
               style={INPUT}
             />
           </div>
+
+          {/* The `date` param is optional — clearing it returns the full history. */}
+          <button
+            type="button"
+            onClick={() => setDateFilter(dateFilter ? "" : todayForFilter())}
+            className="px-3 py-2.5 rounded-xl border text-xs whitespace-nowrap transition-colors hover:border-[#cafd00] hover:text-[#cafd00]"
+            style={{
+              borderColor: dateFilter ? "#2a2a2a" : "#cafd00",
+              color: dateFilter ? "#adaaaa" : "#cafd00",
+              fontFamily: "JetBrains Mono, monospace",
+            }}
+          >
+            {dateFilter ? t.attendance.allDates : t.attendance.today}
+          </button>
 
           <div className="relative flex-1 max-w-sm">
             <Search
@@ -153,7 +181,12 @@ export default function AttendancePage() {
             />
           </div>
 
-          {stats.insideNow > 0 && (
+          {/*
+            Only a live claim when the log on screen is today's. On a past date
+            these are sessions that were never closed out, not people currently
+            in the building.
+          */}
+          {stats.insideNow > 0 && dateFilter === todayForFilter() && (
             <span className="flex items-center gap-2 text-xs" style={{ color: "#4ae176" }}>
               <span
                 className="w-2 h-2 rounded-full animate-pulse"
@@ -239,9 +272,9 @@ export default function AttendancePage() {
                           <span
                             className="text-xs"
                             style={{ fontFamily: "JetBrains Mono, monospace", color: "#adaaaa" }}
-                            title={formatDateTime(log.checkInTime)}
+                            title={formatDateTime(log.checkInTime, locale)}
                           >
-                            {timeOnly(log.checkInTime)}
+                            {timeOnly(log.checkInTime, locale)}
                           </span>
                         </td>
                         <td className="px-5 py-3.5">
@@ -260,9 +293,9 @@ export default function AttendancePage() {
                             <span
                               className="text-xs"
                               style={{ fontFamily: "JetBrains Mono, monospace", color: "#adaaaa" }}
-                              title={formatDateTime(log.checkOutTime!)}
+                              title={formatDateTime(log.checkOutTime!, locale)}
                             >
-                              {timeOnly(log.checkOutTime!)}
+                              {timeOnly(log.checkOutTime!, locale)}
                             </span>
                           )}
                         </td>

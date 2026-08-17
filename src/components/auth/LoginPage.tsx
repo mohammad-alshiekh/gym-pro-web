@@ -8,6 +8,7 @@ import { z } from "zod";
 import { Eye, EyeOff, Mail, Lock, Dumbbell } from "lucide-react";
 import toast from "react-hot-toast";
 import Button from "@/components/ui/Button";
+import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import { authApi } from "@/lib/api";
 import { saveAuth } from "@/lib/auth";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -24,6 +25,12 @@ type LoginForm = z.infer<typeof loginSchema>;
 type AuthMode = "login" | "forgot" | "reset";
 type RoleTab = "super_admin" | "gym_manager";
 
+/**
+ * "verifying" covers the login request; "redirecting" covers the navigation
+ * that follows it, which is the slower and previously unindicated half.
+ */
+type AuthPhase = "idle" | "verifying" | "redirecting";
+
 export default function LoginPage() {
   const router = useRouter();
   const { t, locale, isRtl } = useTranslation();
@@ -34,6 +41,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [authPhase, setAuthPhase] = useState<AuthPhase>("idle");
 
   // Forgot password state
   const [forgotEmail, setForgotEmail] = useState("");
@@ -49,6 +57,7 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginForm) => {
     setLoading(true);
+    setAuthPhase("verifying");
     try {
       let response;
       if (activeRole === "super_admin") {
@@ -66,15 +75,22 @@ export default function LoginPage() {
 
       toast.success(t.auth.loginSuccess);
 
-      if (activeRole === "super_admin") {
-        router.push("/admin/dashboard");
-      } else {
-        router.push("/manager/dashboard");
-      }
+      /*
+       * `router.push` resolves once the navigation is queued, not once the
+       * dashboard has rendered — that route still has to be fetched. Clearing
+       * the busy flags here (the old `finally` did) dropped the spinner and
+       * left the form sitting there looking frozen for the whole wait, so the
+       * overlay deliberately stays up until this component unmounts.
+       */
+      setAuthPhase("redirecting");
+      router.push(
+        activeRole === "super_admin" ? "/admin/dashboard" : "/manager/dashboard"
+      );
     } catch {
-      toast.error(t.auth.invalidCredentials);
-    } finally {
+      // Only the failure path returns control to the form.
+      setAuthPhase("idle");
       setLoading(false);
+      toast.error(t.auth.invalidCredentials);
     }
   };
 
@@ -113,6 +129,19 @@ export default function LoginPage() {
       className="min-h-screen flex items-center justify-center relative overflow-hidden"
       style={{ background: "#0a0a0a" }}
     >
+      {authPhase !== "idle" && (
+        <LoadingOverlay
+          message={
+            authPhase === "verifying" ? t.auth.loggingIn : t.auth.preparingDashboard
+          }
+          hint={
+            authPhase === "verifying"
+              ? t.auth.verifyingCredentials
+              : t.auth.almostThere
+          }
+        />
+      )}
+
       {/* Background grid */}
       <div
         className="absolute inset-0 opacity-5"

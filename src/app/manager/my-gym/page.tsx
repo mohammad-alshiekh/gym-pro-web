@@ -19,6 +19,7 @@ import {
   Trash2,
   Upload,
   User,
+  UserCircle,
   X,
   XCircle,
 } from "lucide-react";
@@ -788,7 +789,9 @@ export default function MyGymPage() {
         <SectionCard
           icon={Images}
           title={t.gyms.gallery}
-          meta={t.gyms.galleryCount.replace("{count}", String(images.length))}
+          // `galleryCount` is a suffix (" images"), not a template — same
+          // convention as the admin gym cards.
+          meta={`${images.length}${t.gyms.galleryCount}`}
           action={
             <div className="flex items-center gap-2">
               {orderDirty && (
@@ -915,12 +918,17 @@ export default function MyGymPage() {
           )}
         </SectionCard>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {/*
+          `items-start` so the short manager card keeps its own height instead
+          of stretching to match the plans list beside it, which left a large
+          empty panel whenever a gym had more than a couple of plans.
+        */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
           {/* ── Plans ── */}
           <SectionCard
             icon={Check}
             title={t.gyms.plans}
-            meta={t.gyms.plansCount.replace("{count}", String(gym.plans?.length ?? 0))}
+            meta={`${gym.plans?.length ?? 0}${t.gyms.plansCount}`}
             action={
               <Link
                 href="/manager/plans"
@@ -972,7 +980,24 @@ export default function MyGymPage() {
           </SectionCard>
 
           {/* ── Manager ── */}
-          <SectionCard icon={User} title={t.gyms.gymManager}>
+          {/*
+            The profile page was dropped from the sidebar, so this card's
+            action is the only route into it — keep the link here.
+          */}
+          <SectionCard
+            icon={User}
+            title={t.gyms.gymManager}
+            action={
+              <Link
+                href="/manager/profile"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-colors hover:border-[#cafd00] hover:text-[#cafd00]"
+                style={{ borderColor: "#2a2a2a", color: "#adaaaa" }}
+              >
+                <UserCircle className="w-3.5 h-3.5" />
+                {t.profile.updateProfile}
+              </Link>
+            }
+          >
             <div className="flex items-start gap-4">
               <div
                 className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"

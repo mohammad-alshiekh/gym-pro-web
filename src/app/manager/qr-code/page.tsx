@@ -1,27 +1,64 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { QrCode, RefreshCw, Download } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Check, ChevronDown, ChevronUp, Copy, QrCode, RefreshCw, Download } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import Button from "@/components/ui/Button";
 import { useTranslation } from "@/hooks/useTranslation";
 import { myGymApi } from "@/lib/api";
-import { apiErrorMessage } from "@/lib/apiError";
 import type { GymQrCode } from "@/lib/manager";
 import toast from "react-hot-toast";
+
+/** Characters of the token shown before it is expanded. */
+const TOKEN_PREVIEW = 32;
+
+/**
+ * navigator.clipboard is only defined in a secure context, so it is missing
+ * whenever the dashboard is served over plain http on a LAN address. Fall
+ * back to a throwaway textarea + execCommand so copying still works there.
+ */
+async function copyText(value: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(value);
+      return true;
+    }
+  } catch {
+    // Permission denied or blocked — try the legacy path below.
+  }
+
+  try {
+    const area = document.createElement("textarea");
+    area.value = value;
+    // Keep it off-screen and non-focusable-looking so the page doesn't jump.
+    area.setAttribute("readonly", "");
+    area.style.position = "fixed";
+    area.style.top = "-9999px";
+    document.body.appendChild(area);
+    area.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(area);
+    return ok;
+  } catch {
+    return false;
+  }
+}
 
 export default function QrCodePage() {
   const { t } = useTranslation();
   const [qrData, setQrData] = useState<GymQrCode | null>(null);
   const [loading, setLoading] = useState(true);
   const [regenerating, setRegenerating] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [tokenExpanded, setTokenExpanded] = useState(false);
+  const copiedTimer = useRef<number | null>(null);
 
   const fetchQr = async () => {
     try {
       const res = await myGymApi.getQr();
       setQrData(res.data);
     } catch {
-      toast.error("Failed to load QR code");
+      toast.error(t.auth.failedLoadQr);
     } finally {
       setLoading(false);
     }
@@ -29,17 +66,41 @@ export default function QrCodePage() {
 
   useEffect(() => { fetchQr(); }, []);
 
+  // Don't leave the "copied" tick scheduled on an unmounted page.
+  useEffect(() => () => {
+    if (copiedTimer.current) window.clearTimeout(copiedTimer.current);
+  }, []);
+
   const handleRegenerate = async () => {
     setRegenerating(true);
     try {
       await myGymApi.regenerateQr();
       await fetchQr();
-      toast.success("QR code regenerated successfully");
+      // The old token is dead now — never leave it on screen as if it were live.
+      setCopied(false);
+      setTokenExpanded(false);
+      toast.success(t.auth.qrRegenerated);
     } catch {
-      toast.error("Failed to regenerate QR code");
+      toast.error(t.auth.failedRegenerateQr);
     } finally {
       setRegenerating(false);
     }
+  };
+
+  const handleCopyToken = async () => {
+    const token = qrData?.qrToken;
+    if (!token) return;
+
+    // Always copy the whole token, never the truncated preview.
+    if (!(await copyText(token))) {
+      toast.error(t.gyms.copyFailed);
+      return;
+    }
+
+    setCopied(true);
+    toast.success(t.gyms.tokenCopied);
+    if (copiedTimer.current) window.clearTimeout(copiedTimer.current);
+    copiedTimer.current = window.setTimeout(() => setCopied(false), 2000);
   };
 
   const handleDownload = () => {
@@ -71,12 +132,63 @@ export default function QrCodePage() {
           ) : qrData?.qrCodeBase64 ? (
             <div>
               <div className="w-64 h-64 mx-auto rounded-2xl overflow-hidden p-4" style={{ background: "white" }}>
-                <img src={qrData.qrCodeBase64} alt="Check-in QR Code" className="w-full h-full object-contain" />
+                <img src={qrData.qrCodeBase64} alt={t.gyms.qrCode} className="w-full h-full object-contain" />
               </div>
-              <div className="mt-4 px-4 py-2 rounded-xl inline-block" style={{ background: "#20201f" }}>
-                <p className="text-xs" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}>Token:</p>
-                <p className="text-xs font-mono break-all" style={{ color: "#cafd00" }}>
-                  {qrData.qrToken.substring(0, 32)}...
+              <div
+                className="mt-4 px-4 py-3 rounded-xl w-full max-w-sm mx-auto space-y-2"
+                style={{ background: "#20201f" }}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <p
+                    className="text-xs"
+                    style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}
+                  >
+                    {t.auth.tokenLabel}
+                  </p>
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    {qrData.qrToken.length > TOKEN_PREVIEW && (
+                      <button
+                        type="button"
+                        onClick={() => setTokenExpanded((v) => !v)}
+                        title={tokenExpanded ? t.gyms.hideFullToken : t.gyms.showFullToken}
+                        aria-label={tokenExpanded ? t.gyms.hideFullToken : t.gyms.showFullToken}
+                        aria-expanded={tokenExpanded}
+                        className="p-1.5 rounded-lg transition-colors hover:bg-[#2a2a28]"
+                        style={{ color: "#8a8888" }}
+                      >
+                        {tokenExpanded ? (
+                          <ChevronUp className="w-3.5 h-3.5" />
+                        ) : (
+                          <ChevronDown className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={handleCopyToken}
+                      title={t.gyms.copyToken}
+                      aria-label={t.gyms.copyToken}
+                      className="p-1.5 rounded-lg transition-colors hover:bg-[#2a2a28]"
+                      style={{ color: copied ? "#4ae176" : "#8a8888" }}
+                    >
+                      {copied ? (
+                        <Check className="w-3.5 h-3.5" />
+                      ) : (
+                        <Copy className="w-3.5 h-3.5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* An opaque ASCII token — force LTR so Arabic never reorders it. */}
+                <p
+                  className="text-xs font-mono break-all select-all"
+                  dir="ltr"
+                  style={{ color: "#cafd00", textAlign: "left" }}
+                >
+                  {tokenExpanded || qrData.qrToken.length <= TOKEN_PREVIEW
+                    ? qrData.qrToken
+                    : `${qrData.qrToken.substring(0, TOKEN_PREVIEW)}…`}
                 </p>
               </div>
             </div>

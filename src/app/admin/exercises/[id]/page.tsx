@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import {
   ArrowLeft,
   Dumbbell,
+  Edit2,
   Flame,
   Layers,
   ListOrdered,
@@ -15,6 +16,8 @@ import {
 } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
+import ExerciseFormModal from "@/components/exercises/ExerciseFormModal";
 import { useTranslation } from "@/hooks/useTranslation";
 import { exercisesApi } from "@/lib/api";
 import { exerciseImageUrl, type CatalogueExercise } from "@/lib/exercises";
@@ -96,6 +99,7 @@ export default function ExerciseDetailPage() {
   const [exercise, setExercise] = useState<CatalogueExercise | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
 
   const fetchExercise = useCallback(async () => {
     if (!id) return;
@@ -213,7 +217,17 @@ export default function ExerciseDetailPage() {
       requiredRole="super_admin"
     >
       <div className="space-y-5 pb-6">
-        {backLink}
+        <div className="flex items-center justify-between gap-4">
+          {backLink}
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={<Edit2 className="w-4 h-4" />}
+            onClick={() => setEditOpen(true)}
+          >
+            {t.common.edit}
+          </Button>
+        </div>
 
         {/* ── Hero ── */}
         <div className="rounded-2xl border overflow-hidden" style={CARD}>
@@ -410,6 +424,14 @@ export default function ExerciseDetailPage() {
           </a>
         )}
       </div>
+
+      {/* Refetch rather than trust the PUT body — its shape is undocumented. */}
+      <ExerciseFormModal
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        exercise={exercise}
+        onSaved={fetchExercise}
+      />
     </DashboardLayout>
   );
 }

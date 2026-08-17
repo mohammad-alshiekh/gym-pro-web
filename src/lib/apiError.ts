@@ -14,7 +14,20 @@ interface ProblemDetails {
   message?: string;
   title?: string;
   detail?: string;
+  errorCode?: number;
   errors?: Record<string, string[] | string>;
+}
+
+/**
+ * Some endpoints (AI plan packages) answer every business failure with HTTP
+ * 400 and put the real code in the body's `errorCode` — so `404 not found`
+ * arrives as a 400. Callers that need to branch must read this, not the status.
+ * Returns null when the response carries no `errorCode`.
+ */
+export function apiErrorCode(error: unknown): number | null {
+  if (!axios.isAxiosError(error)) return null;
+  const data = error.response?.data as ProblemDetails | undefined;
+  return typeof data?.errorCode === "number" ? data.errorCode : null;
 }
 
 export function apiErrorMessage(error: unknown, fallback: string): string {
