@@ -8,7 +8,7 @@ import Modal from "@/components/ui/Modal";
 import Badge from "@/components/ui/Badge";
 import { useTranslation } from "@/hooks/useTranslation";
 import { myGymApi, plansApi } from "@/lib/api";
-import { apiErrorMessage } from "@/lib/apiError";
+import { apiErrorMessage, apiErrorMessageKnown } from "@/lib/apiError";
 import type { GymPlan } from "@/lib/manager";
 import { formatCurrency } from "@/lib/utils";
 import toast from "react-hot-toast";
@@ -23,7 +23,7 @@ interface FormState {
 const defaultForm: FormState = { name: "", description: "", durationDays: "", price: "" };
 
 export default function ManagerPlansPage() {
-  const { t } = useTranslation();
+  const { t, isRtl } = useTranslation();
   const [plans, setPlans] = useState<GymPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -82,7 +82,15 @@ export default function ManagerPlansPage() {
       setModalOpen(false);
       fetchPlans();
     } catch (err) {
-      toast.error(apiErrorMessage(err, t.plans.saveFailed));
+      // The API answers this specific case with a fixed English sentence —
+      // show the already-translated hint instead of that raw text.
+      toast.error(
+        apiErrorMessageKnown(
+          err,
+          { "Price and duration cannot be changed": t.plans.editLockNote },
+          t.plans.saveFailed
+        )
+      );
     } finally { setSubmitting(false); }
   };
 
@@ -95,7 +103,15 @@ export default function ManagerPlansPage() {
       setDeleteTarget(null);
       fetchPlans();
     } catch (err) {
-      toast.error(apiErrorMessage(err, t.plans.deleteFailed));
+      // Same deal — the "deactivate instead" refusal comes back as fixed
+      // English, so map it to the localized note we already show up front.
+      toast.error(
+        apiErrorMessageKnown(
+          err,
+          { "Cannot delete plan because subscriptions exist": t.plans.deleteNote },
+          t.plans.deleteFailed
+        )
+      );
     } finally { setSubmitting(false); }
   };
 
@@ -130,51 +146,150 @@ export default function ManagerPlansPage() {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">{Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-44 rounded-2xl shimmer" />)}</div>
+          <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-16 rounded-xl shimmer" />)}</div>
         ) : plans.length === 0 ? (
-          <div className="text-center py-20" style={{ color: "#8a8888" }}><ScrollText className="w-12 h-12 mx-auto mb-4 opacity-30" /><p>{t.plans.noPlansYet}</p></div>
+          <div className="rounded-2xl border py-20 text-center" style={{ borderColor: "#2a2a2a", background: "#131313" }}>
+            <ScrollText className="w-12 h-12 mx-auto mb-4 opacity-30" style={{ color: "#cafd00" }} />
+            <p style={{ color: "#8a8888" }}>{t.plans.noPlansYet}</p>
+          </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {plans.map((plan) => (
-              <div key={plan.id} className="rounded-2xl border p-6 flex flex-col gap-4 card-interactive" style={{ background: "#131313", borderColor: plan.isActive ? "#2a2a2a" : "#5c162030" }}>
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-base leading-tight" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>{plan.name}</p>
-                    {plan.description && <p className="text-xs mt-1 line-clamp-2" style={{ color: "#8a8888" }}>{plan.description}</p>}
-                  </div>
-                  <Badge variant={plan.isActive ? "success" : "danger"}>{plan.isActive ? t.plans.activeLabel : t.plans.inactiveLabel}</Badge>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div>
-                    <p className="text-2xl font-bold" style={{ fontFamily: "Space Grotesk, sans-serif", color: "#cafd00" }}>
-                      {formatCurrency(plan.price)}
-                    </p>
-                  </div>
-                  <div className="px-3 py-1 rounded-full text-sm" style={{ background: "#cafd0015", color: "#cafd00", fontFamily: "JetBrains Mono, monospace" }}>
-                    {plan.durationDays} {t.plans.daysLabel}
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 pt-2 border-t" style={{ borderColor: "#20201f" }}>
-                  <button onClick={() => openEdit(plan)} className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border text-xs transition-colors hover:bg-[#20201f]" style={{ borderColor: "#2a2a2a", color: "#adaaaa" }}>
-                    <Edit2 className="w-3.5 h-3.5" />{t.plans.edit}
-                  </button>
-                  {!plan.isActive ? (
-                    <button onClick={() => handleReactivate(plan)} title={t.plans.reactivatePlan} className="p-2 rounded-xl hover:bg-[#cafd0015] transition-colors" style={{ color: "#cafd00" }}>
-                      <RotateCcw className="w-4 h-4" />
-                    </button>
-                  ) : (
-                    <button onClick={() => handleDeactivate(plan)} title={t.plans.deactivatePlan} className="p-2 rounded-xl hover:bg-[#20201f] transition-colors" style={{ color: "#8a8888" }}>
-                      <EyeOff className="w-4 h-4" />
-                    </button>
-                  )}
-                  <button onClick={() => setDeleteTarget(plan)} title={t.plans.deletePlan} className="p-2 rounded-xl hover:bg-[#5c1620]/20" style={{ color: "#ff6e81" }}>
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
+          <div className="rounded-2xl border overflow-hidden" style={{ borderColor: "#2a2a2a", background: "#131313" }}>
+            <div className="overflow-x-auto">
+              {/* `dir` is pinned explicitly (not just inherited from the RTL
+                  page shell) so the table's own column order and each
+                  cell's text-align always agree — otherwise the browser
+                  flips column order for a `dir=rtl` ancestor while a
+                  physical `text-left` utility class stays put, and headers
+                  drift away from the data underneath them. */}
+              <table dir={isRtl ? "rtl" : "ltr"} className="w-full min-w-[720px]">
+                <thead>
+                  <tr style={{ background: "#1a1a1a" }}>
+                    {[
+                      t.plans.planName,
+                      t.plans.price,
+                      t.plans.durationDays,
+                      t.common.status,
+                      t.common.actions,
+                    ].map((head, i) => (
+                      <th
+                        key={head}
+                        className={`text-[10px] font-medium uppercase tracking-widest px-5 py-3.5 ${
+                          // Actions reads as a toolbar, not a data column — center its header to match.
+                          i === 4 ? "text-center" : isRtl ? "text-right" : "text-left"
+                        }`}
+                        style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}
+                      >
+                        {head}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {plans.map((plan) => {
+                    const cell = `px-5 py-4 ${isRtl ? "text-right" : "text-left"}`;
+                    return (
+                      <tr
+                        key={plan.id}
+                        className="border-t transition-colors hover:bg-[#1a1a1a]"
+                        style={{ borderColor: "#20201f" }}
+                      >
+                        <td className={cell}>
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div
+                              className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                              style={{
+                                background: plan.isActive ? "rgba(202,253,0,0.1)" : "rgba(173,170,170,0.1)",
+                                color: plan.isActive ? "#cafd00" : "#8a8888",
+                              }}
+                            >
+                              <ScrollText className="w-4 h-4" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium truncate max-w-[220px]" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>
+                                {plan.name}
+                              </p>
+                              {plan.description && (
+                                <p className="text-xs truncate max-w-[220px] mt-0.5" style={{ color: "#8a8888" }}>
+                                  {plan.description}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                        <td className={cell}>
+                          <span className="text-sm font-bold" style={{ fontFamily: "JetBrains Mono, monospace", color: "#cafd00" }}>
+                            {formatCurrency(plan.price)}
+                          </span>
+                        </td>
+                        <td className={cell}>
+                          <span
+                            className="inline-flex items-center px-2.5 py-1 rounded-full text-xs"
+                            style={{ background: "#20201f", color: "#adaaaa", fontFamily: "JetBrains Mono, monospace" }}
+                          >
+                            {plan.durationDays} {t.plans.daysLabel}
+                          </span>
+                        </td>
+                        <td className={cell}>
+                          <Badge variant={plan.isActive ? "success" : "danger"}>
+                            {plan.isActive ? t.plans.activeLabel : t.plans.inactiveLabel}
+                          </Badge>
+                        </td>
+                        <td className="px-5 py-4 text-center">
+                          {/* A bordered toolbar instead of loose icons — edit is
+                              the primary action, a divider sets the destructive
+                              pair (deactivate/reactivate, delete) apart from it. */}
+                          <div
+                            className="inline-flex items-center gap-0.5 p-1 rounded-xl border"
+                            style={{ background: "#0e0e0e", borderColor: "#2a2a2a" }}
+                          >
+                            <button
+                              onClick={() => openEdit(plan)}
+                              title={t.plans.edit}
+                              aria-label={t.plans.edit}
+                              className="p-2 rounded-lg transition-colors hover:bg-[#20201f] hover:text-[#cafd00]"
+                              style={{ color: "#adaaaa" }}
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <span className="w-px h-5 flex-shrink-0" style={{ background: "#2a2a2a" }} />
+                            {!plan.isActive ? (
+                              <button
+                                onClick={() => handleReactivate(plan)}
+                                title={t.plans.reactivatePlan}
+                                aria-label={t.plans.reactivatePlan}
+                                className="p-2 rounded-lg transition-colors hover:bg-[#cafd0015]"
+                                style={{ color: "#cafd00" }}
+                              >
+                                <RotateCcw className="w-4 h-4" />
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => handleDeactivate(plan)}
+                                title={t.plans.deactivatePlan}
+                                aria-label={t.plans.deactivatePlan}
+                                className="p-2 rounded-lg transition-colors hover:bg-[#20201f]"
+                                style={{ color: "#8a8888" }}
+                              >
+                                <EyeOff className="w-4 h-4" />
+                              </button>
+                            )}
+                            <button
+                              onClick={() => setDeleteTarget(plan)}
+                              title={t.plans.deletePlan}
+                              aria-label={t.plans.deletePlan}
+                              className="p-2 rounded-lg transition-colors hover:bg-[#5c1620]/30"
+                              style={{ color: "#ff6e81" }}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>

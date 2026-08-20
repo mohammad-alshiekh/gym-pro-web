@@ -33,7 +33,7 @@ interface FormState {
 const defaultForm: FormState = { nameEn: "", nameAr: "", descriptionEn: "", descriptionAr: "", isActive: true };
 
 export default function MuscleGroupsPage() {
-  const { t } = useTranslation();
+  const { t, isRtl } = useTranslation();
   const [items, setItems] = useState<MuscleGroup[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
@@ -54,11 +54,11 @@ export default function MuscleGroupsPage() {
       setItems(res.data?.items ?? []);
       setTotalCount(res.data?.totalCount ?? 0);
     } catch {
-      toast.error("Failed to load muscle groups");
+      toast.error(t.muscleGroups.toastFailedLoadMuscleGroups);
     } finally {
       setLoading(false);
     }
-  }, [search, page]);
+  }, [search, page, t]);
 
   useEffect(() => { fetchItems(); }, [fetchItems]);
 
@@ -70,7 +70,7 @@ export default function MuscleGroupsPage() {
   };
 
   const handleSave = async () => {
-    if (!form.nameEn || !form.nameAr) { toast.error("Name (EN and AR) required"); return; }
+    if (!form.nameEn || !form.nameAr) { toast.error(t.muscleGroups.toastNameEnArRequired); return; }
     setSubmitting(true);
     try {
       if (editTarget) {
@@ -82,7 +82,7 @@ export default function MuscleGroupsPage() {
       }
       setModalOpen(false);
       fetchItems();
-    } catch { toast.error("Failed to save"); } finally { setSubmitting(false); }
+    } catch { toast.error(t.muscleGroups.toastFailedSave); } finally { setSubmitting(false); }
   };
 
   const handleDelete = async () => {
@@ -93,7 +93,7 @@ export default function MuscleGroupsPage() {
       toast.success(t.muscleGroups.deleteSuccess);
       setDeleteTarget(null);
       fetchItems();
-    } catch { toast.error("Failed to delete"); } finally { setSubmitting(false); }
+    } catch { toast.error(t.muscleGroups.toastFailedDelete); } finally { setSubmitting(false); }
   };
 
   const setField = (key: keyof FormState, value: string | boolean) => setForm(p => ({ ...p, [key]: value }));
@@ -111,70 +111,129 @@ export default function MuscleGroupsPage() {
           <Button icon={<Plus className="w-4 h-4" />} onClick={openCreate}>{t.muscleGroups.createGroup}</Button>
         </div>
 
-        {/* حالة التحميل (Shimmer Cards) */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="space-y-2">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-36 rounded-xl shimmer" style={{ background: "#1a1a1a" }} />
+              <div key={i} className="h-16 rounded-xl shimmer" />
             ))}
           </div>
         ) : items.length === 0 ? (
-          <div className="text-center py-20" style={{ color: "#8a8888" }}><Layers className="w-12 h-12 mx-auto mb-4 opacity-30" /><p>{t.common.noData}</p></div>
+          <div className="rounded-2xl border py-20 text-center" style={{ borderColor: "#2a2a2a", background: "#131313" }}>
+            <Layers className="w-12 h-12 mx-auto mb-4 opacity-30" style={{ color: "#cafd00" }} />
+            <p style={{ color: "#8a8888" }}>{t.common.noData}</p>
+          </div>
         ) : (
-          /* شبكة البطاقات */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {items.map((item) => (
-              <div
-                key={item.id}
-               // href={`/admin/muscle-groups/${item.id}`}
-                className="block transition-all duration-200 hover:scale-[1.01] hover:border-[#cafd00]"
-              >
-                <div
-                  className="p-5 rounded-xl border flex flex-col h-full gap-3"
-                  style={{ background: "#131313", borderColor: "#2a2a2a" }}
-                >
-                  {/* رأس البطاقة: الأيقونة والاسم */}
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#cafd0015" }}>
-                      <Layers className="w-5 h-5" style={{ color: "#cafd00" }} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>{item.nameEn}</p>
-                      <p className="text-xs" style={{ color: "#8a8888", direction: "rtl", textAlign: "left" }}>{item.nameAr}</p>
-                    </div>
-                  </div>
-
-                  {/* منتصف البطاقة: الحالة وعدد التمارين */}
-                  <div className="flex items-center justify-between mt-1">
-                    <Badge variant={item.isActive ? "success" : "neutral"}>{item.isActive ? t.common.active : t.common.inactive}</Badge>
-<span className="text-xs" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}>
-                       {(item.exercises as unknown[])?.length ?? 0} {t.exercises.exercisesCount}
-                     </span>
-                  </div>
-
-                  {/* أزرار التحكم */}
-                  <div className="flex items-center justify-end gap-1 pt-2 mt-auto border-t" style={{ borderColor: "#20201f" }}>
-                    <button
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); openEdit(item); }}
-                      className="p-1.5 rounded-lg hover:bg-[#2a2a28]"
-                      style={{ color: "#adaaaa" }}
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeleteTarget(item); }}
-                      className="p-1.5 rounded-lg hover:bg-[#5c1620]/20"
-                      style={{ color: "#ff6e81" }}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="rounded-2xl border overflow-hidden" style={{ borderColor: "#2a2a2a", background: "#131313" }}>
+            <div className="overflow-x-auto">
+              {/* `dir` is pinned explicitly (not just inherited from the RTL
+                  page shell) so the table's own column order and each
+                  cell's text-align always agree — otherwise the browser
+                  flips column order for a `dir=rtl` ancestor while a
+                  physical `text-left` utility class stays put, and headers
+                  drift away from the data underneath them. */}
+              <table dir={isRtl ? "rtl" : "ltr"} className="w-full min-w-[620px]">
+                <thead>
+                  <tr style={{ background: "#1a1a1a" }}>
+                    {[
+                      t.common.name,
+                      t.exercises.title,
+                      t.common.status,
+                      t.common.actions,
+                    ].map((head, i) => (
+                      <th
+                        key={head}
+                        className={`text-[10px] font-medium uppercase tracking-widest px-5 py-3.5 ${
+                          // Actions reads as a toolbar, not a data column — center its header to match.
+                          i === 3 ? "text-center" : isRtl ? "text-right" : "text-left"
+                        }`}
+                        style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}
+                      >
+                        {head}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map((item) => {
+                    const cell = `px-5 py-4 ${isRtl ? "text-right" : "text-left"}`;
+                    const exercisesCount = (item.exercises as unknown[])?.length ?? 0;
+                    return (
+                      <tr
+                        key={item.id}
+                        className="border-t transition-colors hover:bg-[#1a1a1a]"
+                        style={{ borderColor: "#20201f" }}
+                      >
+                        <td className={cell}>
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div
+                              className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                              style={{
+                                background: item.isActive ? "rgba(202,253,0,0.1)" : "rgba(173,170,170,0.1)",
+                                color: item.isActive ? "#cafd00" : "#8a8888",
+                              }}
+                            >
+                              <Layers className="w-4 h-4" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium truncate max-w-[220px]" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>
+                                {item.nameEn}
+                              </p>
+                              <p className="text-xs truncate max-w-[220px] mt-0.5" style={{ color: "#8a8888" }} dir="rtl" lang="ar">
+                                {item.nameAr}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className={cell}>
+                          <span
+                            className="inline-flex items-center px-2.5 py-1 rounded-full text-xs"
+                            style={{ background: "#20201f", color: "#adaaaa", fontFamily: "JetBrains Mono, monospace" }}
+                          >
+                            {exercisesCount} {t.exercises.exercisesCount.trim()}
+                          </span>
+                        </td>
+                        <td className={cell}>
+                          <Badge variant={item.isActive ? "success" : "neutral"}>
+                            {item.isActive ? t.common.active : t.common.inactive}
+                          </Badge>
+                        </td>
+                        <td className="px-5 py-4 text-center">
+                          {/* A bordered toolbar instead of loose icons, matching
+                              the treatment used on Membership Plans. */}
+                          <div
+                            className="inline-flex items-center gap-0.5 p-1 rounded-xl border"
+                            style={{ background: "#0e0e0e", borderColor: "#2a2a2a" }}
+                          >
+                            <button
+                              onClick={() => openEdit(item)}
+                              title={t.common.edit}
+                              aria-label={t.common.edit}
+                              className="p-2 rounded-lg transition-colors hover:bg-[#20201f] hover:text-[#cafd00]"
+                              style={{ color: "#adaaaa" }}
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <span className="w-px h-5 flex-shrink-0" style={{ background: "#2a2a2a" }} />
+                            <button
+                              onClick={() => setDeleteTarget(item)}
+                              title={t.common.delete}
+                              aria-label={t.common.delete}
+                              className="p-2 rounded-lg transition-colors hover:bg-[#5c1620]/30"
+                              style={{ color: "#ff6e81" }}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
-        
+
         <Pagination currentPage={page} totalPages={Math.ceil(totalCount / perPage) || 1} onPageChange={setPage} totalCount={totalCount} resultsPerPage={perPage} />
       </div>
 

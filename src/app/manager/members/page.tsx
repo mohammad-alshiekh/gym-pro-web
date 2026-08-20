@@ -1,8 +1,16 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { ArrowDown, ArrowUp, ChevronDown, ChevronRight, Search, Users } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowDown,
+  ArrowUp,
+  ChevronDown,
+  ChevronRight,
+  Search,
+  Users,
+} from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import Badge from "@/components/ui/Badge";
 import Pagination from "@/components/ui/Pagination";
@@ -68,14 +76,15 @@ export default function ManagerMembersPage() {
     return "neutral";
   };
 
-  const expiringSoon = useMemo(
-    () =>
-      members.filter((m) => {
-        const left = daysRemaining(m.endDate);
-        return m.status === SUBSCRIPTION_STATUS.active && left !== null && left >= 0 && left <= 7;
-      }).length,
-    [members]
-  );
+  // Hex twin of statusVariant — Badge's fixed palette can't color the
+  // avatar ring and left accent bar, which need the raw value.
+  const STATUS_COLOR: Record<"warning" | "success" | "danger" | "neutral", string> = {
+    warning: "#ffd04a",
+    success: "#4ae176",
+    danger: "#ff6e81",
+    neutral: "#adaaaa",
+  };
+  const statusAccent = (status: number) => STATUS_COLOR[statusVariant(status)];
 
   return (
     <DashboardLayout title={t.members.title} requiredRole="gym_manager">
@@ -150,63 +159,77 @@ export default function ManagerMembersPage() {
               )}
             </button>
           </div>
-
-          <div className="sm:ml-auto flex items-center gap-3 text-xs" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}>
-            <span>{totalCount} {t.members.title}</span>
-            {expiringSoon > 0 && (
-              <span style={{ color: "#ffd04a" }}>
-                {expiringSoon} {t.members.expiringSoon}
-              </span>
-            )}
-          </div>
         </div>
 
         {loading ? (
-          <div className="space-y-3">{Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-20 rounded-2xl shimmer" />)}</div>
+          <div className="space-y-2">{Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-[70px] rounded-2xl shimmer" />)}</div>
         ) : members.length === 0 ? (
-          <div className="text-center py-20" style={{ color: "#8a8888" }}>
-            <Users className="w-12 h-12 mx-auto mb-4 opacity-30" />
-            <p>{t.common.noData}</p>
+          <div className="rounded-2xl border py-20 text-center" style={{ borderColor: "#2a2a2a", background: "#131313" }}>
+            <div
+              className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
+              style={{ background: "#20201f" }}
+            >
+              <Users className="w-7 h-7" style={{ color: "#cafd00", opacity: 0.5 }} />
+            </div>
+            <p className="text-sm" style={{ color: "#8a8888" }}>{t.common.noData}</p>
           </div>
         ) : (
           <div className="rounded-2xl border overflow-hidden" style={{ borderColor: "#2a2a2a", background: "#131313" }}>
-            {members.map((member, i) => (
-              <Link
-                key={member.traineeId}
-                href={`/manager/members/${member.traineeId}`}
-                className="flex items-center gap-4 px-5 py-4 hover:bg-[#20201f] transition-colors"
-                style={{ borderBottom: i < members.length - 1 ? "1px solid #20201f" : "none" }}
-              >
-                {member.photoUrl ? (
-                  <img src={member.photoUrl} alt={member.name} className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
-                ) : (
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
-                    style={{ background: "#20201f", color: "#cafd00", fontFamily: "Lexend, sans-serif" }}>
-                    {getInitials(member.name)}
-                  </div>
-                )}
+            {members.map((member, i) => {
+              const accent = statusAccent(member.status);
+              const left = member.endDate ? daysRemaining(member.endDate) : null;
+              const soon =
+                member.status === SUBSCRIPTION_STATUS.active && left !== null && left >= 0 && left <= 7;
 
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="font-medium text-sm" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>{member.name}</p>
-                    <Badge variant={statusVariant(member.status)} className="hidden sm:inline-flex">
-                      {subscriptionStatusLabel(member.status, locale)}
-                    </Badge>
-                  </div>
-                  <p className="text-xs" style={{ color: "#8a8888" }}>{member.email}</p>
-                </div>
+              return (
+                <Link
+                  key={member.traineeId}
+                  href={`/manager/members/${member.traineeId}`}
+                  className="relative flex items-center gap-3.5 pl-6 pr-5 py-3.5 transition-colors hover:bg-[#1a1a1a]"
+                  style={{ borderBottom: i < members.length - 1 ? "1px solid #20201f" : "none" }}
+                >
+                  {/* Status accent bar */}
+                  <span
+                    className="absolute inset-y-0 left-0 w-1"
+                    style={{ background: accent }}
+                    aria-hidden
+                  />
 
-                <div className="hidden sm:block text-right">
-                  <p className="text-xs font-medium" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>
-                    {member.currentPlanName ?? "—"}
-                  </p>
-                  {member.endDate && (() => {
-                    const left = daysRemaining(member.endDate);
-                    const soon = left !== null && left >= 0 && left <= 7;
-                    return (
-                      <p className="text-xs" style={{ color: soon ? "#ffd04a" : "#8a8888" }}>
-                        {t.members.expires}: {formatDate(member.endDate, locale)}
-                        {left !== null && left >= 0 && ` · ${left}d`}
+                  {member.photoUrl ? (
+                    <img
+                      src={member.photoUrl}
+                      alt={member.name}
+                      className="w-11 h-11 rounded-2xl object-cover flex-shrink-0"
+                    />
+                  ) : (
+                    <div
+                      className="w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-sm flex-shrink-0"
+                      style={{ background: `${accent}18`, color: accent, fontFamily: "Lexend, sans-serif" }}
+                    >
+                      {getInitials(member.name)}
+                    </div>
+                  )}
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium text-sm truncate" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>{member.name}</p>
+                      <Badge variant={statusVariant(member.status)} className="hidden sm:inline-flex flex-shrink-0">
+                        {subscriptionStatusLabel(member.status, locale)}
+                      </Badge>
+                    </div>
+                    <p className="text-xs truncate" style={{ color: "#8a8888" }}>{member.email}</p>
+                  </div>
+
+                  <div className="hidden sm:block text-right flex-shrink-0">
+                    <p className="text-xs font-medium" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>
+                      {member.currentPlanName ?? "—"}
+                    </p>
+                    {member.endDate && (() => {
+                      return (
+                        <p className="text-xs mt-0.5 flex items-center justify-end gap-1" style={{ color: soon ? "#ffd04a" : "#8a8888" }}>
+                          {soon && <AlertTriangle className="w-3 h-3 flex-shrink-0" />}
+                          {t.members.expires}: {formatDate(member.endDate, locale)}
+                          {left !== null && left >= 0 && ` · ${left}${t.subscriptions.daySuffix}`}
                       </p>
                     );
                   })()}
@@ -216,8 +239,9 @@ export default function ManagerMembersPage() {
                   className="w-4 h-4 flex-shrink-0"
                   style={{ color: "#8a8888", transform: isRtl ? "scaleX(-1)" : undefined }}
                 />
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         )}
 

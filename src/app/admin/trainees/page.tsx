@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Users, Search } from "lucide-react";
-import Link from "next/link"; // استيراد Link للتنقل
+import { Users, Search, Mail, Phone, Cake } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import Pagination from "@/components/ui/Pagination";
 import Badge from "@/components/ui/Badge";
@@ -22,7 +21,7 @@ interface Trainee {
 }
 
 export default function AdminTraineesPage() {
-  const { t, locale } = useTranslation();
+  const { t, locale, isRtl } = useTranslation();
   const [trainees, setTrainees] = useState<Trainee[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
@@ -42,11 +41,11 @@ export default function AdminTraineesPage() {
       setTrainees(res.data?.items ?? []);
       setTotalCount(res.data?.totalCount ?? 0);
     } catch {
-      toast.error("Failed to load trainees");
+      toast.error(t.trainees.toastFailedLoadTrainees);
     } finally {
       setLoading(false);
     }
-  }, [search, page]);
+  }, [search, page, t]);
 
   useEffect(() => {
     fetchTrainees();
@@ -75,71 +74,109 @@ export default function AdminTraineesPage() {
           />
         </div>
 
-        {/* حالة التحميل (Shimmer Cards) */}
         {loading && trainees.length === 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="space-y-2">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-36 rounded-xl shimmer" style={{ background: "#1a1a1a" }} />
+              <div key={i} className="h-16 rounded-xl shimmer" />
             ))}
           </div>
         ) : trainees.length === 0 ? (
-          <div className="text-center py-20" style={{ color: "#8a8888" }}>
-            <Users className="w-12 h-12 mx-auto mb-4 opacity-30" />
-            <p>{t.common.noData}</p>
+          <div className="rounded-2xl border py-20 text-center" style={{ borderColor: "#2a2a2a", background: "#131313" }}>
+            <Users className="w-12 h-12 mx-auto mb-4 opacity-30" style={{ color: "#cafd00" }} />
+            <p style={{ color: "#8a8888" }}>{t.common.noData}</p>
           </div>
         ) : (
-          /* شبكة البطاقات */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {trainees.map((trainee) => (
-              <div
-                key={trainee.id}
-             //   href={`/admin/trainees/${trainee.id}`}
-                className="block transition-all duration-200 hover:scale-[1.01] hover:border-[#cafd00]"
-              >
-                <div
-                  className="p-5 rounded-xl border flex flex-col h-full gap-3"
-                  style={{
-                    background: "#0e0e0e",
-                    borderColor: "#2a2a2a",
-                  }}
-                >
-                  {/* رأس البطاقة: الصورة والاسم */}
-                  <div className="flex items-center gap-3">
-                    {trainee.profilePictureUrl ? (
-                      <img
-                        src={trainee.profilePictureUrl}
-                        alt={trainee.name}
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div
-                        className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold"
-                        style={{ background: "#20201f", color: "#cafd00" }}
+          <div className="rounded-2xl border overflow-hidden" style={{ borderColor: "#2a2a2a", background: "#131313" }}>
+            <div className="overflow-x-auto">
+              {/* `dir` is pinned explicitly (not just inherited from the RTL
+                  page shell) so the table's own column order and each
+                  cell's text-align always agree — otherwise the browser
+                  flips column order for a `dir=rtl` ancestor while a
+                  physical `text-left` utility class stays put, and headers
+                  drift away from the data underneath them. */}
+              <table dir={isRtl ? "rtl" : "ltr"} className="w-full min-w-[680px]">
+                <thead>
+                  <tr style={{ background: "#1a1a1a" }}>
+                    {[
+                      t.trainees.columnName,
+                      t.trainees.columnEmail,
+                      t.trainees.columnPhone,
+                      t.trainees.columnBirthDate,
+                      t.trainees.columnGender,
+                    ].map((head) => (
+                      <th
+                        key={head}
+                        className={`text-[10px] font-medium uppercase tracking-widest px-5 py-3.5 ${isRtl ? "text-right" : "text-left"}`}
+                        style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}
                       >
-                        {getInitials(trainee.name)}
-                      </div>
-                    )}
-                    <span className="font-semibold text-white" style={{ fontFamily: "Lexend, sans-serif" }}>
-                      {trainee.name}
-                    </span>
-                  </div>
-
-                  {/* تفاصيل المتدرب */}
-                  <div className="flex-1 space-y-1.5 text-sm" style={{ color: "#a0a0a0" }}>
-                    <p>📧 {trainee.email}</p>
-                    <p>📞 {trainee.phoneNumber ?? "—"}</p>
-                    <p>🎂 {formatDate(trainee.birthDate, locale)}</p>
-                  </div>
-
-                  {/* تذييل البطاقة (النوع) */}
-                  <div className="mt-auto pt-2 border-t" style={{ borderColor: "#1f1f1f" }}>
-                    <Badge variant={trainee.gender === 1 ? "info" : "neutral"}>
-                      {genderLabel(trainee.gender)}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-            ))}
+                        {head}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {trainees.map((trainee) => {
+                    const cell = `px-5 py-4 ${isRtl ? "text-right" : "text-left"}`;
+                    return (
+                      <tr
+                        key={trainee.id}
+                        className="border-t transition-colors hover:bg-[#1a1a1a]"
+                        style={{ borderColor: "#20201f" }}
+                      >
+                        <td className={cell}>
+                          <div className="flex items-center gap-3 min-w-0">
+                            {trainee.profilePictureUrl ? (
+                              <img
+                                src={trainee.profilePictureUrl}
+                                alt={trainee.name}
+                                className="w-9 h-9 rounded-full object-cover flex-shrink-0"
+                              />
+                            ) : (
+                              <div
+                                className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
+                                style={{ background: "rgba(202,253,0,0.1)", color: "#cafd00", fontFamily: "Lexend, sans-serif" }}
+                              >
+                                {getInitials(trainee.name)}
+                              </div>
+                            )}
+                            <span className="text-sm font-medium truncate max-w-[180px]" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>
+                              {trainee.name}
+                            </span>
+                          </div>
+                        </td>
+                        <td className={cell}>
+                          <span className="flex items-center gap-1.5 text-sm truncate max-w-[220px]" style={{ color: "#adaaaa" }}>
+                            <Mail className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#8a8888" }} />
+                            {trainee.email}
+                          </span>
+                        </td>
+                        <td className={cell}>
+                          {trainee.phoneNumber ? (
+                            <span className="flex items-center gap-1.5 text-sm" style={{ color: "#adaaaa" }} dir="ltr">
+                              <Phone className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#8a8888" }} />
+                              {trainee.phoneNumber}
+                            </span>
+                          ) : (
+                            <span className="text-sm" style={{ color: "#8a8888" }}>—</span>
+                          )}
+                        </td>
+                        <td className={cell}>
+                          <span className="flex items-center gap-1.5 text-sm" style={{ fontFamily: "JetBrains Mono, monospace", color: "#adaaaa" }}>
+                            <Cake className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#8a8888" }} />
+                            {formatDate(trainee.birthDate, locale)}
+                          </span>
+                        </td>
+                        <td className={cell}>
+                          <Badge variant={trainee.gender === 1 ? "info" : "neutral"}>
+                            {genderLabel(trainee.gender)}
+                          </Badge>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 

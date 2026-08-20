@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import Link from "next/link";
-import { ArrowRight, Dumbbell, Edit2, Plus, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ChevronRight, Dumbbell, Edit2, Plus, Search } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import Pagination from "@/components/ui/Pagination";
 import Badge from "@/components/ui/Badge";
@@ -19,6 +19,7 @@ type Exercise = CatalogueExercise;
 
 export default function AdminExercisesPage() {
   const { t, isRtl } = useTranslation();
+  const router = useRouter();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
@@ -66,8 +67,7 @@ export default function AdminExercisesPage() {
   };
 
   const openEdit = (e: React.MouseEvent, exercise: Exercise) => {
-    // The card is a Link — keep the click from navigating to the detail page.
-    e.preventDefault();
+    // The row navigates to the detail page on click — keep this from doing that too.
     e.stopPropagation();
     setEditTarget(exercise);
     setFormOpen(true);
@@ -109,11 +109,11 @@ export default function AdminExercisesPage() {
           </div>
         </div>
 
-        {/* ── Grid ── */}
+        {/* ── Table ── */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="rounded-2xl h-64 shimmer" />
+          <div className="space-y-2">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="h-16 rounded-xl shimmer" />
             ))}
           </div>
         ) : exercises.length === 0 ? (
@@ -130,112 +130,139 @@ export default function AdminExercisesPage() {
             <p className="text-sm">{t.common.noData}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {exercises.map((ex) => {
-              const thumb = exerciseImageUrl(ex.imageUrl);
-              return (
-                <Link
-                  key={ex.id}
-                  href={`/admin/exercises/${ex.id}`}
-                  className="group rounded-2xl border p-4 flex flex-col gap-3 card-interactive"
-                  style={{ background: "#131313", borderColor: "#2a2a2a" }}
-                >
-                  <div
-                    className="w-full h-32 rounded-xl overflow-hidden flex items-center justify-center"
-                    style={{ background: "#20201f" }}
-                  >
-                    {thumb ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={thumb}
-                        alt={ex.nameEn}
-                        loading="lazy"
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).style.visibility = "hidden";
-                        }}
-                      />
-                    ) : (
-                      <Dumbbell className="w-8 h-8" style={{ color: "#cafd00", opacity: 0.3 }} />
-                    )}
-                  </div>
-
-                  <div className="min-w-0">
-                    <p
-                      className="font-semibold text-sm leading-tight truncate"
-                      style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}
-                      dir="ltr"
-                      title={ex.nameEn}
-                    >
-                      {ex.nameEn}
-                    </p>
-                    {ex.nameAr && (
-                      <p
-                        className="text-xs mt-0.5 truncate"
-                        style={{ color: "#8a8888" }}
-                        dir="rtl"
-                        lang="ar"
+          <div className="rounded-2xl border overflow-hidden" style={{ borderColor: "#2a2a2a", background: "#131313" }}>
+            <div className="overflow-x-auto">
+              {/* `dir` is pinned explicitly (not just inherited from the RTL
+                  page shell) so the table's own column order and each
+                  cell's text-align always agree — otherwise the browser
+                  flips column order for a `dir=rtl` ancestor while a
+                  physical `text-left` utility class stays put, and headers
+                  drift away from the data underneath them. */}
+              <table dir={isRtl ? "rtl" : "ltr"} className="w-full min-w-[800px]">
+                <thead>
+                  <tr style={{ background: "#1a1a1a" }}>
+                    {[
+                      t.exercises.exerciseName,
+                      t.exercises.level,
+                      t.exercises.equipment,
+                      t.exercises.primaryMuscles,
+                      "",
+                    ].map((head, i) => (
+                      <th
+                        key={i}
+                        className={`text-[10px] font-medium uppercase tracking-widest px-5 py-3.5 ${isRtl ? "text-right" : "text-left"}`}
+                        style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}
                       >
-                        {ex.nameAr}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Badge variant={difficultyVariant(ex.level)}>
-                      {t.exercises[difficultyKey(ex.level)]}
-                    </Badge>
-                    {ex.equipmentEn && (
-                      <span className="text-xs truncate" style={{ color: "#8a8888" }} dir="ltr">
-                        {ex.equipmentEn}
-                      </span>
-                    )}
-                  </div>
-
-                  {ex.primaryMuscleGroups && ex.primaryMuscleGroups.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {ex.primaryMuscleGroups.slice(0, 2).map((m) => (
-                        <span
-                          key={m.id}
-                          className="text-xs px-2 py-0.5 rounded-full"
-                          style={{
-                            background: "rgba(202,253,0,0.1)",
-                            color: "#cafd00",
-                            fontFamily: "JetBrains Mono, monospace",
-                          }}
-                          dir={isRtl && m.nameAr ? "rtl" : "ltr"}
-                        >
-                          {isRtl ? m.nameAr || m.nameEn : m.nameEn}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="mt-auto pt-2 flex items-center justify-between gap-2">
-                    <span
-                      className="flex items-center gap-1.5 text-xs font-medium transition-colors group-hover:text-[#cafd00]"
-                      style={{ color: "#8a8888", fontFamily: "JetBrains Mono, monospace" }}
-                    >
-                      {t.common.details}
-                      <ArrowRight
-                        className="w-3.5 h-3.5"
-                        style={{ transform: isRtl ? "scaleX(-1)" : undefined }}
-                      />
-                    </span>
-                    <button
-                      type="button"
-                      onClick={(e) => openEdit(e, ex)}
-                      title={t.common.edit}
-                      aria-label={`${t.common.edit} — ${isRtl ? ex.nameAr || ex.nameEn : ex.nameEn}`}
-                      className="p-1.5 rounded-lg transition-colors hover:bg-[#2a2a28]"
-                      style={{ color: "#adaaaa" }}
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </Link>
-              );
-            })}
+                        {head}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {exercises.map((ex) => {
+                    const thumb = exerciseImageUrl(ex.imageUrl);
+                    const cell = `px-5 py-3 ${isRtl ? "text-right" : "text-left"}`;
+                    return (
+                      <tr
+                        key={ex.id}
+                        onClick={() => router.push(`/admin/exercises/${ex.id}`)}
+                        className="border-t transition-colors hover:bg-[#1a1a1a] cursor-pointer"
+                        style={{ borderColor: "#20201f" }}
+                      >
+                        <td className={cell}>
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div
+                              className="w-11 h-11 rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0"
+                              style={{ background: "#20201f" }}
+                            >
+                              {thumb ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                  src={thumb}
+                                  alt={ex.nameEn}
+                                  loading="lazy"
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).style.visibility = "hidden";
+                                  }}
+                                />
+                              ) : (
+                                <Dumbbell className="w-4 h-4" style={{ color: "#cafd00", opacity: 0.4 }} />
+                              )}
+                            </div>
+                            <div className="min-w-0">
+                              <p
+                                className="text-sm font-medium truncate max-w-[200px]"
+                                style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}
+                                dir="ltr"
+                                title={ex.nameEn}
+                              >
+                                {ex.nameEn}
+                              </p>
+                              {ex.nameAr && (
+                                <p className="text-xs truncate max-w-[200px] mt-0.5" style={{ color: "#8a8888" }} dir="rtl" lang="ar">
+                                  {ex.nameAr}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                        <td className={cell}>
+                          <Badge variant={difficultyVariant(ex.level)}>
+                            {t.exercises[difficultyKey(ex.level)]}
+                          </Badge>
+                        </td>
+                        <td className={cell}>
+                          <span className="text-sm truncate max-w-[160px] inline-block" style={{ color: "#adaaaa" }} dir="ltr">
+                            {ex.equipmentEn || "—"}
+                          </span>
+                        </td>
+                        <td className={cell}>
+                          {ex.primaryMuscleGroups && ex.primaryMuscleGroups.length > 0 ? (
+                            <div className="flex flex-wrap gap-1">
+                              {ex.primaryMuscleGroups.slice(0, 2).map((m) => (
+                                <span
+                                  key={m.id}
+                                  className="text-xs px-2 py-0.5 rounded-full"
+                                  style={{
+                                    background: "rgba(202,253,0,0.1)",
+                                    color: "#cafd00",
+                                    fontFamily: "JetBrains Mono, monospace",
+                                  }}
+                                  dir={isRtl && m.nameAr ? "rtl" : "ltr"}
+                                >
+                                  {isRtl ? m.nameAr || m.nameEn : m.nameEn}
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-sm" style={{ color: "#8a8888" }}>—</span>
+                          )}
+                        </td>
+                        <td className="px-5 py-3">
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              type="button"
+                              onClick={(e) => openEdit(e, ex)}
+                              title={t.common.edit}
+                              aria-label={`${t.common.edit} — ${isRtl ? ex.nameAr || ex.nameEn : ex.nameEn}`}
+                              className="p-2 rounded-lg transition-colors hover:bg-[#20201f] hover:text-[#cafd00]"
+                              style={{ color: "#adaaaa" }}
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <ChevronRight
+                              className="w-4 h-4 flex-shrink-0"
+                              style={{ color: "#8a8888", transform: isRtl ? "scaleX(-1)" : undefined }}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 

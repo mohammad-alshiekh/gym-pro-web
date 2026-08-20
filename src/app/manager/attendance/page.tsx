@@ -40,7 +40,7 @@ function todayForFilter(): string {
 }
 
 export default function AttendancePage() {
-  const { t, locale } = useTranslation();
+  const { t, locale, isRtl } = useTranslation();
   const [logs, setLogs] = useState<AttendanceLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [dateFilter, setDateFilter] = useState(todayForFilter());
@@ -219,7 +219,13 @@ export default function AttendancePage() {
         ) : (
           <div className="rounded-2xl border overflow-hidden" style={CARD}>
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[640px]">
+              {/* `dir` is pinned explicitly (not just inherited from the RTL
+                  page shell) so the table's own column order and each
+                  cell's text-align always agree — otherwise the browser
+                  flips column order for a `dir=rtl` ancestor while a
+                  physical `text-left` utility class stays put, and headers
+                  drift away from the data underneath them. */}
+              <table dir={isRtl ? "rtl" : "ltr"} className="w-full min-w-[640px]">
                 <thead>
                   <tr style={{ background: "#1a1a1a" }}>
                     {[
@@ -230,7 +236,7 @@ export default function AttendancePage() {
                     ].map((head) => (
                       <th
                         key={head}
-                        className="text-left text-[10px] font-medium uppercase tracking-widest px-5 py-3"
+                        className={`text-[10px] font-medium uppercase tracking-widest px-5 py-3 ${isRtl ? "text-right" : "text-left"}`}
                         style={MONO}
                       >
                         {head}
@@ -242,13 +248,14 @@ export default function AttendancePage() {
                   {visible.map((log) => {
                     const duration = sessionDuration(log);
                     const inside = !log.checkOutTime;
+                    const cell = `px-5 py-3.5 ${isRtl ? "text-right" : "text-left"}`;
                     return (
                       <tr
                         key={log.id}
                         className="border-t transition-colors hover:bg-[#1a1a1a]"
                         style={{ borderColor: "#20201f" }}
                       >
-                        <td className="px-5 py-3.5">
+                        <td className={cell}>
                           <div className="flex items-center gap-2.5 min-w-0">
                             <div
                               className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
@@ -268,7 +275,7 @@ export default function AttendancePage() {
                             </span>
                           </div>
                         </td>
-                        <td className="px-5 py-3.5">
+                        <td className={cell}>
                           <span
                             className="text-xs"
                             style={{ fontFamily: "JetBrains Mono, monospace", color: "#adaaaa" }}
@@ -277,7 +284,7 @@ export default function AttendancePage() {
                             {timeOnly(log.checkInTime, locale)}
                           </span>
                         </td>
-                        <td className="px-5 py-3.5">
+                        <td className={cell}>
                           {inside ? (
                             <span
                               className="flex items-center gap-1.5 text-xs"
@@ -299,7 +306,7 @@ export default function AttendancePage() {
                             </span>
                           )}
                         </td>
-                        <td className="px-5 py-3.5">
+                        <td className={cell}>
                           <span
                             className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
                             style={{

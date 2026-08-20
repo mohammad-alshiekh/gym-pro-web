@@ -9,6 +9,7 @@
 import axios from "axios";
 import { attachApiLogger } from "@/lib/apiLogger";
 import type { AiPlanPackage, AiPlanPackageInput } from "@/lib/aiPlans";
+import type { CoachDetail, CoachSummary } from "@/lib/coaches";
 import type { CatalogueExercise, ExerciseInput } from "@/lib/exercises";
 import type { MyGym } from "@/lib/gym";
 import type {
@@ -239,6 +240,34 @@ export const analyticsApi = {
   getStats: () => apiClient.get<GymStatistics>("/gym-statistics"),
 };
 
+// ─── Media ───────────────────────────────────────────────────────────────────
+
+export const mediaApi = {
+  /**
+   * Uploads a single file to Cloudinary via the backend and answers with the
+   * hosted URL as a plain string.
+   *
+   * The Swagger doc renders this as a raw binary body with
+   * `Content-Type: application/json`, but sending it that way 415s — the
+   * endpoint binds an `IFormFile`, so it needs actual multipart/form-data,
+   * same as the gym-image uploads above.
+   */
+  upload: (file: File, folder?: string) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    // `apiClient` defaults to "Content-Type: application/json" for every
+    // request. For FormData that header must come out entirely — setting it
+    // by hand to "multipart/form-data" (as the gym-image uploads above do)
+    // sends it without a boundary param, and this endpoint 415s on that.
+    // `undefined` here deletes the header so the browser generates the
+    // correct multipart boundary itself.
+    return apiClient.post<string>("/media/upload", formData, {
+      params: folder ? { folder } : undefined,
+      headers: { "Content-Type": undefined },
+    });
+  },
+};
+
 // ─── Coaches ─────────────────────────────────────────────────────────────────
 
 export const coachesApi = {
@@ -246,9 +275,9 @@ export const coachesApi = {
     PageNumber?: number;
     ResultsPerPage?: number;
     searchQuery?: string;
-  }) => apiClient.get("/Coach/GetAllCoachs", { params }),
+  }) => apiClient.get<Paginated<CoachSummary>>("/Coach/GetAllCoachs", { params }),
 
-  getById: (coachId: string) => apiClient.get(`/Coach/${coachId}`),
+  getById: (coachId: string) => apiClient.get<CoachDetail>(`/Coach/${coachId}`),
 
   create: (data: {
     fullName: string;

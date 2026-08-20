@@ -100,7 +100,7 @@ const en = {
     tokenLabel: "Token:",
     howToUse: "How to use",
     qrStep1: "Print or display this QR code at the gym reception desk",
-    qrStep2: "Members scan the code with the GymBro app to check in",
+    qrStep2: "Members scan the code with their app to check in",
     qrStep3: "Regenerate the QR code if you suspect it has been compromised",
     qrStep4: "Each regeneration invalidates the previous token immediately",
   },
@@ -417,6 +417,11 @@ const en = {
     activeNow: "Active Now",
     activeRate: "Active Rate",
     toastFailedLoadTransactionStats: "Failed to load transaction stats",
+    periodProgress: "Period Progress",
+    requestedOn: "Requested",
+    daysLeft: "days left",
+    daySuffix: "d",
+    expiredLabel: "Expired",
   },
 
   // Members
@@ -440,6 +445,8 @@ const en = {
     daysLeft: "Days Left",
     expires: "Expires",
     expiringSoon: "expiring in 7 days",
+    expiringSoonLabel: "Expiring Soon",
+    onThisPage: "on this page",
     sortBy: "Sort",
     sortAsc: "Ascending",
     sortDesc: "Descending",
@@ -523,6 +530,17 @@ const en = {
     toastNameEmailPasswordRequired: "Name, email and password are required",
     toastFailedLoadCoaches: "Failed to load coaches",
     toastFailedCreateCoach: "Failed to create coach",
+    backToCoaches: "Back to Coaches",
+    coachNotFound: "Coach not found",
+    overview: "Overview",
+    contactSocial: "Contact & Social",
+    gallery: "Gallery",
+    achievements: "Achievements",
+    noGalleryImages: "No gallery images",
+    noAchievements: "No achievements uploaded",
+    reviewsTitle: "Reviews",
+    noReviews: "No reviews yet",
+    anonymousTrainee: "Trainee",
   },
 
   // Trainees
@@ -728,9 +746,17 @@ const en = {
 
     // Builder
     planDetails: "Schedule Details",
-    imageUrl: "Cover Image URL",
+    imageUrl: "Cover Image",
     imageUrlHint: "Optional \u2014 shown as the schedule cover in the app",
     coverPreview: "Cover preview",
+    uploadImage: "Click to upload an image",
+    uploadImageHint: "PNG or JPG, up to a few MB",
+    uploadingImage: "Uploading...",
+    changeImage: "Change image",
+    removeImage: "Remove image",
+    uploadImageFailed: "Failed to upload image",
+    invalidImageFile: "Please choose an image file",
+    imageUploaded: "Image uploaded",
     addDay: "Add Day",
     addExercise: "Add Exercise",
     addSet: "Add Set",
@@ -820,6 +846,20 @@ const en = {
     placeholderFullName: "Full Name",
     placeholderEmail: "email@example.com",
     placeholderPhone: "+201000000000",
+  },
+
+  // Settings
+  settings: {
+    title: "Settings",
+    appearance: "Appearance",
+    theme: "Theme",
+    dark: "Dark",
+    light: "Light",
+    themeComingSoon: "Light mode is on the way — your choice is saved now and the app will re-skin once it ships.",
+    language: "Language",
+    languageHint: "Switch the interface between English and Arabic",
+    account: "Account",
+    logoutHint: "Sign out of this device",
   },
 
   // Services (GymServiceTypeEnum is 0-based on the server)

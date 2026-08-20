@@ -60,3 +60,22 @@ export function apiErrorMessage(error: unknown, fallback: string): string {
 
   return fallback;
 }
+
+/**
+ * Some endpoints only ever answer with a fixed, un-localized English
+ * sentence — apiErrorMessage would pass that straight through to an Arabic
+ * user. This checks the raw message against known phrases first and shows
+ * the matching localized string instead; anything unrecognized still falls
+ * through to apiErrorMessage's usual behavior.
+ */
+export function apiErrorMessageKnown(
+  error: unknown,
+  knownPhrases: Record<string, string>,
+  fallback: string
+): string {
+  const raw = apiErrorMessage(error, "");
+  for (const [phrase, localized] of Object.entries(knownPhrases)) {
+    if (raw.includes(phrase)) return localized;
+  }
+  return raw || fallback;
+}

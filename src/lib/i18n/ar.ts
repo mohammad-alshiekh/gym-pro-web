@@ -102,7 +102,7 @@ const ar: Translations = {
     tokenLabel: "الرمز:",
     howToUse: "كيفية الاستخدام",
     qrStep1: "اطبع أو اعرض رمز QR هذا في مكتب الاستقبال",
-    qrStep2: "يقوم الأعضاء بمسح الرمز باستخدام تطبيق GymBio لتسجيل الدخول",
+    qrStep2: "يقوم الأعضاء بمسح الرمز باستخدام التطبيق لتسجيل الحضور",
     qrStep3: "أعد إنشاء رمز QR إذا كنت تشتبه في أنه تم اختراقه",
     qrStep4: "كل إعادة إنشاء تلغي الرمز السابق فورًا",
   },
@@ -418,6 +418,11 @@ const ar: Translations = {
     activeNow: "نشط الآن",
     activeRate: "معدل النشاط",
     toastFailedLoadTransactionStats: "فشل تحميل إحصائيات المعاملات",
+    periodProgress: "تقدم الفترة",
+    requestedOn: "تاريخ الطلب",
+    daysLeft: "يوم متبقي",
+    daySuffix: "ي",
+    expiredLabel: "منتهي",
   },
 
   // Members
@@ -441,6 +446,8 @@ const ar: Translations = {
     daysLeft: "الأيام المتبقية",
     expires: "ينتهي",
     expiringSoon: "تنتهي خلال 7 أيام",
+    expiringSoonLabel: "تنتهي قريبًا",
+    onThisPage: "في هذه الصفحة",
     sortBy: "ترتيب",
     sortAsc: "تصاعدي",
     sortDesc: "تنازلي",
@@ -524,6 +531,17 @@ const ar: Translations = {
     toastNameEmailPasswordRequired: "الاسم والبريد وكلمة المرور مطلوبة",
     toastFailedLoadCoaches: "فشل تحميل المدربين",
     toastFailedCreateCoach: "فشل إنشاء المدرب",
+    backToCoaches: "الرجوع إلى المدربين",
+    coachNotFound: "المدرب غير موجود",
+    overview: "نبذة عامة",
+    contactSocial: "التواصل والحسابات",
+    gallery: "معرض الصور",
+    achievements: "الإنجازات",
+    noGalleryImages: "لا توجد صور في المعرض",
+    noAchievements: "لم يتم رفع أي إنجازات",
+    reviewsTitle: "التقييمات",
+    noReviews: "لا توجد تقييمات بعد",
+    anonymousTrainee: "متدرب",
   },
 
   // Trainees
@@ -728,9 +746,17 @@ const ar: Translations = {
 
     // المُنشئ
     planDetails: "تفاصيل الجدول",
-    imageUrl: "رابط صورة الغلاف",
+    imageUrl: "صورة الغلاف",
     imageUrlHint: "اختياري — تظهر كغلاف للجدول في التطبيق",
     coverPreview: "معاينة الغلاف",
+    uploadImage: "اضغط لرفع صورة",
+    uploadImageHint: "PNG أو JPG، بحد أقصى بضعة ميغابايت",
+    uploadingImage: "جارٍ الرفع...",
+    changeImage: "تغيير الصورة",
+    removeImage: "إزالة الصورة",
+    uploadImageFailed: "فشل رفع الصورة",
+    invalidImageFile: "الرجاء اختيار ملف صورة",
+    imageUploaded: "تم رفع الصورة",
     addDay: "إضافة يوم",
     addExercise: "إضافة تمرين",
     addSet: "إضافة مجموعة",
@@ -820,6 +846,20 @@ const ar: Translations = {
     placeholderFullName: "الاسم الكامل",
     placeholderEmail: "email@example.com",
     placeholderPhone: "+201000000000",
+  },
+
+  // الإعدادات
+  settings: {
+    title: "الإعدادات",
+    appearance: "المظهر",
+    theme: "السمة",
+    dark: "داكن",
+    light: "فاتح",
+    themeComingSoon: "الوضع الفاتح قادم قريبًا — تم حفظ اختيارك الآن وسيُطبّق على شكل التطبيق فور توفره.",
+    language: "اللغة",
+    languageHint: "التبديل بين العربية والإنجليزية في الواجهة",
+    account: "الحساب",
+    logoutHint: "تسجيل الخروج من هذا الجهاز",
   },
 
   // الخدمات (ترقيم الخادم يبدأ من 0)

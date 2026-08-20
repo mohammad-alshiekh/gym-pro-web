@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Plus, Building2, MapPin, Phone, Trash2, Eye, EyeOff, Search } from "lucide-react";
+import { Plus, Building2, Phone, Trash2, Eye, EyeOff, Search } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
@@ -55,7 +55,7 @@ const defaultForm: GymFormState = {
 };
 
 export default function AdminGymsPage() {
-  const { t, locale } = useTranslation();
+  const { t, locale, isRtl } = useTranslation();
   const [gyms, setGyms] = useState<Gym[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
@@ -197,114 +197,141 @@ export default function AdminGymsPage() {
           </Button>
         </div>
 
-        {/* Grid */}
+        {/* Table */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="space-y-2">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="rounded-2xl h-48 shimmer" />
+              <div key={i} className="h-16 rounded-xl shimmer" />
             ))}
           </div>
         ) : gyms.length === 0 ? (
-          <div className="text-center py-20" style={{ color: "#8a8888" }}>
-            <Building2 className="w-12 h-12 mx-auto mb-4 opacity-30" />
-            <p>{t.common.noData}</p>
+          <div className="rounded-2xl border py-20 text-center" style={{ borderColor: "#2a2a2a", background: "#131313" }}>
+            <Building2 className="w-12 h-12 mx-auto mb-4 opacity-30" style={{ color: "#cafd00" }} />
+            <p style={{ color: "#8a8888" }}>{t.common.noData}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {gyms.map((gym) => (
-              <div
-                key={gym.id}
-                className="rounded-2xl border p-5 flex flex-col gap-4 card-interactive"
-                style={{ background: "#131313", borderColor: "#2a2a2a" }}
-              >
-                <div className="flex items-start gap-3">
-                  {gym.logoUrl ? (
-                    <img
-                      src={gym.logoUrl}
-                      alt={gym.name}
-                      className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
-                    />
-                  ) : (
-                    <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                      style={{ background: "#20201f" }}
-                    >
-                      <Building2 className="w-6 h-6" style={{ color: "#cafd00" }} />
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p
-                      className="font-semibold text-sm truncate"
-                      style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}
-                    >
-                      {gym.name}
-                    </p>
-                    <Badge variant="default" className="mt-1">
-                      {gymTypeLabel(gym.gymType, locale)}
-                    </Badge>
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  {gym.phone && (
-                    <div
-                      className="flex items-center gap-2 text-xs"
-                      style={{ color: "#adaaaa" }}
-                    >
-                      <Phone className="w-3.5 h-3.5" style={{ color: "#8a8888" }} />
-                      {gym.phone}
-                    </div>
-                  )}
-                  {(gym.latitude !== 0 || gym.longitude !== 0) && (
-                    <div
-                      className="flex items-center gap-2 text-xs"
-                      style={{ color: "#adaaaa" }}
-                    >
-                      <MapPin className="w-3.5 h-3.5" style={{ color: "#8a8888" }} />
-                      {gym.latitude?.toFixed(4)}, {gym.longitude?.toFixed(4)}
-                    </div>
-                  )}
-                  {gym.gymManager && (
-                    <div className="text-xs" style={{ color: "#adaaaa" }}>
-                      {t.gyms.gymManager}:{" "}
-                      <span style={{ color: "#ffffff" }}>{gym.gymManager.name}</span>
-                    </div>
-                  )}
-                </div>
-
-                <div
-                  className="flex items-center justify-between pt-2 border-t"
-                  style={{ borderColor: "#20201f" }}
-                >
-                  <div
-                    className="flex items-center gap-3 text-xs"
-                    style={{
-                      fontFamily: "JetBrains Mono, monospace",
-                      color: "#8a8888",
-                    }}
-                  >
-                    <span>{(gym.plans as unknown[])?.length ?? 0}{t.gyms.plansCount}</span>
-                    <span>{(gym.images as unknown[])?.length ?? 0}{t.gyms.photosCount}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => setViewTarget(gym)}
-                      className="p-1.5 rounded-lg hover:bg-[#20201f] transition-colors"
-                      style={{ color: "#adaaaa" }}
-                    >
-                      <Eye className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => setDeleteTarget(gym)}
-                      className="p-1.5 rounded-lg hover:bg-[#5c1620]/20 transition-colors"
-                      style={{ color: "#ff6e81" }}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="rounded-2xl border overflow-hidden" style={{ borderColor: "#2a2a2a", background: "#131313" }}>
+            <div className="overflow-x-auto">
+              {/* `dir` is pinned explicitly (not just inherited from the RTL
+                  page shell) so the table's own column order and each
+                  cell's text-align always agree — otherwise the browser
+                  flips column order for a `dir=rtl` ancestor while a
+                  physical `text-left` utility class stays put, and headers
+                  drift away from the data underneath them. */}
+              <table dir={isRtl ? "rtl" : "ltr"} className="w-full min-w-[760px]">
+                <thead>
+                  <tr style={{ background: "#1a1a1a" }}>
+                    {[
+                      t.gyms.title,
+                      t.gyms.gymManager,
+                      t.common.phone,
+                      t.gyms.plans,
+                      t.common.actions,
+                    ].map((head, i) => (
+                      <th
+                        key={head}
+                        className={`text-[10px] font-medium uppercase tracking-widest px-5 py-3.5 ${
+                          // Actions reads as a toolbar, not a data column — center its header to match.
+                          i === 4 ? "text-center" : isRtl ? "text-right" : "text-left"
+                        }`}
+                        style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}
+                      >
+                        {head}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {gyms.map((gym) => {
+                    const cell = `px-5 py-4 ${isRtl ? "text-right" : "text-left"}`;
+                    return (
+                      <tr
+                        key={gym.id}
+                        className="border-t transition-colors hover:bg-[#1a1a1a]"
+                        style={{ borderColor: "#20201f" }}
+                      >
+                        <td className={cell}>
+                          <div className="flex items-center gap-3 min-w-0">
+                            {gym.logoUrl ? (
+                              <img
+                                src={gym.logoUrl}
+                                alt={gym.name}
+                                className="w-9 h-9 rounded-xl object-cover flex-shrink-0"
+                              />
+                            ) : (
+                              <div
+                                className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                                style={{ background: "rgba(202,253,0,0.1)" }}
+                              >
+                                <Building2 className="w-4 h-4" style={{ color: "#cafd00" }} />
+                              </div>
+                            )}
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium truncate max-w-[200px]" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>
+                                {gym.name}
+                              </p>
+                              <Badge variant="default" className="mt-1">
+                                {gymTypeLabel(gym.gymType, locale)}
+                              </Badge>
+                            </div>
+                          </div>
+                        </td>
+                        <td className={cell}>
+                          <span className="text-sm" style={{ color: gym.gymManager ? "#adaaaa" : "#8a8888" }}>
+                            {gym.gymManager?.name ?? "—"}
+                          </span>
+                        </td>
+                        <td className={cell}>
+                          {gym.phone ? (
+                            <span className="flex items-center gap-1.5 text-sm" style={{ color: "#adaaaa" }} dir="ltr">
+                              <Phone className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#8a8888" }} />
+                              {gym.phone}
+                            </span>
+                          ) : (
+                            <span className="text-sm" style={{ color: "#8a8888" }}>—</span>
+                          )}
+                        </td>
+                        <td className={cell}>
+                          <div className="flex items-center gap-2 text-xs" style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}>
+                            <span>{(gym.plans as unknown[])?.length ?? 0}{t.gyms.plansCount}</span>
+                            <span style={{ color: "#2a2a2a" }}>·</span>
+                            <span>{(gym.images as unknown[])?.length ?? 0}{t.gyms.photosCount}</span>
+                          </div>
+                        </td>
+                        <td className="px-5 py-4 text-center">
+                          {/* A bordered toolbar instead of loose icons, matching
+                              the treatment used elsewhere in the admin tables. */}
+                          <div
+                            className="inline-flex items-center gap-0.5 p-1 rounded-xl border"
+                            style={{ background: "#0e0e0e", borderColor: "#2a2a2a" }}
+                          >
+                            <button
+                              onClick={() => setViewTarget(gym)}
+                              title={t.common.view}
+                              aria-label={t.common.view}
+                              className="p-2 rounded-lg transition-colors hover:bg-[#20201f] hover:text-[#cafd00]"
+                              style={{ color: "#adaaaa" }}
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                            <span className="w-px h-5 flex-shrink-0" style={{ background: "#2a2a2a" }} />
+                            <button
+                              onClick={() => setDeleteTarget(gym)}
+                              title={t.gyms.deleteGym}
+                              aria-label={t.gyms.deleteGym}
+                              className="p-2 rounded-lg transition-colors hover:bg-[#5c1620]/30"
+                              style={{ color: "#ff6e81" }}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 

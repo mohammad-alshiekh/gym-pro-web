@@ -120,16 +120,17 @@ export default function Sidebar() {
       icon: <LayoutDashboard className="w-5 h-5" />,
       roles: ["gym_manager"],
     },
-    {
-      label: t.nav.plans,
-      href: "/manager/plans",
-      icon: <ScrollText className="w-5 h-5" />,
-      roles: ["gym_manager"],
-    },
+    
     {
       label: t.nav.subscriptions,
       href: "/manager/subscriptions",
       icon: <ClipboardList className="w-5 h-5" />,
+      roles: ["gym_manager"],
+    },
+    {
+      label: t.nav.plans,
+      href: "/manager/plans",
+      icon: <ScrollText className="w-5 h-5" />,
       roles: ["gym_manager"],
     },
     {
@@ -164,6 +165,14 @@ export default function Sidebar() {
       icon: <Building2 className="w-5 h-5" />,
       roles: ["gym_manager"],
     },
+
+    // Shared — one entry for both roles instead of duplicating it per section.
+    // {
+    //   label: t.nav.settings,
+    //   href: "/settings",
+    //   icon: <Settings className="w-5 h-5" />,
+    //   roles: ["super_admin", "gym_manager"],
+    // },
   ];
 
   const filteredNav = navItems.filter((item) =>

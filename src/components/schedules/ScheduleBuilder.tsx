@@ -10,10 +10,12 @@ import {
   Dumbbell,
   ImageIcon,
   Layers,
+  Loader2,
   Plus,
   Repeat,
   Save,
   Trash2,
+  Upload,
   X,
 } from "lucide-react";
 import Button from "@/components/ui/Button";
@@ -21,6 +23,8 @@ import Badge from "@/components/ui/Badge";
 import ExercisePicker, { type PickedExercise } from "@/components/schedules/ExercisePicker";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useExerciseCatalogue } from "@/hooks/useExerciseCatalogue";
+import { mediaApi } from "@/lib/api";
+import { apiErrorMessage } from "@/lib/apiError";
 import { exerciseImageUrl } from "@/lib/exercises";
 import {
   DIFFICULTY_LEVELS,
@@ -213,6 +217,8 @@ export default function ScheduleBuilder({
   const [picker, setPicker] = useState<
     { mode: "single"; dayKey: string; exKey: string } | { mode: "multi"; dayKey: string } | null
   >(null);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const coverInputRef = useRef<HTMLInputElement>(null);
 
   // Anchors used to scroll the first invalid day/exercise into view.
   const anchors = useRef(new Map<string, HTMLElement>());
@@ -328,6 +334,29 @@ export default function ScheduleBuilder({
       ...ex,
       sets: ex.sets.map((s) => (s.key === setKey ? { ...s, [field]: value } : s)),
     }));
+
+  // ── Cover image upload ──
+  const handleCoverFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file after a failed attempt
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error(t.exerciseSchedules.invalidImageFile);
+      return;
+    }
+
+    setUploadingCover(true);
+    try {
+      const res = await mediaApi.upload(file, "exercise-schedules");
+      patch({ imageUrl: res.data });
+      toast.success(t.exerciseSchedules.imageUploaded);
+    } catch (err) {
+      toast.error(apiErrorMessage(err, t.exerciseSchedules.uploadImageFailed));
+    } finally {
+      setUploadingCover(false);
+    }
+  };
 
   // ── Exercise picking ──
   const handlePicked = (picked: PickedExercise[]) => {
@@ -486,22 +515,80 @@ export default function ScheduleBuilder({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="md:col-span-2 flex flex-col gap-1.5">
             <FieldLabel>{t.exerciseSchedules.imageUrl}</FieldLabel>
-            <div className="relative">
-              <ImageIcon
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4"
-                style={{ color: "#8a8888" }}
-              />
-              <input
-                value={form.imageUrl}
-                onChange={(e) => patch({ imageUrl: e.target.value })}
-                placeholder="https://..."
-                className="w-full py-2.5 pl-10 pr-3.5 rounded-xl border text-sm input-accent"
-                style={inputStyle}
-              />
-            </div>
-            <p className="text-xs" style={{ color: "#8a8888" }}>
-              {t.exerciseSchedules.imageUrlHint}
-            </p>
+            <input
+              ref={coverInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleCoverFileChange}
+              className="hidden"
+            />
+
+            {form.imageUrl.trim() !== "" ? (
+              <div
+                className="relative w-full max-w-md h-36 rounded-xl overflow-hidden border"
+                style={{ background: "#20201f", borderColor: "#2a2a2a" }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={form.imageUrl}
+                  alt={t.exerciseSchedules.coverPreview}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.visibility = "hidden";
+                  }}
+                />
+                {uploadingCover && (
+                  <div
+                    className="absolute inset-0 flex items-center justify-center"
+                    style={{ background: "rgba(14,14,14,0.7)" }}
+                  >
+                    <Loader2 className="w-5 h-5 animate-spin" style={{ color: "#cafd00" }} />
+                  </div>
+                )}
+                <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    title={t.exerciseSchedules.changeImage}
+                    onClick={() => coverInputRef.current?.click()}
+                    disabled={uploadingCover}
+                    className="p-1.5 rounded-lg backdrop-blur-sm transition-colors disabled:opacity-50"
+                    style={{ background: "rgba(14,14,14,0.75)", color: "#ffffff" }}
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    title={t.exerciseSchedules.removeImage}
+                    onClick={() => patch({ imageUrl: "" })}
+                    disabled={uploadingCover}
+                    className="p-1.5 rounded-lg backdrop-blur-sm transition-colors disabled:opacity-50"
+                    style={{ background: "rgba(14,14,14,0.75)", color: "#ff6e81" }}
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => coverInputRef.current?.click()}
+                disabled={uploadingCover}
+                className="w-full max-w-md h-36 rounded-xl border border-dashed flex flex-col items-center justify-center gap-1.5 transition-colors hover:border-[#cafd00] hover:text-[#cafd00] disabled:opacity-60"
+                style={{ borderColor: "#2a2a2a", color: "#8a8888" }}
+              >
+                {uploadingCover ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <ImageIcon className="w-5 h-5" />
+                )}
+                <span className="text-sm font-medium">
+                  {uploadingCover ? t.exerciseSchedules.uploadingImage : t.exerciseSchedules.uploadImage}
+                </span>
+                {!uploadingCover && (
+                  <span className="text-xs opacity-70">{t.exerciseSchedules.uploadImageHint}</span>
+                )}
+              </button>
+            )}
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -530,26 +617,6 @@ export default function ScheduleBuilder({
             </div>
           </div>
         </div>
-
-        {form.imageUrl.trim() !== "" && (
-          <div className="flex flex-col gap-1.5">
-            <FieldLabel>{t.exerciseSchedules.coverPreview}</FieldLabel>
-            <div
-              className="w-full max-w-md h-36 rounded-xl overflow-hidden border"
-              style={{ background: "#20201f", borderColor: "#2a2a2a" }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={form.imageUrl}
-                alt={t.exerciseSchedules.coverPreview}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.visibility = "hidden";
-                }}
-              />
-            </div>
-          </div>
-        )}
       </section>
 
       {/* ── Days ── */}

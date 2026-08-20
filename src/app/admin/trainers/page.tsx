@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Plus, UserCheck, Star, Users, Search, Eye, CheckCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Plus, UserCheck, Search, ChevronRight, Star } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
@@ -9,27 +10,9 @@ import Badge from "@/components/ui/Badge";
 import Pagination from "@/components/ui/Pagination";
 import { useTranslation } from "@/hooks/useTranslation";
 import { coachesApi } from "@/lib/api";
+import type { CoachSummary } from "@/lib/coaches";
 import { getInitials } from "@/lib/utils";
 import toast from "react-hot-toast";
-
-interface Coach {
-  id: string;
-  name: string;
-  email: string;
-  phoneNumber?: string;
-  profilePictureUrl?: string;
-  bio?: string;
-  yearsOfExperience?: number;
-  isAvailableForClients: boolean;
-  isVerifiedByAdmin: boolean;
-  numberOfClients: number;
-  averageRatings: number;
-  ratingsCount: number;
-  facebookUrl?: string;
-  instagramUrl?: string;
-  tikTokUrl?: string;
-  youTubeUrl?: string;
-}
 
 interface CoachFormState {
   fullName: string;
@@ -56,14 +39,14 @@ const defaultForm: CoachFormState = {
 };
 
 export default function AdminTrainersPage() {
-  const { t, locale } = useTranslation();
-  const [coaches, setCoaches] = useState<Coach[]>([]);
+  const { t, locale, isRtl } = useTranslation();
+  const router = useRouter();
+  const [coaches, setCoaches] = useState<CoachSummary[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
-  const [viewTarget, setViewTarget] = useState<Coach | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState<CoachFormState>(defaultForm);
 
@@ -160,83 +143,114 @@ value={search}
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="rounded-2xl h-52 shimmer" />
+          <div className="space-y-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-16 rounded-xl shimmer" />
             ))}
           </div>
         ) : coaches.length === 0 ? (
-          <div className="text-center py-20" style={{ color: "#8a8888" }}>
-            <UserCheck className="w-12 h-12 mx-auto mb-4 opacity-30" />
-            <p>{t.common.noData}</p>
+          <div className="rounded-2xl border py-20 text-center" style={{ borderColor: "#2a2a2a", background: "#131313" }}>
+            <UserCheck className="w-12 h-12 mx-auto mb-4 opacity-30" style={{ color: "#cafd00" }} />
+            <p style={{ color: "#8a8888" }}>{t.common.noData}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {coaches.map((coach) => (
-              <div
-                key={coach.id}
-                className="rounded-2xl border p-5 flex flex-col gap-3 card-interactive"
-                style={{ background: "#131313", borderColor: "#2a2a2a" }}
-              >
-                <div className="flex items-center gap-3">
-                  {coach.profilePictureUrl ? (
-                    <img src={coach.profilePictureUrl} alt={coach.name} className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold"
-                      style={{ background: "#20201f", color: "#cafd00", fontFamily: "Lexend, sans-serif" }}>
-                      {getInitials(coach.name)}
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm truncate" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>
-                      {coach.name}
-                    </p>
-                    <p className="text-xs truncate" style={{ color: "#8a8888" }}>{coach.email}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {coach.isVerifiedByAdmin ? (
-                    <Badge variant="success">{t.coaches.verified}</Badge>
-                  ) : (
-                    <Badge variant="neutral">{t.coaches.unverified}</Badge>
-                  )}
-                  {coach.isAvailableForClients && (
-                    <Badge variant="info">{t.coaches.available}</Badge>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-3 gap-2 text-center">
-                  <div>
-                    <p className="text-base font-bold" style={{ fontFamily: "Lexend, sans-serif", color: "#cafd00" }}>
-                      {coach.yearsOfExperience ?? 0}
-                    </p>
-                    <p className="text-xs" style={{ color: "#8a8888" }}>{t.coaches.yrsExp}</p>
-                  </div>
-                  <div>
-                    <p className="text-base font-bold" style={{ fontFamily: "Lexend, sans-serif", color: "#4ae176" }}>
-                      {coach.numberOfClients}
-                    </p>
-                    <p className="text-xs" style={{ color: "#8a8888" }}>{t.coaches.clientsCount}</p>
-                  </div>
-                  <div>
-                    <p className="text-base font-bold" style={{ fontFamily: "Lexend, sans-serif", color: "#ffd04a" }}>
-                      {coach.averageRatings?.toFixed(1) ?? "0"}
-                    </p>
-                    <p className="text-xs" style={{ color: "#8a8888" }}>{t.coaches.ratingCount}</p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => setViewTarget(coach)}
-                  className="w-full flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-medium transition-colors hover:bg-[#20201f]"
-                  style={{ color: "#adaaaa", border: "1px solid #2a2a2a" }}
-                >
-                  <Eye className="w-3.5 h-3.5" />
-                  {t.coaches.viewDetails}
-                </button>
-              </div>
-            ))}
+          <div className="rounded-2xl border overflow-hidden" style={{ borderColor: "#2a2a2a", background: "#131313" }}>
+            <div className="overflow-x-auto">
+              {/* `dir` is pinned explicitly (not just inherited from the RTL
+                  page shell) so the table's own column order and each
+                  cell's text-align always agree — otherwise the browser
+                  flips column order for a `dir=rtl` ancestor while a
+                  physical `text-left` utility class stays put, and headers
+                  drift away from the data underneath them. */}
+              <table dir={isRtl ? "rtl" : "ltr"} className="w-full min-w-[760px]">
+                <thead>
+                  <tr style={{ background: "#1a1a1a" }}>
+                    {[
+                      t.coaches.coachName,
+                      t.coaches.experienceLabel,
+                      t.coaches.clientsLabel,
+                      t.coaches.ratingLabel,
+                      t.common.status,
+                      "",
+                    ].map((head, i) => (
+                      <th
+                        key={i}
+                        className={`text-[10px] font-medium uppercase tracking-widest px-5 py-3.5 ${isRtl ? "text-right" : "text-left"}`}
+                        style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}
+                      >
+                        {head}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {coaches.map((coach) => {
+                    const cell = `px-5 py-4 ${isRtl ? "text-right" : "text-left"}`;
+                    return (
+                      <tr
+                        key={coach.id}
+                        onClick={() => router.push(`/admin/trainers/${coach.id}`)}
+                        className="border-t transition-colors hover:bg-[#1a1a1a] cursor-pointer"
+                        style={{ borderColor: "#20201f" }}
+                      >
+                        <td className={cell}>
+                          <div className="flex items-center gap-3 min-w-0">
+                            {coach.profilePictureUrl ? (
+                              <img src={coach.profilePictureUrl} alt={coach.name} className="w-9 h-9 rounded-full object-cover flex-shrink-0" />
+                            ) : (
+                              <div
+                                className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold"
+                                style={{ background: "rgba(202,253,0,0.1)", color: "#cafd00", fontFamily: "Lexend, sans-serif" }}
+                              >
+                                {getInitials(coach.name)}
+                              </div>
+                            )}
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium truncate max-w-[180px]" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>
+                                {coach.name}
+                              </p>
+                              <p className="text-xs truncate max-w-[180px]" style={{ color: "#8a8888" }}>{coach.email}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className={cell}>
+                          <span className="text-sm" style={{ fontFamily: "JetBrains Mono, monospace", color: "#adaaaa" }}>
+                            {coach.yearsOfExperience ?? 0} {t.coaches.yrsExp}
+                          </span>
+                        </td>
+                        <td className={cell}>
+                          <span className="text-sm" style={{ fontFamily: "JetBrains Mono, monospace", color: "#4ae176" }}>
+                            {coach.numberOfClients}
+                          </span>
+                        </td>
+                        <td className={cell}>
+                          <span className="flex items-center gap-1 text-sm" style={{ fontFamily: "JetBrains Mono, monospace", color: "#ffd04a" }}>
+                            <Star className="w-3.5 h-3.5 fill-current" />
+                            {coach.averageRatings?.toFixed(1) ?? "0"}
+                          </span>
+                        </td>
+                        <td className={cell}>
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            {coach.isVerifiedByAdmin ? (
+                              <Badge variant="success">{t.coaches.verified}</Badge>
+                            ) : (
+                              <Badge variant="neutral">{t.coaches.unverified}</Badge>
+                            )}
+                            
+                          </div>
+                        </td>
+                        <td className="px-5 py-4">
+                          <ChevronRight
+                            className="w-4 h-4"
+                            style={{ color: "#8a8888", transform: isRtl ? "scaleX(-1)" : undefined }}
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
@@ -310,54 +324,10 @@ value={search}
                 }}
               />
             </button>
-            <span className="text-sm" style={{ color: "#ffffff" }}>Verify coach immediately</span>
+            <span className="text-sm" style={{ color: "#ffffff" }}>{t.coaches.verifyCoachImmediately}</span>
           </div>
         </div>
       </Modal>
-
-      {/* View Coach Modal */}
-      {viewTarget && (
-        <Modal open={!!viewTarget} onClose={() => setViewTarget(null)} title={t.coaches.coachDetails} size="md">
-          <div className="space-y-5">
-            <div className="flex items-center gap-4">
-              {viewTarget.profilePictureUrl ? (
-                <img src={viewTarget.profilePictureUrl} alt={viewTarget.name} className="w-20 h-20 rounded-2xl object-cover" />
-              ) : (
-                <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-2xl font-bold"
-                  style={{ background: "#20201f", color: "#cafd00", fontFamily: "Lexend, sans-serif" }}>
-                  {getInitials(viewTarget.name)}
-                </div>
-              )}
-              <div>
-                <h3 className="text-lg font-bold" style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}>{viewTarget.name}</h3>
-                <p className="text-sm" style={{ color: "#8a8888" }}>{viewTarget.email}</p>
-                <div className="flex gap-2 mt-2">
-                  {viewTarget.isVerifiedByAdmin ? (
-                    <Badge variant="success"><CheckCircle className="w-3 h-3 mr-1" />{t.coaches.verified}</Badge>
-                  ) : (
-                    <Badge variant="neutral">{t.coaches.unverified}</Badge>
-                  )}
-                </div>
-              </div>
-            </div>
-            {viewTarget.bio && (
-              <p className="text-sm" style={{ color: "#adaaaa" }}>{viewTarget.bio}</p>
-            )}
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { label: t.coaches.experienceLabel, value: `${viewTarget.yearsOfExperience ?? 0} ${t.coaches.yrsExp}`, color: "#cafd00" },
-                { label: t.coaches.clientsLabel, value: viewTarget.numberOfClients, color: "#4ae176" },
-                { label: t.coaches.ratingLabel, value: `${viewTarget.averageRatings?.toFixed(1)} ★`, color: "#ffd04a" },
-              ].map(({ label, value, color }) => (
-                <div key={label} className="rounded-xl p-3 text-center" style={{ background: "#20201f" }}>
-                  <p className="text-lg font-bold" style={{ fontFamily: "Lexend, sans-serif", color }}>{value}</p>
-                  <p className="text-xs" style={{ color: "#8a8888" }}>{label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Modal>
-      )}
     </DashboardLayout>
   );
 }
