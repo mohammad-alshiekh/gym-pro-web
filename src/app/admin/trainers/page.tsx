@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, UserCheck, Search, ChevronRight, Star } from "lucide-react";
+import { Plus, UserCheck, Search, ChevronRight, Star, ShieldCheck, ShieldOff } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
@@ -49,6 +49,8 @@ export default function AdminTrainersPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState<CoachFormState>(defaultForm);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [unverifyTarget, setUnverifyTarget] = useState<CoachSummary | null>(null);
 
   const perPage = 12;
 
@@ -104,6 +106,27 @@ export default function AdminTrainersPage() {
 
   const setField = (key: keyof CoachFormState, value: string | boolean) => {
     setForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  // `IsVerifiedByAdmin` is a flag only today — nothing downstream reads it
+  // to gate login, listing, or new subscriptions, so unverifying gets a
+  // confirmation with that caveat spelled out instead of firing silently.
+  const applyToggle = async (coachId: string, activate: boolean) => {
+    setTogglingId(coachId);
+    try {
+      const res = activate
+        ? await coachesApi.activate(coachId)
+        : await coachesApi.deactivate(coachId);
+      setCoaches((prev) =>
+        prev.map((c) => (c.id === coachId ? { ...c, isVerifiedByAdmin: res.data.isVerifiedByAdmin } : c))
+      );
+      toast.success(activate ? t.coaches.toastVerifySuccess : t.coaches.toastUnverifySuccess);
+    } catch {
+      toast.error(t.coaches.toastToggleFailed);
+    } finally {
+      setTogglingId(null);
+      setUnverifyTarget(null);
+    }
   };
 
   const inputStyle = {
@@ -230,13 +253,37 @@ value={search}
                           </span>
                         </td>
                         <td className={cell}>
-                          <div className="flex flex-wrap items-center gap-1.5">
+                          <div className="flex flex-wrap items-center gap-2">
                             {coach.isVerifiedByAdmin ? (
                               <Badge variant="success">{t.coaches.verified}</Badge>
                             ) : (
                               <Badge variant="neutral">{t.coaches.unverified}</Badge>
                             )}
-                            
+                            <button
+                              type="button"
+                              disabled={togglingId === coach.id}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (coach.isVerifiedByAdmin) {
+                                  setUnverifyTarget(coach);
+                                } else {
+                                  applyToggle(coach.id, true);
+                                }
+                              }}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors disabled:opacity-40"
+                              style={
+                                coach.isVerifiedByAdmin
+                                  ? { borderColor: "#2a2a2a", color: "#adaaaa" }
+                                  : { borderColor: "rgba(74,225,118,0.35)", color: "#4ae176" }
+                              }
+                            >
+                              {coach.isVerifiedByAdmin ? (
+                                <ShieldOff className="w-3.5 h-3.5" />
+                              ) : (
+                                <ShieldCheck className="w-3.5 h-3.5" />
+                              )}
+                              {coach.isVerifiedByAdmin ? t.coaches.unverify : t.coaches.verify}
+                            </button>
                           </div>
                         </td>
                         <td className="px-5 py-4">
@@ -327,6 +374,31 @@ value={search}
             <span className="text-sm" style={{ color: "#ffffff" }}>{t.coaches.verifyCoachImmediately}</span>
           </div>
         </div>
+      </Modal>
+
+      {/* Unverify confirmation — the flag doesn't gate anything downstream
+          yet, so the caveat has to live here instead of being assumed. */}
+      <Modal
+        open={!!unverifyTarget}
+        onClose={() => setUnverifyTarget(null)}
+        title={t.coaches.unverifyConfirmTitle}
+        size="sm"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setUnverifyTarget(null)}>{t.common.cancel}</Button>
+            <Button
+              variant="danger"
+              loading={togglingId === unverifyTarget?.id}
+              onClick={() => unverifyTarget && applyToggle(unverifyTarget.id, false)}
+            >
+              {t.coaches.unverify}
+            </Button>
+          </>
+        }
+      >
+        <p className="text-sm leading-relaxed" style={{ color: "#adaaaa" }}>
+          {t.coaches.unverifyConfirmBody}
+        </p>
       </Modal>
     </DashboardLayout>
   );

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Plus, Building2, Phone, Trash2, Eye, EyeOff, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Plus, Building2, ChevronRight, Phone, Trash2, Eye, EyeOff, Search } from "lucide-react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
@@ -56,6 +57,7 @@ const defaultForm: GymFormState = {
 
 export default function AdminGymsPage() {
   const { t, locale, isRtl } = useTranslation();
+  const router = useRouter();
   const [gyms, setGyms] = useState<Gym[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
@@ -63,7 +65,6 @@ export default function AdminGymsPage() {
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Gym | null>(null);
-  const [viewTarget, setViewTarget] = useState<Gym | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState<GymFormState>(defaultForm);
   const [formErrors, setFormErrors] = useState<Partial<GymFormState>>({});
@@ -226,14 +227,11 @@ export default function AdminGymsPage() {
                       t.gyms.gymManager,
                       t.common.phone,
                       t.gyms.plans,
-                      t.common.actions,
+                      "",
                     ].map((head, i) => (
                       <th
-                        key={head}
-                        className={`text-[10px] font-medium uppercase tracking-widest px-5 py-3.5 ${
-                          // Actions reads as a toolbar, not a data column — center its header to match.
-                          i === 4 ? "text-center" : isRtl ? "text-right" : "text-left"
-                        }`}
+                        key={head || i}
+                        className={`text-[10px] font-medium uppercase tracking-widest px-5 py-3.5 ${isRtl ? "text-right" : "text-left"}`}
                         style={{ fontFamily: "JetBrains Mono, monospace", color: "#8a8888" }}
                       >
                         {head}
@@ -247,7 +245,8 @@ export default function AdminGymsPage() {
                     return (
                       <tr
                         key={gym.id}
-                        className="border-t transition-colors hover:bg-[#1a1a1a]"
+                        onClick={() => router.push(`/admin/gyms/${gym.id}`)}
+                        className="border-t transition-colors hover:bg-[#1a1a1a] cursor-pointer"
                         style={{ borderColor: "#20201f" }}
                       >
                         <td className={cell}>
@@ -298,25 +297,13 @@ export default function AdminGymsPage() {
                             <span>{(gym.images as unknown[])?.length ?? 0}{t.gyms.photosCount}</span>
                           </div>
                         </td>
-                        <td className="px-5 py-4 text-center">
-                          {/* A bordered toolbar instead of loose icons, matching
-                              the treatment used elsewhere in the admin tables. */}
-                          <div
-                            className="inline-flex items-center gap-0.5 p-1 rounded-xl border"
-                            style={{ background: "#0e0e0e", borderColor: "#2a2a2a" }}
-                          >
+                        <td className="px-5 py-4">
+                          <div className="flex items-center justify-end gap-1">
                             <button
-                              onClick={() => setViewTarget(gym)}
-                              title={t.common.view}
-                              aria-label={t.common.view}
-                              className="p-2 rounded-lg transition-colors hover:bg-[#20201f] hover:text-[#cafd00]"
-                              style={{ color: "#adaaaa" }}
-                            >
-                              <Eye className="w-4 h-4" />
-                            </button>
-                            <span className="w-px h-5 flex-shrink-0" style={{ background: "#2a2a2a" }} />
-                            <button
-                              onClick={() => setDeleteTarget(gym)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDeleteTarget(gym);
+                              }}
                               title={t.gyms.deleteGym}
                               aria-label={t.gyms.deleteGym}
                               className="p-2 rounded-lg transition-colors hover:bg-[#5c1620]/30"
@@ -324,6 +311,10 @@ export default function AdminGymsPage() {
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
+                            <ChevronRight
+                              className="w-4 h-4 flex-shrink-0"
+                              style={{ color: "#8a8888", transform: isRtl ? "scaleX(-1)" : undefined }}
+                            />
                           </div>
                         </td>
                       </tr>
@@ -519,88 +510,6 @@ export default function AdminGymsPage() {
           </div>
         </div>
       </Modal>
-
-      {/* View Gym Modal */}
-      {viewTarget && (
-        <Modal
-          open={!!viewTarget}
-          onClose={() => setViewTarget(null)}
-          title={viewTarget.name}
-          size="md"
-        >
-          <div className="space-y-4">
-            <div className="flex items-center gap-4">
-              {viewTarget.logoUrl ? (
-                <img
-                  src={viewTarget.logoUrl}
-                  alt={viewTarget.name}
-                  className="w-16 h-16 rounded-xl object-cover"
-                />
-              ) : (
-                <div
-                  className="w-16 h-16 rounded-xl flex items-center justify-center"
-                  style={{ background: "#20201f" }}
-                >
-                  <Building2 className="w-8 h-8" style={{ color: "#cafd00" }} />
-                </div>
-              )}
-              <div>
-                <h3
-                  className="font-semibold"
-                  style={{ fontFamily: "Lexend, sans-serif", color: "#ffffff" }}
-                >
-                  {viewTarget.name}
-                </h3>
-                  <Badge variant="default">{gymTypeLabel(viewTarget.gymType, locale)}</Badge>
-              </div>
-            </div>
-            <div className="space-y-2 text-sm" style={{ color: "#adaaaa" }}>
-              <div className="flex justify-between">
-                <span>{t.gyms.viewPhone}</span>
-                <span style={{ color: "#ffffff" }}>{viewTarget.phone || "—"}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>{t.gyms.viewLocation}</span>
-                <span style={{ color: "#ffffff" }}>
-                  {viewTarget.latitude}, {viewTarget.longitude}
-                </span>
-              </div>
-              {viewTarget.gymManager && (
-                <>
-                  <div className="flex justify-between">
-                    <span>{t.gyms.viewManager}</span>
-                    <span style={{ color: "#ffffff" }}>{viewTarget.gymManager.name}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>{t.gyms.viewManagerEmail}</span>
-                    <span style={{ color: "#ffffff" }}>{viewTarget.gymManager.email}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>{t.gyms.viewManagerPhone}</span>
-                    <span style={{ color: "#ffffff" }}>{viewTarget.gymManager.phoneNumber}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>{t.gyms.viewManagerId}</span>
-                    <span style={{ color: "#ffffff", fontFamily: "JetBrains Mono, monospace" }}>{viewTarget.gymManager.gymId}</span>
-                  </div>
-                </>
-              )}
-              <div className="flex justify-between">
-                <span>{t.gyms.viewPlans}</span>
-                <span style={{ color: "#ffffff" }}>
-                  {(viewTarget.plans as unknown[])?.length ?? 0}
-                </span>
-              </div>
-              {viewTarget.description && (
-                <div>
-                  <span className="block mb-1">Description</span>
-                  <span style={{ color: "#ffffff" }}>{viewTarget.description}</span>
-                </div>
-              )}
-            </div>
-          </div>
-        </Modal>
-      )}
 
       {/* Delete Confirm */}
       <Modal

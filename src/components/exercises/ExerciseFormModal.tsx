@@ -1,16 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Plus, Trash2, Image as ImageIcon, Upload, Loader2, X } from "lucide-react";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import { useTranslation } from "@/hooks/useTranslation";
-import { exercisesApi, muscleGroupsApi } from "@/lib/api";
+import { exercisesApi, mediaApi, muscleGroupsApi } from "@/lib/api";
 import { apiErrorMessage } from "@/lib/apiError";
 import {
   CATEGORY_KEYS,
   FORCE_KEYS,
   MECHANIC_KEYS,
+  exerciseImageUrl,
   invalidateExerciseCatalogue,
   type CatalogueExercise,
   type ExerciseInput,
@@ -323,6 +324,8 @@ export default function ExerciseFormModal({
   const [form, setForm] = useState<FormState>(emptyForm);
   const [muscles, setMuscles] = useState<MuscleGroupRef[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const isEdit = Boolean(exercise);
   const ph = t.exercises.placeholders;
@@ -357,6 +360,28 @@ export default function ExerciseFormModal({
       setForm((prev) => ({ ...prev, [key]: value })),
     []
   );
+
+  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file after a failed attempt
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error(t.exercises.invalidImageFile);
+      return;
+    }
+
+    setUploadingImage(true);
+    try {
+      const res = await mediaApi.upload(file, "exercises");
+      setField("imageUrl", res.data.url);
+      toast.success(t.exercises.imageUploaded);
+    } catch (error) {
+      toast.error(apiErrorMessage(error, t.exercises.uploadImageFailed));
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   const toggleMuscle = (key: "primaryMuscleGroupIds" | "secondaryMuscleGroupIds", id: string) =>
     setForm((prev) => ({
@@ -584,8 +609,81 @@ export default function ExerciseFormModal({
 
         <Section title={t.exercises.media}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label={t.exercises.imageUrl} hint={t.exercises.imageUrlHint}>
-              {textInput("imageUrl", { placeholder: ph.imageUrl })}
+            <Field label={t.exercises.imageUrl}>
+              <input
+                ref={imageInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageFileChange}
+                className="hidden"
+              />
+
+              {form.imageUrl.trim() !== "" ? (
+                <div
+                  className="relative w-full h-36 rounded-xl overflow-hidden border"
+                  style={{ background: "#20201f", borderColor: "#2a2a2a" }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={exerciseImageUrl(form.imageUrl) ?? undefined}
+                    alt={t.exercises.imageUrl}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.visibility = "hidden";
+                    }}
+                  />
+                  {uploadingImage && (
+                    <div
+                      className="absolute inset-0 flex items-center justify-center"
+                      style={{ background: "rgba(14,14,14,0.7)" }}
+                    >
+                      <Loader2 className="w-5 h-5 animate-spin" style={{ color: "#cafd00" }} />
+                    </div>
+                  )}
+                  <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      title={t.exercises.changeImage}
+                      onClick={() => imageInputRef.current?.click()}
+                      disabled={uploadingImage}
+                      className="p-1.5 rounded-lg backdrop-blur-sm transition-colors disabled:opacity-50"
+                      style={{ background: "rgba(14,14,14,0.75)", color: "#ffffff" }}
+                    >
+                      <Upload className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      title={t.exercises.removeImage}
+                      onClick={() => setField("imageUrl", "")}
+                      disabled={uploadingImage}
+                      className="p-1.5 rounded-lg backdrop-blur-sm transition-colors disabled:opacity-50"
+                      style={{ background: "rgba(14,14,14,0.75)", color: "#ff6e81" }}
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => imageInputRef.current?.click()}
+                  disabled={uploadingImage}
+                  className="w-full h-36 rounded-xl border border-dashed flex flex-col items-center justify-center gap-1.5 transition-colors hover:border-[#cafd00] hover:text-[#cafd00] disabled:opacity-60"
+                  style={{ borderColor: "#2a2a2a", color: "#8a8888" }}
+                >
+                  {uploadingImage ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <ImageIcon className="w-5 h-5" />
+                  )}
+                  <span className="text-sm font-medium">
+                    {uploadingImage ? t.exercises.uploadingImage : t.exercises.uploadImage}
+                  </span>
+                </button>
+              )}
+
+              <p className="text-xs mt-1.5" style={{ color: "#8a8888" }}>{t.exercises.orPasteUrl}</p>
+              <div className="mt-1.5">{textInput("imageUrl", { placeholder: ph.imageUrl })}</div>
             </Field>
             <Field label={t.exercises.videoUrl}>
               {textInput("videoUrl", { placeholder: ph.videoUrl })}

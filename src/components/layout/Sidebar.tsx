@@ -23,6 +23,8 @@ import {
   Clock,
   ScrollText,
   Sparkles,
+  Wallet,
+  Trophy,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { clearAuth, getUserRole, type UserRole } from "@/lib/auth";
@@ -104,6 +106,18 @@ export default function Sidebar() {
       label: t.nav.aiPlans,
       href: "/admin/ai-plan-packages",
       icon: <Sparkles className="w-5 h-5" />,
+      roles: ["super_admin"],
+    },
+    {
+      label: t.nav.finance,
+      href: "/admin/finance",
+      icon: <Wallet className="w-5 h-5" />,
+      roles: ["super_admin"],
+    },
+    {
+      label: t.nav.gamification,
+      href: "/admin/gamification",
+      icon: <Trophy className="w-5 h-5" />,
       roles: ["super_admin"],
     },
     // {

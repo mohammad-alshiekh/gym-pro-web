@@ -349,7 +349,7 @@ export default function ScheduleBuilder({
     setUploadingCover(true);
     try {
       const res = await mediaApi.upload(file, "exercise-schedules");
-      patch({ imageUrl: res.data });
+      patch({ imageUrl: res.data.url });
       toast.success(t.exerciseSchedules.imageUploaded);
     } catch (err) {
       toast.error(apiErrorMessage(err, t.exerciseSchedules.uploadImageFailed));

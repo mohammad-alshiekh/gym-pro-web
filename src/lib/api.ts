@@ -28,6 +28,8 @@ import type {
   ScheduleInput,
   ScheduleUpdateInput,
 } from "@/lib/schedules";
+import type { FinanceOverview, FinanceTransaction } from "@/lib/finance";
+import type { AdminLeaderboard } from "@/lib/gamification";
 
 const BASE_URL = "https://gymbro.runasp.net/api";
 
@@ -122,7 +124,7 @@ export const gymsApi = {
     "pageInfo.resultsPerPage"?: number;
   }) => apiClient.get("/gyms", { params }),
 
-  getById: (id: string) => apiClient.get(`/gyms/${id}`),
+  getById: (id: string) => apiClient.get<MyGym>(`/gyms/${id}`),
 
   create: (data: {
     gymName: string;
@@ -242,15 +244,24 @@ export const analyticsApi = {
 
 // ─── Media ───────────────────────────────────────────────────────────────────
 
+export interface MediaUploadResult {
+  url: string;
+  publicId: string;
+  resourceType: string;
+}
+
 export const mediaApi = {
   /**
-   * Uploads a single file to Cloudinary via the backend and answers with the
-   * hosted URL as a plain string.
+   * Uploads a single file to Cloudinary via the backend.
    *
    * The Swagger doc renders this as a raw binary body with
    * `Content-Type: application/json`, but sending it that way 415s — the
    * endpoint binds an `IFormFile`, so it needs actual multipart/form-data,
    * same as the gym-image uploads above.
+   *
+   * The doc also describes the response as a bare URL string, but the live
+   * endpoint answers with `{ url, publicId, resourceType }` — read `.url`,
+   * not the response body itself.
    */
   upload: (file: File, folder?: string) => {
     const formData = new FormData();
@@ -261,7 +272,7 @@ export const mediaApi = {
     // sends it without a boundary param, and this endpoint 415s on that.
     // `undefined` here deletes the header so the browser generates the
     // correct multipart boundary itself.
-    return apiClient.post<string>("/media/upload", formData, {
+    return apiClient.post<MediaUploadResult>("/media/upload", formData, {
       params: folder ? { folder } : undefined,
       headers: { "Content-Type": undefined },
     });
@@ -292,6 +303,19 @@ export const coachesApi = {
     youTubeUrl?: string;
     isVerifiedByAdmin?: boolean;
   }) => apiClient.post("/Coach/AddCoach", data),
+
+  /**
+   * `IsVerifiedByAdmin` is a flag only today — nothing downstream reads it
+   * to gate login, listing, or new subscriptions. Label the toggle
+   * "Verified"/"Approved" in the UI, not "Active".
+   * Both return the full `CoachResponseDto`, so replace the row from the
+   * response instead of refetching.
+   */
+  activate: (coachId: string) =>
+    apiClient.put<CoachDetail>(`/Coach/${coachId}/Activate`),
+
+  deactivate: (coachId: string) =>
+    apiClient.put<CoachDetail>(`/Coach/${coachId}/Deactivate`),
 };
 
 // ─── Trainees ────────────────────────────────────────────────────────────────
@@ -436,4 +460,46 @@ export const schedulesApi = {
     apiClient.put<ExerciseSchedule>(`/ExerciseSchedule/${id}`, data),
 
   delete: (id: string) => apiClient.delete(`/ExerciseSchedule/${id}`),
+};
+
+// ─── Admin: Finance ──────────────────────────────────────────────────────────
+
+export const financeApi = {
+  /**
+   * Both `from`/`to` are `DateOnly` (`yyyy-MM-dd`), inclusive on both ends.
+   * Omit both for the current calendar month. `from` after `to` is a 400.
+   */
+  getOverview: (params?: { from?: string; to?: string }) =>
+    apiClient.get<FinanceOverview>("/admin/finance/overview", { params }),
+
+  /**
+   * `pageNumber`/`resultsPerPage` are all-or-nothing — sending only one of
+   * them silently returns the whole unpaged list.
+   */
+  getTransactions: (params?: {
+    from?: string;
+    to?: string;
+    /** FinanceStreamEnum — 0 AiPlan, 1 GymSubscription, 2 CoachSubscription. */
+    stream?: number;
+    includeManual?: boolean;
+    pageNumber?: number;
+    resultsPerPage?: number;
+  }) =>
+    apiClient.get<Paginated<FinanceTransaction>>("/admin/finance/transactions", {
+      params,
+    }),
+};
+
+// ─── Admin: Gamification ─────────────────────────────────────────────────────
+
+export const adminGamificationApi = {
+  /**
+   * Unlike the trainee leaderboard, any date range is allowed and opted-out
+   * trainees are included (flagged, not dropped). Defaults to the current
+   * Monday–Sunday week; `limit` is clamped server-side to 1–200.
+   */
+  getLeaderboard: (params?: { from?: string; to?: string; limit?: number }) =>
+    apiClient.get<AdminLeaderboard>("/admin/gamification/leaderboard", {
+      params,
+    }),
 };
