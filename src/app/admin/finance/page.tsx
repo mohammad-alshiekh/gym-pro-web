@@ -229,17 +229,7 @@ export default function AdminFinancePage() {
           />
         </div>
 
-        {/* Warning: not a closed ledger */}
-        <div
-          className="rounded-xl border p-4 flex items-start gap-3"
-          style={{ background: "rgba(255,208,74,0.06)", borderColor: "rgba(255,208,74,0.25)" }}
-        >
-          <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#ffd04a" }} />
-          <p className="text-xs leading-relaxed" style={{ color: "#adaaaa" }}>
-            {t.finance.notALedgerWarning}
-          </p>
-        </div>
-
+      
         {/* Revenue by stream — one card with proportional bars instead of
             three disconnected boxes, so the split against total revenue
             reads at a glance. */}
